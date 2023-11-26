@@ -13,7 +13,7 @@
 }
 
 .table-name {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: var(--text-color);
     font-weight: 700;
     padding: 10px 16px;
@@ -178,5 +178,40 @@
     .icon{
         font-size: 2.4rem;
         color: #fff;
+    }
+}
+// Update product
+.update-page{
+    margin-top: 0;
+    padding: 0;
+}
+
+.box-header{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    .header-btn{
+        font-size: 1.4rem;
+        color: var(--white);
+        text-transform: uppercase;
+        width: 122px;
+        border-radius: 3px;
+        background-color: red;
+        margin-right: 20px;
+    }
+}
+
+.header-name{
+    font-size: 1.6rem;
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 10px 16px;
+}
+
+.update{
+    .update-btn{
+        width: 182px;
+        margin-bottom: 20px;
     }
 }

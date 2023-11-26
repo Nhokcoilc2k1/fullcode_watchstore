@@ -30,9 +30,9 @@ const productSchema = mongoose.Schema({
     images: {
         type: Array,
     },
-    // thumbnail: {
-    //     type: String,
-    // },
+    thumbnail: {
+        type: String,
+    },
     description: {
         type: String,
     },

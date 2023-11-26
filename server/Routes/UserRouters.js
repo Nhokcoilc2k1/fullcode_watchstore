@@ -376,21 +376,21 @@ usertRouter.put(
     })
 )
 
-usertRouter.put(
-    '/:uid',
-    verifyAccessToken,
-    isAdmin,
-    asyncHandler(async(req, res) => {
-        const {uid} = req.params;
-        const {status} = req.body;
-        if(!uid || !status) throw new Error("Missing input");
-        const user = await User.findByIdAndUpdate(uid, {status: status}, {new: true}).select('-password -roles -refreshToken');
-        return res.status(200).json({
-            success: user ? true : false,
-            message: user ? 'Cập nhật người dùng thành công' : 'Đã xảy ra lỗi!'
-        })
-    })
-)
+// usertRouter.put(
+//     '/:uid',
+//     verifyAccessToken,
+//     isAdmin,
+//     asyncHandler(async(req, res) => {
+//         const {uid} = req.params;
+//         const {status} = req.body;
+//         if(!uid || !status) throw new Error("Missing input");
+//         const user = await User.findByIdAndUpdate(uid, {status: status}, {new: true}).select('-password -roles -refreshToken');
+//         return res.status(200).json({
+//             success: user ? true : false,
+//             message: user ? 'Cập nhật người dùng thành công' : 'Đã xảy ra lỗi!'
+//         })
+//     })
+// )
 
 
 usertRouter.delete(

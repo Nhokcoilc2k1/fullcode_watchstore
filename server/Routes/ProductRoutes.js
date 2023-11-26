@@ -106,49 +106,33 @@ productRoute.post(
     asyncHandler(async(req, res) => {
         const {name, price, sale_price, quantity, brand, category, description} = req.body;
         if(!(name && price && sale_price && quantity)) throw new Error('Đầu vào không hợp lệ!');
+        const thumbnail = req?.files?.thumbnail[0].path
+        const images = req?.files?.images?.map(el => el.path)
         const slug = req.body.slug = slugify(name);
         if (!slug) throw new Error('Trường `slug` là bắt buộc!');
-        // const thumbnail = req?.file[0]?.thumbnail[0].path;
-        // const images = req?.files?.images?.map(el => el.path);
-        const discount_value = Math.round(((price - sale_price) / price) * 100);;
+        const discount_value = Math.round(((price - sale_price) / price) * 100);
         const productExist = await Product.findOne({name});
         if(productExist) throw new Error('Sản phẩm đã tồn tại!');
-        if(discount_value) req.body.discount_value = discount_value;
-        // if(thumbnail) req.body.thumbnail = thumbnail;
-        // if(images) req.body.images = images;
         const product = new Product({
             name,
             price,
             slug,
             sale_price,
             quantity,
+            thumbnail,
+            images,
             description,
             discount_value,
             brand, 
             category,
         })
         const newProduct = await product.save();
-        // const newProduct = await Product.create(req.body)
         return res.status(200).json({
             success: newProduct ? true : false,
-            createProduct: newProduct ? newProduct : 'Không thể tạo được sản phẩm' 
+            message: newProduct ? 'Tạo sản phẩm thành công' : 'Không thể tạo được sản phẩm' 
         })
     })
 )
-// const product = new Product({
-        //     name,
-        //     price,
-        //     slug,
-        //     sale_price,
-        //     quantity,
-        //     thumbnail,
-        //     images,
-        //     description,
-        //     discount_value,
-        //     brand, 
-        //     category,
-        // })
-        // const newProduct = await product.save();
 
 productRoute.get(
     '/:pid',
@@ -201,8 +185,13 @@ productRoute.put(
     '/:pid',
     verifyAccessToken,
     isAdmin,
+    uploadCloud.fields([
+        {name: 'images', maxCount: 10},
+        {name: 'thumbnail', maxCount: 1}
+    ]),
     asyncHandler(async(req, res) => {
         const { pid } = req.params;
+        const files = req?.files
         if(req.body && req.body.name) req.body.slug = slugify(req.body.name);
         const discount_value = Math.round(((req.body.price - req.body.sale_price) / req.body.price) * 100)
         const updatedProduct = await Product.findByIdAndUpdate(pid, {...req.body, discount_value}, {new: true})

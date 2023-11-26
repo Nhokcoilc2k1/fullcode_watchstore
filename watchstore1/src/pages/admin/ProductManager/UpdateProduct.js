@@ -1,25 +1,19 @@
 import classNames from "classnames/bind";
-import styles from './CreateProduct.module.scss';
-import { useFormik} from 'formik';
-import { useCallback, useEffect, useState } from "react";
-import { getAllBrand } from "../BrandManager/BrandServer";
-import { getAllCategory } from "../CategoryManager/CategoryServer";
+import styles from '../CreateProduct/CreateProduct.module.scss';
+import { memo, useCallback, useEffect, useState } from "react";
 import Button from "~/components/Button";
 import { createProductValidation } from "~/components/Form/SignupValidation";
-import MarkdownEditor from "./MarkdownEditor";
-import { getBase64 } from "~/ultils/helpers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { saveAll } from "../ProductManager/ProductServer";
-import { createProduct } from "~/Redux/Reducers/ProductSlice";
-import { useDispatch } from "react-redux";
-import { apiCreateProduct } from "~/apis/product";
+import { getAllBrand } from "../BrandManager/BrandServer";
+import { getAllCategory } from "../CategoryManager/CategoryServer";
+import { useFormik } from "formik";
 import { toast } from "react-toastify";
+import MarkdownEditor from "../CreateProduct/MarkdownEditor";
+import { getBase64 } from "~/ultils/helpers";
 
 const cx = classNames.bind(styles)
 
-function CreateProduct() {
-    // const dispatch = useDispatch();
+function UpdateProduct({editProduct, setEditProduct}) {
+
     const [categoryData, setCategoryData] = useState([]);
     const [branData, setBrandData] = useState();
     const [thumbnail, setThumbnail] = useState();
@@ -32,8 +26,6 @@ function CreateProduct() {
         thumb: null,
         images: [],
     })
-
-    // const [hoverElm, setHoverElm] = useState(null)
 
     const handlePriviewThumd = async(file) => {
         const base64Thumb = await getBase64(file)
@@ -54,15 +46,6 @@ function CreateProduct() {
         if(imagesPreview.length > 0) setPreview(prev => ({...prev, images: imagesPreview}))
     }
 
-    useEffect(() => {
-        if(!thumbnail) return;
-        handlePriviewThumd(thumbnail[0])
-    },[thumbnail])
-
-    useEffect(() => {
-        if(!images) return;
-        handlePreviewImage(images)
-    },[images])
 
     const changValue = useCallback((e) => {
         setPayload(e)
@@ -82,7 +65,7 @@ function CreateProduct() {
         fetchApi();
     },[]);
 
-    const {values, errors,resetForm, handleChange,handleSubmit, handleBlur, touched} = useFormik({
+    const {values, setValues , errors, resetForm, handleChange,handleSubmit, handleBlur, touched} = useFormik({
         initialValues: {
             name: '',
             price: '',
@@ -105,30 +88,40 @@ function CreateProduct() {
                 for(let image of finalPayload.images) formData.append('images', image)
             }
 
-            const response =  await apiCreateProduct(formData);
-            if(response.success){
-                toast.success(response.message);
-                resetForm();
-                setPayload({
-                    description:''
-                })
-                setPreview({
-                    thumb: null,
-                    images: [],
-                })
-            }else{
-                toast.error(response.message)
-            }
+            // const response =  await apiCreateProduct(formData);
+            // if(response.success){
+            //     toast.success(response.message)
+            //     resetForm();
+            // }else{
+            //     toast.error(response.message)
+            // }
         },
       });
 
-    //   const handleRemoveImg = (name) => {
-    //       if(preview.images?.some(el => el.name === name)) setPreview(prev => ({...prev, images: prev.images?.filter(el => el.name !== name)}))
-    //   }
-
-    return ( <div className={cx('wrapper')}>
+      useEffect(() => {
+        if(editProduct){
+            setValues({
+                name: editProduct.name,
+                price: editProduct.price,
+                sale_price: editProduct.sale_price,
+                quantity: editProduct.quantity,
+                category: editProduct.category,
+                brand: editProduct.brand
+            })
+            setPayload({description: typeof editProduct?.description === 'object' ? editProduct.description.join(', ') : editProduct?.description})
+            setPreview({
+                thumb: editProduct?.thumbnail || '',
+                images: editProduct?.images || [],
+            })
+      }
+      }, [editProduct])
+    return ( 
+        <div className={cx('wrapper', 'update-page')}>
         <div className={cx('inner')}>
-            <h2 className={cx('table-name')}>Thêm mới sản phẩm</h2>
+            <div className={cx('box-header')}>
+                <h2 className={cx('header-name')}>Cập nhật sản phẩm</h2>
+                <Button onClick={() => setEditProduct(null)} className={cx('header-btn')}>Quay lại</Button>
+            </div>
             <div>
                 <form onSubmit={handleSubmit}>
                     <div className={cx('form-group')}>
@@ -229,6 +222,7 @@ function CreateProduct() {
                         label='Mô tả'
                         invalidFields={invalidFields}
                         setInvalidFields={setInvalidFields}
+                        value={payload.description}
                     />
                     <div className={cx('upload')}>
                         <label htmlFor="thumb">Tải lên hình ảnh thu nhỏ</label>
@@ -261,16 +255,16 @@ function CreateProduct() {
                                     className={cx('preview-img')}
                                     // onMouseLeave={() => setHoverElm(null)}
                                     >
-                                    <img src={el.path} alt="product" className={cx('thumb-img')} />
+                                    <img src={el} alt="product" className={cx('thumb-img')} />
                                     {/* {hoverElm === el.name && <div className={cx('overlay')} onClick={() => handleRemoveImg(el.name)}>
                                             <FontAwesomeIcon icon={faTrashCan} className={cx('icon')} />
                                         </div>}  */}
                                 </div>
                             ))}
                             </div>}
-                    <div className={cx('ctrl-create')}>
-                        <Button type="submit" className={cx('control-btn')}>
-                            Tạo sản phẩm mới
+                    <div className={cx('ctrl-create', 'update')}>
+                        <Button type="submit" className={cx('control-btn', 'update-btn')}>
+                            Cập nhật sản phẩm
                         </Button>
                     </div>
                 </form>
@@ -279,4 +273,4 @@ function CreateProduct() {
     </div> );
 }
 
-export default CreateProduct;
+export default memo(UpdateProduct);

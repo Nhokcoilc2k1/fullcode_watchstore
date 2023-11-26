@@ -3,36 +3,28 @@ import styles from '../admin.module.scss';
 import Button from '~/components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPen, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import {  deleteProductById } from './ProductServer';
+import { useCallback, useEffect, useState } from 'react';
 import { getAllBrand } from '../BrandManager/BrandServer';
 import { getAllCategory } from '../CategoryManager/CategoryServer';
 import ProductDialog from './ProductDialog';
-import ToastMessage from '~/components/ToastMessage';
 import DialogDelete from '../components/DialogDelete';
 import moment from 'moment';
 import Pagination from '~/pages/components/Pagination';
 import queryString from 'query-string';
+import UpdateProduct from './UpdateProduct';
+import { formattedNumber } from '~/ultils/helpers';
 
 const cx = classNames.bind(styles);
-const formattedNumber = (price) => {
-    return String(price).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-}
-
 
 function ProductManager() {
     const [productData, setProductData] = useState([]);
     const [branData, setBrandData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
 
-    const [productById, setProductById] = useState({});
-
     const [reLoad, setReLoad] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
-    const [showDelete, setShowDelete] = useState(false);
-    const [showToast1, setShowToast1] = useState(false);
-    const [showToast2, setShowToast2] = useState(false);
-    const [deleteId, setDeleteId] = useState();
+    const [editProduct, setEditProduct] = useState(null);
+    const [showEdit, setShowEdit] = useState(false);
 
     const [pagination, setPagination] = useState({})
 
@@ -61,12 +53,10 @@ function ProductManager() {
     useEffect(() => {
         const fetchApi = async() => {
             try {
-                // const response = await getAllProduct();
                 const brand = await getAllBrand();
                 const category = await getAllCategory();
                 setCategoryData(category?.data.categorys);
                 setBrandData(brand?.data.brands);
-                // setProductData(response?.data.products)
             } catch (error) {
                 console.log(error);
             }
@@ -105,16 +95,17 @@ function ProductManager() {
     }
 
     const handleEdit = (product) => {
-        setProductById(product);
-        setShowDialog(true);
+        setEditProduct(product);
     }
 
-    const handleDelete = (productId) => {
-        setShowDelete(true);
-        setDeleteId(productId);
-    }
 
     return <div className={cx('wrapper')}>
+        { editProduct && (
+            <div className={cx('update')}>
+                <UpdateProduct editProduct={editProduct} setEditProduct={setEditProduct} />
+            </div>
+        )
+        }
         <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách sản phẩm</h2>
                 <div className={cx('header')}>
@@ -138,7 +129,7 @@ function ProductManager() {
                             <th><p className={cx('title')}>Danh mục</p></th>
                             <th><p className={cx('title')}>Giá nhập</p></th>
                             <th> <p className={cx('title')}>Giá bán</p></th>
-                            {/* <th><p className={cx('title')}>Giảm giá</p></th> */}
+                            <th><p className={cx('title')}>Đã bán</p></th>
                             <th><p className={cx('title')}>Ngày tạo</p></th>
                             <th><p className={cx('title')}>Ngày sửa</p></th>
                         </tr>
@@ -150,58 +141,42 @@ function ProductManager() {
                             <td className={cx('cus-col2')}>
                                 <div className={cx('action')}>
                                     <span onClick={() => handleEdit(product)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
-                                    <span onClick={() => handleDelete(product._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                    <span  className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
                                 </div>
                             </td>
                             <td className={cx('cus-col2')}><p className={cx('code')}>{product._id.slice(-6)}</p></td>
                             <td><p className={cx('name')}>{product.name}</p></td>
-                            <td className={cx('cus-col1')}><p className={cx('product-img')}><img src={product.image} alt={product.description} /></p></td>
+                            <td className={cx('cus-col1')}><p className={cx('product-img')}><img src={product.thumbnail} alt={product.description} /></p></td>
                             <td><p className={cx('cus-col2', 'custom')}>{handleCompareBrand(product.brand)}</p></td>
                             <td><p className={cx('cus-col2', 'custom')}>{handleCompareCategory(product.category)}</p></td>
                             <td><p className={cx('cus-col3', 'custom')}>{formattedNumber(product.price)}đ</p></td>
                             <td><p className={cx('cus-col3', 'custom')}>{formattedNumber(product.sale_price)}đ</p></td>
-                            {/* <td><p className={cx('cus-col2', 'custom')}>{product.discount_value}%</p></td> */}
+                            <td><p className={cx('cus-col2', 'custom')}>{product.sold}</p></td>
                             <td className={cx('cus-col3')}><p className={cx('date')}>{moment(product.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                             <td className={cx('cus-col3')}><p className={cx('date')}>{handleCompareDate(product.updatedAt, product.createdAt)}</p></td>
                         </tr>
                         )): (<></>)}
                     </tbody>
                 </table>
-                {showDialog && 
-                    <ProductDialog 
-                        isOpen={showDialog}
-                        isClose={setShowDialog}
-                        data={productById}
-                        setData={setProductById}
-                        reLoad={setReLoad}
-                        showToast={setShowToast1}
-                        brands={branData}
-                        categorys={categoryData}
-                    />
-                }
-                {showDelete && 
-                    <DialogDelete 
-                        isOpen={showDelete}
-                        isClose={setShowDelete}
-                        data={deleteId}
-                        showToast={setShowToast2}
-                        reLoad={setReLoad}
-                        tittle={"Xóa sản phẩm"}
-                        message={"Bạn muốn xóa sản phẩm này không?"}
-                        fcDelete={deleteProductById}
-                    />
-                }
+                
             </div>
             <div className={cx('pagination')}>
                 <Pagination pagination={pagination} onPageChange={handlePageChange}  />
             </div>
-            {showToast1 && 
-                <ToastMessage tittle={"Thành công!"} message={"Thêm sản phẩm thành công."} type={"success"} duration={5000} />
-            }
-            {showToast2 && 
-                <ToastMessage tittle={"Thành công!"} message={"Xóa danh mục thành công."} type={"success"} duration={5000} />
-            }
     </div>;
 }
 
 export default ProductManager;
+
+
+// {showDialog && 
+//     <ProductDialog 
+//         isOpen={showDialog}
+//         isClose={setShowDialog}
+//         data={productById}
+//         setData={setProductById}
+//         reLoad={setReLoad}
+//         brands={branData}
+//         categorys={categoryData}
+//     />
+// }

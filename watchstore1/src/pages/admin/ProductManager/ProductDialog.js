@@ -5,7 +5,6 @@ import { saveAll, updateProduct } from "./ProductServer";
 
 function ProductDialog({isOpen, isClose, data, setData,showToast, reLoad, brands, categorys}) {
 
-
     const handleChange = (e) => {
         setData(prev => ({
             ...prev,
