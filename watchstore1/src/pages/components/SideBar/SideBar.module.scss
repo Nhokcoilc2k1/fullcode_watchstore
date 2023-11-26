@@ -1,0 +1,34 @@
+.wrapper {
+    border: 1px solid rgba(12, 24, 35, 0.2);
+    padding: 10px 14px;
+
+    :last-child {
+        border-bottom: none;
+    }
+}
+
+.box {
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(12, 24, 35, 0.2);
+}
+
+.title {
+    font-size: 1.7rem;
+    text-transform: capitalize;
+    margin: 14px 0;
+}
+
+.group {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+
+    input {
+        width: 16px;
+        height: 16px;
+    }
+
+    label {
+        margin-left: 12px;
+    }
+}

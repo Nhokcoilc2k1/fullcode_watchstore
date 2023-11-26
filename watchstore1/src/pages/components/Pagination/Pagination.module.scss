@@ -1,0 +1,22 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
+    padding: 11px 15px;
+    background-color: #d1d1d1;
+}
+
+.pagenumber {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin: 0 10px;
+    padding: 6px 15px;
+    border: 1px solid #d1d1d1;
+}

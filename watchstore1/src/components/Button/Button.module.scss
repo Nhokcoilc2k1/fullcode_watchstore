@@ -1,0 +1,87 @@
+.wrapper {
+    // --search-border-radius: 6px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    padding: 11px 16px;
+    // min-width: 160px;
+    background-color: var(--white);
+    border-radius: var(--search-border-radius);
+    border: 1px solid transparent;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    cursor: pointer;
+
+    + .wrapper {
+        margin-left: 10px;
+    }
+
+    // Disable
+    &.disable {
+        pointer-events: none;
+        opacity: 0.6;
+        user-select: none;
+    }
+
+}
+
+.title {
+    margin-bottom: -1px;
+}
+
+.icon + .title,
+.title + .icon {
+    margin-left: 8px;
+}
+
+
+// Button types
+.rounded {
+    border-radius: 999px;
+    border-color: rgba(22, 24, 35, 0.12);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+
+    &:hover {
+        border-color: rgba(22, 24, 35, 0.2);
+        background-color: rgba(22, 24, 35, 0.03);
+    }
+}
+
+.primary {
+    background-color: var(--primary);
+    color: var(--text-color);
+    border-color: var(--primary);
+
+    &:hover {
+        border-color: var(--primary);
+        background-color: #edc038;
+    }
+}
+
+.outline {
+    border-color: var(--text-color);
+
+    &:hover {
+        border-color: var(--text-color);
+        background-color: rgba(22, 24, 35, 0.06);
+    }
+}
+
+.text {
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// Button size
+.small {
+    min-width: 80px;
+    padding: 4px 16px;
+}
+
+.large {
+    min-width: 220px;
+    height: 56px;
+}

@@ -1,0 +1,399 @@
+.wrapper {
+    display: block;
+    margin-top: 4px;
+    padding: 30px;
+    background-color: #e9e9e9;
+}
+
+.inner {
+    background-color: #fff;
+    height: 520px;
+    padding: 0 16px;
+}
+
+.table-name {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    font-weight: 700;
+    padding: 10px 16px;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+.header {
+    display: flex;
+    margin: 10px 16px 0;
+}
+
+.search {
+    margin-left: auto;
+    border-bottom: 2px solid #d1d1d1;
+    border-radius: 4px;
+    display: flex;
+    overflow: hidden;
+
+    input {
+        border-radius: 4px;
+        color: var(--text-color);
+        background-color: #fff;
+        padding: 6px 10px;
+        font-size: 1.6rem;
+        width: 226px;
+        height: 36px;
+    }
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    background-color: #478bf0;
+    border-radius: 5px;
+    font-size: 1.4rem;
+    color: var(--white);
+    padding: 8px 10px;
+    height: 36px;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    font-size: 1.9rem;
+    color: #478bf0;
+    cursor: pointer;
+}
+
+// Table
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid #e8e8e8;
+    border-collapse: collapse;
+}
+
+.t-header {
+    padding: 8px;
+    background-color: #358600;
+}
+
+.title {
+    font-size: 1.4rem;
+    color: var(--white);
+    font-weight: 500;
+    padding: 8px;
+}
+// row table
+.row{
+    border: 1px solid #e8e8e8;
+    
+    &:nth-child(2n){
+        background-color: #e8e8e8;
+    }
+}
+
+.cus-col{
+    width: 110px;
+}
+
+.cus-col1{
+    width: 160px;
+}
+
+.action{
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+
+.icon-btn{
+    font-size: 2rem;
+    color: red;
+    padding: 0 5px;
+    cursor: pointer;
+
+    &:first-child{
+        color: #478bf0;
+    }
+
+}
+
+.code{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    padding: 10px;
+    font-size: 1.4rem;
+}
+
+.name{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    font-size: 1.4rem;
+}
+
+.image{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img{
+        width: 100px;
+        height: 40px;
+        border: 1px solid #e8e8e8;
+        border-radius: 5px;
+    }
+}
+
+.image-cate{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img{
+        width: 100px;
+        height: 60px;
+        border-radius: 5px;
+        border: 1px solid #e8e8e8;
+    }
+}
+
+.status{
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.date{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 1.4rem;
+}
+
+// Form
+.form{
+    background-color: #fff;
+    padding: 20px 30px;
+}
+
+.form-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    h2{
+        font-size: 1.8rem;
+        font-weight: 500;
+    }
+}
+
+.exit{
+    padding: 0 8px;
+    font-size: 2.2rem;
+    cursor: pointer;
+}
+
+.from-group {
+    
+    input {
+        width: 100%;
+        height: 40px;
+        font-size: 1.4rem;
+        color: var(--text-color);
+        border: 1px solid #d1d1d1;
+        border-radius: 4px;
+        padding: 12px;
+        margin-top: 4px;
+        margin-bottom: 10px;
+    }
+}
+
+.btn-form{
+    text-align: right;
+    margin-top: 4px;
+}
+
+.cancel{
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: var(--text-color);
+    font-weight: 400;
+    background-color: rgb(244, 60, 60);
+    font-size: 1.5rem;
+}
+
+.save{
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #478bf0;
+    color: #fff;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+// pagination
+.pagination{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #fff;
+    height: 50px;
+}
+
+// Infomation Delete
+.form-delete{
+    width: 480px;
+    padding: 20px 24px 28px;
+    background-color: #fff;
+    border-radius: 4px;
+
+    h2{
+    font-size: 1.8rem;
+    font-weight: 500;
+    }
+
+    p{
+        margin: 16px 0;
+    }
+}
+
+// Form nhãn hiệu
+.brand{
+    width: 480px;
+}
+
+// Form danh mục
+.form-cate{
+    font-size: 2rem;
+}
+
+// Product
+.cus-col2{
+    width: 90px;
+}
+
+.cus-col3{
+    width: 100px;
+}
+
+.product-img{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img{
+        width: 80px;
+        height: 80px;
+        border: 1px solid #e8e8e8;
+        border-radius: 5px;
+    }
+}
+
+.custom{
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.cus-col4{
+    width: 60px;
+}
+
+.cus-col5{
+    width: 90px;
+}
+
+// Home Admin
+.box-header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.box-item{
+    display: flex;
+    background-color: #fff;
+    flex-basis: 30%;
+    border-radius: 4px;
+    padding: 20px;
+    align-items: center;
+}
+
+.box-name{
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--text-color);
+    flex: 1;
+}
+
+.box-icon{
+    font-size: 8rem;
+    color: #478bf0;
+    margin-right: 14px;
+}
+
+.box-num{
+    border-bottom: 1px solid #d1d1d1;
+    font-size: 1.6rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.box-btn{
+    font-size: 1.5rem;
+    opacity: 0.6;
+    text-transform: uppercase;
+    margin-top: 4px;
+    float: right;
+    cursor: pointer;
+}
+
+.green{
+    color: #52aa54;
+}
+
+.red{
+    color: #ea413b ;
+}
+
+.orange{
+    color:  #ff9406;
+}
+
+.blue{
+    color: #0bb8ce;
+}
+
+.violet{ 
+    color: #9129a8 ;
+}
+
+.brown{
+    color: #bc4938;
+}
+
+// order
+.order{
+    background-color:  #ff9406;
+    padding: 2px 12px;
+    color: #fff;
+    border-radius: 3px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.custom-col{
+    text-align: center;
+}
+

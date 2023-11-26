@@ -1,0 +1,31 @@
+.wrapper {
+    margin-top: 4px;
+    border-bottom: 1px dotted rgba(12, 24, 35, 0.2);
+    padding-bottom: 8px;
+}
+
+.name-user {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-top: 10px;
+}
+
+.address-user {
+    display: inline-block;
+    padding: 3px 5px;
+    background: #dfe7f1;
+    color: var(--text-color);
+    margin-top: 5px;
+    font-size: 1.2rem;
+    border-radius: 2px;
+}
+
+.custom-star {
+    margin: 5px;
+    font-size: 1.5rem;
+}
+
+.content-comment {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}

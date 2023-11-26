@@ -1,0 +1,38 @@
+.wrapper {
+    margin-bottom: 16px;
+}
+
+.box {
+    height: 420px;
+    padding: 16px 10px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+// NAvigation
+.prev-btn,
+.next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 16.5px;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    color: var(--white);
+    z-index: 10;
+    background-color: rgba(22, 14, 35, 0.84);
+    cursor: pointer;
+}
+
+.prev-btn {
+    left: -14px;
+}
+
+.next-btn {
+    right: -14px;
+}
+
+.disable {
+    cursor: default !important;
+    opacity: 0.3;
+}

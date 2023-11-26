@@ -1,0 +1,12 @@
+.wrapper {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    color: var(--color-rating);
+}
+
+.number-star {
+    margin-left: 5px;
+    margin-bottom: -3px;
+    color: currentColor;
+}

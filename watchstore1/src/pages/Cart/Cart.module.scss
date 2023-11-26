@@ -1,0 +1,275 @@
+.wrapper {
+    margin: 30px 0 80px 0;
+}
+
+.name-pages {
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    color: var(--text-color);
+}
+
+// No-cart
+.no-cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 100px;
+
+    p {
+        font-size: 2rem;
+        margin-top: 20px;
+        margin-bottom: 40px;
+        padding: 0 8px;
+        color: var(--text-color);
+    }
+}
+
+.btn-cart {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid #e8e8e8;
+    border-collapse: collapse;
+}
+
+.t-header {
+    padding: 8px;
+    background-color: #efefef;
+}
+
+.title {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    font-weight: 400;
+    padding: 8px;
+}
+
+.row-product {
+    border: 1px solid #e8e8e8;
+}
+
+.td-checkbox {
+    padding: 8px;
+}
+
+
+.product {
+    width: 380px;
+    display: flex;
+    align-items: center;
+    padding: 16px 1px;
+
+    img {
+        width: 80px;
+        height: 80px;
+        margin-right: 0.75rem;
+        border: 1px solid #e8e8e8;
+    }
+
+    span {
+        font-size: 1.4rem;
+        color: var(--text-color);
+    }
+}
+
+.single-price {
+    font-size: 1.7rem;
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 20px;
+}
+
+.calcul-btn {
+    padding: 20px 10px;
+}
+
+.box-btn {
+    display: flex;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid #d1d1d1;
+    align-items: center;
+}
+
+.btn,
+.quantity {
+    padding: 8px;
+    font-size: 1.5rem;
+    flex-basis: 33.33333%;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid #d1d1d1;
+    border-right: 1px solid #d1d1d1;
+    cursor: default;
+}
+
+.price-temporary {
+    font-size: 1.8rem;
+    text-align: center;
+    color: var(--color-price);
+    font-weight: 600;
+    padding: 20px 10px;
+}
+
+.col-6 {
+    font-size: 1.6rem;
+    padding: 20px 8px;
+    text-align: center;
+}
+
+.delete {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.info-order {
+    margin-top: 20px;
+    border: 1px solid #e8e8e8;
+}
+
+.info-head {
+    margin: 10px;
+
+    h4 {
+        font-size: 1.8rem;
+        color: var(--text-color);
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+    }
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-bottom: 1px solid #e8e8e8;
+
+    span {
+        font-size: 1.5rem;
+        color: var(--text-color);
+    }
+}
+
+.total-price {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.total:first-child {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.total:last-child {
+    font-size: 1.7rem;
+    color: var(--color-price);
+    font-weight: 600;
+}
+
+.btn-cart {
+    padding: 14px;
+    border-radius: 0;
+    width: 280px;
+    margin-top: 20px;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+}
+
+
+.sub-text {
+    display: block;
+    text-transform: capitalize;
+    font-size: 1.4rem;
+    padding-top: 8px;
+}
+// responsive
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.col {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.c-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+@media (min-width: 740px) {
+    .row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    .col {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .m-0 {
+        display: none;
+    }
+
+    .m-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width: 1113px) {
+    .row {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .col {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .l-0 {
+        display: none;
+    }
+
+    .l-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+
+    .l-2 {
+        flex: 0 0 16.66667%;
+        max-width: 16.66667%;
+    }
+
+    .l-9 {
+        flex: 0 0 75%;
+        max-width: 75%;
+    }
+
+    .l-10 {
+        flex: 0 0 83.33333%;
+        max-width: 83.33333%;
+    }
+}

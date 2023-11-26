@@ -1,0 +1,22 @@
+.wrapper{
+    background-color: #fff9fa;
+    border:  1px solid #ffd4d8;
+    padding: 12px 15px;
+    margin-top: 6px;
+    border-radius: 2px;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+.icon{
+    color: #ff4753;
+    font-size: 1.4rem;
+    margin-right: 6px;
+}
+
+.box{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

@@ -1,0 +1,53 @@
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Roboto:wght@100;300;400;500;700&display=swap');
+
+:root {
+    --primary: #ffcc33;
+    // --primary: #c00;
+    --white: #fff;
+    --black: #000;
+    --text-color: #333;
+
+    // Price, dicount
+    --color-price: #ed1c24;
+    --color-discont: #f05e5d;
+    --color-bg-discount: #f9e9e2;
+    --border-discount: 2px;
+    --color-hover-name-product: #0066ff;
+    --color-rating: #ff9727;
+
+    // Default layout
+    --default-layout-header-height: 80px;
+    --default-layout-navigation-height: 40px;
+    --default-layout-width: 1200px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+    color: var(--text-color);
+}
+
+button,
+input,
+[tabindex] {
+    outline: none;
+    border: none;
+}
+
+a[href] {
+    color: var(--text-color);
+    text-decoration: none;
+}

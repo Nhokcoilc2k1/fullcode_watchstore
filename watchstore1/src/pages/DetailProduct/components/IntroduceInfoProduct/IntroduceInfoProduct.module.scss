@@ -1,0 +1,49 @@
+// Hướng dẫn chọn size
+
+.box-size {
+    font-size: 1.4rem;
+}
+
+.title {
+    margin: 16px 0;
+}
+
+.img1 {
+    width: 600px;
+    height: 600px;
+}
+
+.img2 {
+    width: 600px;
+    height: 443px;
+}
+
+// Chính sách bảo hành
+.Warr-policy {
+    font-size: 1.4rem;
+
+    p {
+        margin-bottom: 4px;
+    }
+
+    h5 {
+        color: var(--text-color);
+        font-size: 1.6rem;
+        margin: 8px 0;
+    }
+}
+
+// Chi tiết sản phẩm
+.box-desc {
+    font-size: 1.4rem;
+
+    p {
+        margin-bottom: 8px;
+    }
+
+    img {
+        width: 600px;
+        height: 360px;
+        margin-bottom: 8px;
+    }
+}
