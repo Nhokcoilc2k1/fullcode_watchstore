@@ -43,7 +43,7 @@ function FormLogin({ isClose }) {
            if(response.success){
             dispatch(login({isLoggedIn: true,  token: response.accessToken,}))
             handleIsClose(false);
-            navigate(`/`);
+            navigate('/');
             window.location.reload();
         }
         },

@@ -38,7 +38,7 @@
         background-color: #fff;
         padding: 6px 10px;
         font-size: 1.6rem;
-        width: 226px;
+        width: 366px;
         height: 36px;
     }
 }
@@ -104,6 +104,7 @@
     display: flex;
     justify-content: space-around;
     padding: 10px;
+
 }
 
 
@@ -118,6 +119,15 @@
     }
 
 }
+
+.icon-acc{
+    font-size: 2rem;
+    color: red;
+    padding: 0 5px;
+    cursor: pointer;
+}
+
+
 
 .code{
     display: flex;
@@ -386,10 +396,10 @@
 
 // order
 .order{
-    background-color:  #ff9406;
+    background-color:  #fba22d;
     padding: 2px 12px;
     color: #fff;
-    border-radius: 3px;
+    border-radius: 8px;
     display: inline-block;
     cursor: pointer;
 }
@@ -398,11 +408,51 @@
     text-align: center;
 }
 
+.pay{
+    background-color: #fba22d;
+    padding: 2px 6px;
+    color: #fff;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.payed{
+    background-color:  #358600;
+}
+
 // PRODUCT
 .update{
     position: absolute;
-    background-color: red;
+    // background-color: red;
     height: 100%;
     z-index: 5;
-    width: 100%;
+    width: 1200px;
+}
+
+
+// Chart
+.chart{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.barchart{
+    flex-basis: 46%;
+    background-color: #fff;
+}
+
+
+.piechart{
+    flex-basis: 46%;
+    background-color: #fff;
+}
+
+.name-chart{
+    font-size: 1.6rem;
+    color: var(--white);
+    font-weight: 600;
+    padding: 10px;
+    text-align: left;
+    background-color:  #52aa54;
 }

@@ -7,7 +7,7 @@ import RatingShow from '../components/Rating';
 import Button from '~/components/Button';
 import Specification from './components/Specification';
 import ProductSlide from '../components/ProductSilde';
-import { products } from '~/assets/data/Product';
+// import { products } from '~/assets/data/Product';
 import WarrantyPolicy from './components/IntroduceInfoProduct/WarrantyPolicy';
 import { useEffect, useState } from 'react';
 import DescriptionProduct from './components/IntroduceInfoProduct/DescriptionProduct';
@@ -23,6 +23,7 @@ import { getCurrent } from '~/Redux/user/asyncActions';
 import Swal from 'sweetalert2';
 import { apiUpdateCart } from '~/apis/user';
 import Comment from './components/Comment';
+import { apiGetBrand } from '~/apis/brand';
 
 const cx = classNames.bind(styles);
 
@@ -40,6 +41,7 @@ function DetailProduct() {
     const [star, setStar] = useState(0);
     const [comment, setComment] = useState('');
     const [product, setProduct] = useState({});
+    const [brands, setBrands] = useState([]);
 
     const {pid} = useParams();
     const dispatch = useDispatch();
@@ -50,13 +52,21 @@ function DetailProduct() {
         setProduct(response.productData);
     }
 
-
     useEffect(() => {
        if(pid) fetchProductData();
     }, [pid]);
 
+    const fetchBrand = async() => {
+        const rs = await apiGetBrand();
+        setBrands(rs.brands);
+    }
+
+    useEffect(() => {
+        fetchBrand();
+    },[])
+
     const addToCartHandle = async() => {
-        const response = await apiUpdateCart({ pid, action: 'increase'})
+        const response = await apiUpdateCart({ pid, action: 'increase', name: product.name, sale_price: product.sale_price, thumbnail: product.thumbnail})
         if(!current) return Swal.fire({
             title: "Cảnh báo",
             text: "Vui lòng đăng nhập trước", 
@@ -82,12 +92,16 @@ function DetailProduct() {
     const submitComment = async(e) => {
         e.preventDefault();
         const response = await apiUpdateReview({pid, star, comment});
-        console.log(response);
         if(response.status) {
             toast.success('Bình luận thành công');
             setReview(false);
         }
         else toast.error('Đã xảy ra lỗi');
+    }
+
+    const handleConvertBrand = (bid) => {
+         const brand = brands?.find(el => el._id === bid).name
+         return brand;
     }
 
     const config = [
@@ -101,7 +115,7 @@ function DetailProduct() {
             <div className={cx('head')}>
                 <h2 className={cx('product-name')}>{product.name}</h2>
                 <RatingShow value={product.totalRating}  />
-                <span className={cx('number-com')}>{product.numReviews}</span>
+                <span className={cx('number-com')}>{product?.reviews?.length} đánh giá</span>
             </div>
             <div className={cx('row')}>
                 <div className={cx('col', 'l-6')}>
@@ -134,7 +148,7 @@ function DetailProduct() {
                         </div>
                        <p className={cx('com-head')}> Cam kết 100% đánh giá đều đến từ khách đã mua hàng</p>
                     </div>
-                    <Comment reviews={product.reviews}/>
+                    <Comment reviews={product.reviews} totalRating={product.totalRating}/>
                 </div>
                 <div className={cx('col', 'l-6')}>
                     <div className={cx('info')}>
@@ -143,7 +157,7 @@ function DetailProduct() {
                             <span className={cx('regular-price')}>{formattedNumber(product.sale_price)} đ</span>
                             <span className={cx('discount')}>{product.discount_value}%</span>
                         </div>
-                        <span className={cx('brand')}>Thương hiệu: {product?.brand}</span>
+                        <span className={cx('brand')}>Thương hiệu: {handleConvertBrand(product?.brand)}</span>
                         <div className={cx('box-promo')}>
                             <h5>Khuyến mãi áp dụng từ 10/09/2023 đến 20/09/2023</h5>
                             <div className={cx('pro-content')}>
@@ -215,8 +229,8 @@ function DetailProduct() {
                 </div>
             </div>
             <div className={cx('footer-page')}>
-                <h4>Có thể bạn cũng thích</h4>
-                <ProductSlide data={products} />
+                {/* <h4>Có thể bạn cũng thích</h4> */}
+                {/* <ProductSlide data={products} /> */}
             </div>
             {
                 review &&

@@ -4,10 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faSignOut, faTableList } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { getUserDetail, logout } from '~/Redux/Reducers/UserSlice';
 import Profile from './Profile';
 import { Link, useNavigate } from "react-router-dom";
+import { logout } from '~/Redux/user/userSlice';
 
 
 const cx = classNames.bind(styles);
@@ -16,6 +15,7 @@ function Account() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate()
+    const {current} = useSelector(state => state.user)
 
     const handleLogout = () => {
         dispatch(logout());
@@ -30,7 +30,7 @@ function Account() {
                         <div className={cx('nav-header')}>
                             <FontAwesomeIcon icon={faCircleUser} className={cx('icon')} />
                             <div className={cx('info')}>
-                                <p className={cx('username')}></p>
+                                <p className={cx('username')}>{current.name}</p>
                                 <p>Chưa có hạng thành viên</p>
                             </div>
                         </div>

@@ -9,10 +9,11 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import MarkdownEditor from "../CreateProduct/MarkdownEditor";
 import { getBase64 } from "~/ultils/helpers";
+import { apiUpdateProduct } from "~/apis/product";
 
 const cx = classNames.bind(styles)
 
-function UpdateProduct({editProduct, setEditProduct}) {
+function UpdateProduct({editProduct, setEditProduct, setReLoad}) {
 
     const [categoryData, setCategoryData] = useState([]);
     const [branData, setBrandData] = useState();
@@ -36,15 +37,28 @@ function UpdateProduct({editProduct, setEditProduct}) {
         const imagesPreview = []
         for(let file of files){
             if(file.type !== 'image/png' && file.type !== 'image/jpeg' ) {
-                alert('file not supported !');
+                toast.warning('file not supported !');
                 return;
+
             }
             const base64 = await getBase64(file)
             imagesPreview.push({name: file.name, path: base64});
         }
-
-        if(imagesPreview.length > 0) setPreview(prev => ({...prev, images: imagesPreview}))
+         setPreview(prev => ({...prev, images: imagesPreview}))
     }
+
+    useEffect(() => {
+        if(!thumbnail) return;
+        if(typeof thumbnail === 'string') return;
+        handlePriviewThumd(thumbnail[0])
+    },[thumbnail])
+
+    useEffect(() => {
+        if(!images) return;
+        if(images instanceof FileList){
+            handlePreviewImage(images);
+        }else return;
+    },[images])
 
 
     const changValue = useCallback((e) => {
@@ -65,7 +79,7 @@ function UpdateProduct({editProduct, setEditProduct}) {
         fetchApi();
     },[]);
 
-    const {values, setValues , errors, resetForm, handleChange,handleSubmit, handleBlur, touched} = useFormik({
+    const {values, setValues , errors, handleChange,handleSubmit, handleBlur, touched} = useFormik({
         initialValues: {
             name: '',
             price: '',
@@ -83,18 +97,23 @@ function UpdateProduct({editProduct, setEditProduct}) {
             const finalPayload = {...values,...payload, thumbnail, images};
             const formData = new FormData()
             for(let i of Object.entries(finalPayload)) formData.append(i[0], i[1])
-            if(finalPayload.thumbnail) formData.append('thumbnail', finalPayload.thumbnail[0])
-            if(finalPayload.images){
-                for(let image of finalPayload.images) formData.append('images', image)
-            }
 
-            // const response =  await apiCreateProduct(formData);
-            // if(response.success){
-            //     toast.success(response.message)
-            //     resetForm();
-            // }else{
-            //     toast.error(response.message)
-            // }
+            if(finalPayload.thumbnail) formData.append('thumbnail', finalPayload.thumbnail.length  === 0 ? thumbnail : finalPayload.thumbnail[0])
+            if(finalPayload.images){
+                const images1 = finalPayload.images.length === 0 ? images : finalPayload.images
+                for(let image of images1) formData.append('images', image)
+            }
+            console.log(finalPayload);
+            console.log(formData);
+
+            const response =  await apiUpdateProduct(formData, editProduct._id);
+            if(response.success){
+                toast.success(response.message)
+                setReLoad(prev => !prev)
+                setEditProduct(null)
+            }else{
+                toast.error(response.message)
+            }
         },
       });
 
@@ -113,8 +132,11 @@ function UpdateProduct({editProduct, setEditProduct}) {
                 thumb: editProduct?.thumbnail || '',
                 images: editProduct?.images || [],
             })
+            setThumbnail(editProduct.thumbnail)
+            setImages(editProduct.images)
       }
       }, [editProduct])
+
     return ( 
         <div className={cx('wrapper', 'update-page')}>
         <div className={cx('inner')}>
@@ -231,7 +253,6 @@ function UpdateProduct({editProduct, setEditProduct}) {
                             type="file" 
                             onChange={e => setThumbnail(e.target.files)}
                         />
-                        {/* {errors.thumbnail && touched.thumbnail && <span>{errors.thumbnail}</span>}       */}
                     </div>
                       {preview.thumb && <div className={cx('thumb')}>
                             <img src={preview.thumb} alt="thumbnail" className={cx('thumb-img')} />
@@ -245,22 +266,31 @@ function UpdateProduct({editProduct, setEditProduct}) {
                             multiple 
                             onChange={e => setImages(e.target.files)}
                         />
-                        {/* {errors.images && touched.images && <span>{errors.images}</span>} */}
                     </div>
                         {preview.images.length > 0 && <div className={cx('thumb')}>
-                            {preview.images?.map((el, index) => (
-                                <div 
-                                    // onMouseEnter={() => setHoverElm(el.name)} 
-                                    key={index} 
-                                    className={cx('preview-img')}
-                                    // onMouseLeave={() => setHoverElm(null)}
-                                    >
-                                    <img src={el} alt="product" className={cx('thumb-img')} />
-                                    {/* {hoverElm === el.name && <div className={cx('overlay')} onClick={() => handleRemoveImg(el.name)}>
-                                            <FontAwesomeIcon icon={faTrashCan} className={cx('icon')} />
-                                        </div>}  */}
-                                </div>
-                            ))}
+                            {images instanceof FileList ? (
+                                <>
+                                {preview.images?.map((el, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={cx('preview-img')}
+                                        >
+                                        <img src={el.path} alt="product" className={cx('thumb-img')} />
+                                    </div>
+                                ))}</>
+                            ) : (
+                                <>
+                                {preview.images?.map((el, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={cx('preview-img')}
+                                        >
+                                        <img src={el} alt="product" className={cx('thumb-img')} />
+                                    </div>
+                                ))}
+                                </>
+                            )}
+                            
                             </div>}
                     <div className={cx('ctrl-create', 'update')}>
                         <Button type="submit" className={cx('control-btn', 'update-btn')}>

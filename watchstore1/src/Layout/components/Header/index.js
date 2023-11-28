@@ -13,8 +13,9 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
-import { logout } from '~/Redux/user/userSlice';
+import { clearMessage, logout } from '~/Redux/user/userSlice';
 import { getCurrent } from '~/Redux/user/asyncActions';
+import Swal from 'sweetalert2';
 
 const cx = classNames.bind(styles);
 
@@ -22,7 +23,7 @@ function Header() {
     const [showForm, setShowForm] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {isLoggedIn, current} = useSelector(state => state.user)
+    const {isLoggedIn, current, message} = useSelector(state => state.user)
 
     useEffect(() => {
         if(isLoggedIn) dispatch(getCurrent());
@@ -36,6 +37,13 @@ function Header() {
         dispatch(logout());
         navigate('/');
     }
+
+    useEffect(() => {
+        if(message) Swal.fire("Oops!", message, 'info').then(() => {
+            dispatch(clearMessage)
+            navigate('/');
+        })
+    }, [message])
 
 
     return (

@@ -7,7 +7,7 @@ const products = [
             "https://wscdn.vn/upload/original-image/uploads/ima…-GL-X-3-1654832242583.jpg?size=800x800&fomat=webp",
             "https://wscdn.vn/upload/original-image/uploads/ima…-GL-X-4-1654832245600.jpg?size=800x800&fomat=webp",
             "https://wscdn.vn/upload/original-image/uploads/ima…-GL-X-5-1654832248992.jpg?size=800x800&fomat=webp",
-            "https://wscdn.vn/upload/original-image/uploads/ima…-GL-X-6-1654832252853.jpg?size=800x800&fomat=webp",
+            "https://wscdn.vn/upload/original-image/uploads/ima…-GL-X-6-1654832252853.jpg?size=800x800&fomat=webp"
         ],
         description:"Đồng Hồ Casio",
         price:8800000,
@@ -18,10 +18,10 @@ const products = [
         name:"Đồng Hồ Olym Pianus 42mm Nam OP990-45ADGS-GL-T",
         thumbnail:"https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=400x400&fomat=webp",
         images: [
-            'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-2-1129260898-1966677048.jpg?size=800x800&fomat=webp',
-            'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-3-32906702-1296074297.jpg?size=800x800&fomat=webp',
-            'https://wscdn.vn/upload/original-image/OP990-45ADGS-GL-T-4.jpg?size=800x800&fomat=webp',
-            'https://wscdn.vn/upload/original-image/OP990-45ADGS-GL-T-5.jpg?size=800x800&fomat=webp',
+            "https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-2-1129260898-1966677048.jpg?size=800x800&fomat=webp",
+            "https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-3-32906702-1296074297.jpg?size=800x800&fomat=webp",
+            "https://wscdn.vn/upload/original-image/OP990-45ADGS-GL-T-4.jpg?size=800x800&fomat=webp",
+            "https://wscdn.vn/upload/original-image/OP990-45ADGS-GL-T-5.jpg?size=800x800&fomat=webp"
         ],
         description:"Đồng Hồ Pianus",
         price:8800000,

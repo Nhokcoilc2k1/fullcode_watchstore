@@ -37,6 +37,9 @@ const userSchema = mongoose.Schema({
     cart: [{
         product: {type: mongoose.Types.ObjectId, ref: 'Product'},
         quantity: Number,
+        sale_price: Number,
+        thumbnail: String,
+        name: String,
     }],
     refreshToken: {
         type: String,

@@ -47,7 +47,7 @@ function Navigation() {
                     </Tippy>
                 </div>
 
-                <Button className={cx('custom')} to={'/products'} primary>
+                <Button className={cx('custom', 'space')} to={'/products'} primary>
                     Sản phẩm
                 </Button>
                 <Button className={cx('custom')} primary>

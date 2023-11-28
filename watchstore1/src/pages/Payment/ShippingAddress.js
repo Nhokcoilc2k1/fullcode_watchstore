@@ -10,12 +10,28 @@ import OverLay from '../components/OverLay';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { formattedNumber } from '~/ultils/helpers';
+import { apiUpdateCurrent } from '~/apis/user';
+import Swal from 'sweetalert2';
+import Congration from '../components/Congration';
+import { apiCreateOrder } from '~/apis/product';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function ShippingAddress() {
     const [showPaypal, setShowPaypal] = useState(false);
-    const {current} = useSelector((state)  => state.user);
+    const [checked, setChecked] = useState();
+    const {current, currentCart} = useSelector((state)  => state.user);
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const navigate = useNavigate();
+
+    const provisional = current?.cart?.reduce((acum, el) => {
+        return acum + el.product.sale_price * el.quantity;
+    },0);
+    const totalPrice = provisional;
+
+
 
     const {values, setValues, errors, handleChange,handleSubmit, handleBlur, touched} = useFormik({
         initialValues: {
@@ -25,12 +41,33 @@ function ShippingAddress() {
             note:'',
         },    
         validationSchema: shipAddressValidation,
-        onSubmit : () => {
+        onSubmit : async() => {
             const {name, phone, address, note} = values;
-            setShowPaypal(true);
+            const data = {name, phone, address}
+            const response = await apiUpdateCurrent(data);
+            if(checked && checked === 'Thanh toán sau'){
+                const response = await apiCreateOrder({...values,products: currentCart, orderBy: current?._id, totalPrice})
+                if(response.success){
+                    setIsSuccess(true);
+                    setTimeout(() => {
+                        Swal.fire('Chúc mừng','Bạn đã đặt hàng thành công', 'success').then(() => {
+                            navigate('/don-hang')
+                        }, 3000)
+                    })
+                }
+            }else if(checked && checked === 'Thanh toán paypal'){
+                setShowPaypal(true);
+            }else{
+                Swal.fire({
+                    title: 'Vui lòng chọn phương thức thanh toán'
+                })
+            }
+            
         }
         
       });
+
+      const {name, phone, address, note} = values;
 
       useEffect(() => {
         if(current){
@@ -41,19 +78,22 @@ function ShippingAddress() {
             })
         }
       },[current])
+    
 
     const handlePrivision = (price, quantity) => {
         const privision = price*quantity;
         return formattedNumber(privision)
     };
 
-    const provisional = current?.cart?.reduce((acum, el) => {
-        return acum + el.product.sale_price * el.quantity;
-    },0);
-    const totalPrice = provisional;
+
+    const payment = [
+        {value: 'Thanh toán sau', name: "Thanh toán khi nhận hàng"},
+        {value: 'Thanh toán paypal', name: "Thanh toán bằng PayPal"}
+    ]
 
     return ( 
         <form  onSubmit={handleSubmit}>
+            { isSuccess && <Congration />}
             <div className={cx('row')}>
                 <div className={cx('col', 'l-5')}>
                     <div className={cx('form-user')}>
@@ -141,7 +181,15 @@ function ShippingAddress() {
                     <div className={cx('box-item')}>
                         <p className={cx('total')}>Tổng tiền</p>
                         <p className={cx('total')}>{formattedNumber(totalPrice)} đ</p>
-                    </div>              
+                    </div>    
+                    <div className={cx('box-select')}>
+                        {payment.map(el => (
+                            <div key={el.value} className={cx('pay-method')}>
+                                <input type='radio' checked = {checked === el.value} onChange={() => setChecked(el.value)} />
+                                <label>{el.name}</label>
+                            </div> 
+                        ))}  
+                    </div>        
                     <Button type='submit' primary className={cx('btn-pay')}>
                         Đặt hàng <span className={cx('des-pay')}>Không ưng đổi ngay trong 7 ngày</span>
                     </Button>
@@ -161,30 +209,22 @@ function ShippingAddress() {
                         <div className={cx('paypal')}>
                             <Paypal 
                                 payload={{
-                                    // orderItems: cartItems,
-                                    // name,
-                                    // phone,
-                                    // address,
-                                    // note,
-                                    // totalPrice,
+                                    products: currentCart,
+                                    orderBy: current?._id,
+                                    totalPrice,
+                                    name,
+                                    address,
+                                    phone,
+                                    note,
                                 }}
+                                setIsSuccess={setIsSuccess}
+                                setShowPaypal={setShowPaypal}
                                 amount={Math.round(+totalPrice/23500)} 
                             />
                         </div>
                 </div>
             </OverLay>
         )}
-                        {/* <div className={cx('box-select')}>
-                        <div className={cx('pay-method')}>
-                            <input type='radio' />
-                            <label>Thanh toán khi nhận hàng</label>
-                        </div>
-                        <div className={cx('pay-method')}>
-                            <input type='radio' />
-                            <label>Thanh toán qua cổng VN PAY</label>
-                        </div>
-                        
-                    </div> */}
     </form>
 
      );

@@ -5,27 +5,25 @@ import { faCircleUser, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faSignOut, faTableList } from '@fortawesome/free-solid-svg-icons'; 
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "~/Redux/Reducers/UserSlice";
 import { useEffect, useState } from "react";
-import {  getOderDetails } from "~/Redux/Reducers/OrderSlice";
 import TabsOrder from "./TabsOrder";
-
+import { logout } from "~/Redux/user/userSlice";
+import { getOrderOfUser } from "~/Redux/orders/asyncActions";
 
 const cx = classNames.bind(styles);
 
 function Order() {
     const [activeTab, setActiveTab] = useState(0);
+    const [render, setRender] = useState(false);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    // const userLogin = useSelector((state) => state.userLogin);
-    // const { userInfo } = userLogin;
-    const orderDetails = useSelector((state) => state.orderDetails);
-    const {orderOfUser} = orderDetails;
-    // const id = userInfo._id;
 
-    // useEffect(() => {
-    //     dispatch(getOderDetails(id));
-    // },[dispatch, id]);
+    const { orderOfUser } = useSelector(state => state.orders);
+
+    useEffect(() => {
+        dispatch(getOrderOfUser());
+    },[dispatch, render])
 
     const logoutHandle = () => {
         dispatch(logout());
@@ -34,19 +32,20 @@ function Order() {
 
     // ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng','Đã giao hàng', 'Đã hủy']
 
-    const pendingOrder = orderOfUser.filter((order) => order.status === 'Chờ xác nhận');
-    const confirmedOrder = orderOfUser.filter((order) => order.status === 'Đã xác nhận');
-    const deliveringOrder = orderOfUser.filter((order) => order.status === 'Đang giao hàng');
-    const deliveredOrder = orderOfUser.filter((order) => order.status === 'Đã giao hàng');
-    const canceledOrder = orderOfUser.filter((order) => order.status === 'Đã hủy');
+    const pendingOrder = orderOfUser?.filter((order) => order.status === 'Chờ xác nhận');
+    const confirmedOrder = orderOfUser?.filter((order) => order.status === 'Đã xác nhận');
+    const deliveringOrder = orderOfUser?.filter((order) => order.status === 'Đang giao hàng');
+    const deliveredOrder = orderOfUser?.filter((order) => order.status === 'Đã giao hàng');
+    const canceledOrder = orderOfUser?.filter((order) => order.status === 'Đã hủy');
+    
 
     const config = [
-        {name: 'Tất cả', component: <TabsOrder data={orderOfUser}  />, number: orderOfUser.length},
-        {name: 'Chờ xác nhận', component: <TabsOrder data={pendingOrder} />, number: pendingOrder.length},
-        {name: 'Chờ lấy hàng', component: <TabsOrder data={confirmedOrder}  />, number: confirmedOrder.length},
-        {name: 'Đang giao', component: <TabsOrder data={deliveringOrder}  />, number: deliveringOrder.length},
-        {name: 'Đã giao', component: <TabsOrder data={deliveredOrder}  />, number: deliveredOrder.length},
-        {name: 'Đã hủy', component: <TabsOrder data={canceledOrder}  />, number: canceledOrder.length},
+        {name: 'Tất cả', component: <TabsOrder data={orderOfUser} setRender={setRender}   />, number: orderOfUser.length},
+        {name: 'Chờ xác nhận', component: <TabsOrder data={pendingOrder} setRender={setRender}  />, number: pendingOrder.length},
+        {name: 'Chờ lấy hàng', component: <TabsOrder data={confirmedOrder} setRender={setRender}   />, number: confirmedOrder.length},
+        {name: 'Đang giao', component: <TabsOrder data={deliveringOrder} setRender={setRender}   />, number: deliveringOrder.length},
+        {name: 'Đã giao', component: <TabsOrder data={deliveredOrder}  setRender={setRender}  />, number: deliveredOrder.length},
+        {name: 'Đã hủy', component: <TabsOrder data={canceledOrder} setRender={setRender}   />, number: canceledOrder.length},
     ]
 
     return ( 
@@ -86,7 +85,7 @@ function Order() {
                                 </button>
                             ))}
                         </div>
-                            {orderOfUser.length === 0 ? (
+                            {orderOfUser?.length === 0 ? (
                                 <div className={cx('no-order')}>
                                     <p>Bạn chưa có đơn hàng nào</p>
                                 </div> 

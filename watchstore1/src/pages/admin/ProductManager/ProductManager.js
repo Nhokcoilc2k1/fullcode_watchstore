@@ -13,6 +13,9 @@ import Pagination from '~/pages/components/Pagination';
 import queryString from 'query-string';
 import UpdateProduct from './UpdateProduct';
 import { formattedNumber } from '~/ultils/helpers';
+import Swal from 'sweetalert2';
+import { apiDeleteProduct } from '~/apis/product';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -22,9 +25,7 @@ function ProductManager() {
     const [categoryData, setCategoryData] = useState([]);
 
     const [reLoad, setReLoad] = useState(false);
-    const [showDialog, setShowDialog] = useState(false);
     const [editProduct, setEditProduct] = useState(null);
-    const [showEdit, setShowEdit] = useState(false);
 
     const [pagination, setPagination] = useState({})
 
@@ -98,19 +99,38 @@ function ProductManager() {
         setEditProduct(product);
     }
 
+    const handleDelete = (pid) => {
+        Swal.fire({
+            title: 'Xóa sản phẩm',
+            text: 'Bạn chắc chắn muốn xóa sản phẩm này', 
+            icon: 'warning',
+            showCancelButton: true,
+        }).then(async(rs) => {
+            if(rs.isConfirmed){
+                const response = await apiDeleteProduct(pid);
+                if(response.success){
+                    toast.success(response.message)
+                    setReLoad(prev => !prev)
+                }
+                else toast.error(response.message);
+            }
+        })
+        
+    }
+
 
     return <div className={cx('wrapper')}>
         { editProduct && (
             <div className={cx('update')}>
-                <UpdateProduct editProduct={editProduct} setEditProduct={setEditProduct} />
+                <UpdateProduct editProduct={editProduct} setEditProduct={setEditProduct} setReLoad={setReLoad} />
             </div>
         )
         }
         <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách sản phẩm</h2>
                 <div className={cx('header')}>
-                    <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button>
-                    <Button className={cx('btn')}>Thêm thông số kĩ thuật</Button>
+                    {/* <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button> */}
+                    {/* <Button className={cx('btn')}>Thêm thông số kĩ thuật</Button> */}
                     <div className={cx('search')}>
                         <input placeholder="Tìm kiếm" />
                         <div className={cx('icon')}>
@@ -141,7 +161,7 @@ function ProductManager() {
                             <td className={cx('cus-col2')}>
                                 <div className={cx('action')}>
                                     <span onClick={() => handleEdit(product)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
-                                    <span  className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                    <span onClick={() => handleDelete(product._id)}  className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
                                 </div>
                             </td>
                             <td className={cx('cus-col2')}><p className={cx('code')}>{product._id.slice(-6)}</p></td>

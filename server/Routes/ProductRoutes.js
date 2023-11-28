@@ -192,12 +192,14 @@ productRoute.put(
     asyncHandler(async(req, res) => {
         const { pid } = req.params;
         const files = req?.files
+        if(files?.thumbnail) req.body.thumbnail = files?.thumbnail[0]?.path;
+        if(files?.images) req.body.images = files?.images?.map(el => el.path);
         if(req.body && req.body.name) req.body.slug = slugify(req.body.name);
         const discount_value = Math.round(((req.body.price - req.body.sale_price) / req.body.price) * 100)
         const updatedProduct = await Product.findByIdAndUpdate(pid, {...req.body, discount_value}, {new: true})
         return res.status(200).json({
             success: updatedProduct ? true : false,
-            updateData: updatedProduct ? updatedProduct : 'Đã xảy ra lỗi!'
+            message: updatedProduct ? 'Cập nhật sản phẩm thành công!' : 'Đã xảy ra lỗi!'
         })
     })
 )
@@ -211,7 +213,7 @@ productRoute.delete(
         const deletedProduct = await Product.findByIdAndDelete(pid, {new: true})
         return res.status(200).json({
             success: deletedProduct ? true : false,
-            deletedData: deletedProduct ? deletedProduct : 'Đã xảy ra lỗi!'
+            message: deletedProduct ? 'Xóa sản phẩm thành công!' : 'Đã xảy ra lỗi!'
         })
     })
 )

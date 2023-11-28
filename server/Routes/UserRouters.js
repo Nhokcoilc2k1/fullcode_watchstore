@@ -340,7 +340,7 @@ usertRouter.put(
     verifyAccessToken,
     asyncHandler(async(req, res) => {
         const {_id} = req.user;
-        const {pid, quantity = 1, action} = req.body;
+        const {pid, quantity = 1, action, name, sale_price, thumbnail,} = req.body;
         if(!pid || !action) throw new Error('Missing input');
         const product = await Product.findById(pid).select('quantity')
         const user = await User.findById(_id).select('cart');
@@ -361,13 +361,13 @@ usertRouter.put(
                 throw new Error('Invalid action');
               }
            
-            const response = await User.updateOne({cart: {$elemMatch : alreadyProduct}}, {$set: {"cart.$.quantity" : newQuantity}}, {new : true})
+            const response = await User.updateOne({cart: {$elemMatch : alreadyProduct}}, {$set: {"cart.$.quantity" : newQuantity, "cart.$.sale_price" : sale_price, "cart.$.name" : name, "cart.$.thumbnail" : thumbnail}}, {new : true})
             return res.status(200).json({
                 success: response ? true : false,
                 message: response ? 'Thêm sản phẩm thành công' : 'Đã xảy ra lỗi!'
             })
         }else{
-            const response = await User.findByIdAndUpdate(_id, {$push: {cart: {product: pid, quantity}}}, {new : true})
+            const response = await User.findByIdAndUpdate(_id, {$push: {cart: {product: pid, quantity, sale_price, name, thumbnail}}}, {new : true})
             return res.status(200).json({
                 success: response ? true : false,
                 message: response ? 'Thêm sản phẩm thành công' : 'Đã xảy ra lỗi!'

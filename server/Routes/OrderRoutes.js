@@ -1,54 +1,72 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import protect, { isAdmin } from '../Middleware/AuthMiddleware.js';
+import protect, { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
 import Order from '../Models/OrderModel.js';
+import User from '../Models/UserModel.js';
+import Promotion from '../Models/PromotionModel.js';
 
 const orderRouter = express.Router();
 
 // CREATE ORDER
 orderRouter.post(
     "/",
-    protect,
+    verifyAccessToken,
     asyncHandler(async (req, res) => {
-        const {orderItems,isPaid, name, phone, address, note, totalPrice} = req.body;
-        if (orderItems && orderItems.length === 0) {
-            return res.status(400).json({message: 'Không có mặt hàng nào'})
-        } else {
-            const order = new Order({
-                orderItems, 
-                user: req.user._id,
-                name,
-                phone,
-                address,
-                note,
-                isPaid,  
-                totalPrice,   
-            })
-            const createOrder = await order.save();
-            res.status(201).json(createOrder);
+        const {_id} = req.user
+        const {products, totalPrice, name, address, phone, note, status, paymentMethod, isPaid} = req.body
+        if(address){
+            await User.findByIdAndUpdate(_id, {cart: []})
         }
+        const data = {products, totalPrice, name, address, phone, note, orderBy: _id }
+        if(status) data.status = status
+        if(paymentMethod) data.paymentMethod = paymentMethod
+        if(isPaid) data.isPaid = isPaid
+        const rs = await Order.create(data);
+        return res.json({
+            success: rs ? true : false,
+            rs: rs ? rs : 'Đã xảy ra lỗi'
+        })
+        
         
 }))
 
-// GET ORDER BY ID
-orderRouter.get(
-    "/:id",
-    protect,
+// Update By Admin
+orderRouter.put(
+    "/status/:oid",
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async (req, res) => {
-        const order = await Order.find({user: req.user._id});
-        if(order){
-            res.json(order);
-        }else{
-            return res.status(404).json("Không tìm thấy đơn hàng")
-        }
+        const {oid} = req.params
+        const {status} = req.body
+        if(!status) throw new Error('Missing status');
+        const response = await Order.findByIdAndUpdate(oid, {status},{new : true})
+        
+        return res.json({
+            success: response ? true : false,
+            response: response ? response : 'Đã xảy ra lỗi'
+        })
+            
+}))
+
+// Get Order By User
+orderRouter.get(
+    "/",
+    verifyAccessToken,
+    asyncHandler(async (req, res) => {
+        const { _id } = req.user
+        const response = await Order.find({orderBy: _id});
+        return res.json({
+            success: response ? true : false,
+            orders: response ? response : 'Đã xảy ra lỗi'
+        })
         
 }))
 
 // GET ALL ORDER
 orderRouter.get(
-    '/',
-    // protect,
-    // isAdmin,
+    '/admin',
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async(req, res) => {
         const queries = {...req.query};
         // tách các trường đặt biệt ra khỏi query
@@ -101,22 +119,23 @@ orderRouter.get(
 
 // ORDER DELETE
 orderRouter.delete(
-    '/:id',
-    protect,
+    '/:oid',
+    verifyAccessToken,
     asyncHandler(async(req, res) => {
-        const deleteOrder = await Order.findByIdAndDelete(req.params.id);
-        if(deleteOrder){
-            res.status(201).json('Xóa thành công')
-        }else{
-            res.status(400).json('Xóa không thành công')
-        }
+        const { oid } = req.params;
+        const response = await Order.findByIdAndDelete(oid, {new: true});
+        return res.status(200).json({
+            success: response ? true : false,
+            message: response ? 'Hủy đơn hàng thành công!' : 'Đã xảy ra lỗi!'
+        })
     })
 )
 
 // UPDATE ORDER
 orderRouter.put(
     '/:id',
-    // protect,
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async(req, res) => {
         const {status} = req.body;
         const order = await Order.findById(req.params.id)

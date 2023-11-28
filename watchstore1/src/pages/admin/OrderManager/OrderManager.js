@@ -8,6 +8,8 @@ import moment from 'moment';
 import OrderDialog from './OrderDialog';
 import queryString from 'query-string';
 import Pagination from '~/pages/components/Pagination';
+import { apiGetOrder } from '~/apis/product';
+import UpdateOrder from './UpdateOrder';
 
 
 const cx = classNames.bind(styles);
@@ -19,27 +21,22 @@ function OrderManager() {
     const [orderById, setOrderById] = useState({});
     const [reLoad, setReLoad] = useState(false);
     const [pagination, setPagination] = useState({});
+    const [editOrder, setEditOrder] = useState(null);
 
     const [filters, setFilters] = useState({
-        limit: 2,
+        limit: 5,
         page: 1,
     })
 
     useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const requestUrl = `http://localhost:5000/api/orders?${paramString}`;
-                const response = await fetch(requestUrl);
-                const responseJson = await response.json();
-                const {orders,pagination} = responseJson;
-                setDataOrder(orders);
-                setPagination(pagination);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-         fetchApi();
+         const fetchOrder = async() => {
+            const response = await apiGetOrder(filters);
+            const {orders, pagination} = response
+            console.log(orders);
+            setDataOrder(orders)
+            setPagination(pagination);
+         }
+         fetchOrder();
     },[reLoad, filters])
 
     const handlePageChange = (newPage) => {
@@ -65,8 +62,18 @@ function OrderManager() {
         return update;
     }
 
+    const handleEditOrder = (order) => {
+        setEditOrder(order);
+    }
+
     return ( 
         <div className={cx('wrapper')}>
+            { editOrder && (
+            <div className={cx('update')}>
+                <UpdateOrder editOrder={editOrder} setEditOrder={setEditOrder} />
+            </div>
+            )
+            }
             <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách đơn hàng</h2>
                 <div className={cx('header')}>
@@ -100,6 +107,9 @@ function OrderManager() {
                                 <p className={cx('title')}>Sản phẩm</p>
                             </th>
                             <th>
+                                <p className={cx('title')}>Thanh toán</p>
+                            </th>
+                            <th>
                                 <p className={cx('title')}>Ngày tạo</p>
                             </th>
                             <th>
@@ -112,22 +122,23 @@ function OrderManager() {
                     </thead>
                     <tbody>
                         {
-                            dataOrder.length !== 0 ? 
-                            dataOrder.map((order,index) => (
+                            dataOrder?.length !== 0 ? 
+                            dataOrder?.map((order,index) => (
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{index + 1}</p></td>
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{order._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{order.name}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('code')}>{order.phone}</p></td>
-                                <td className={cx('cus-col1', 'custom-col')}><p className={cx('status', 'order')}>{order.status}</p></td>
+                                <td className={cx('cus-col1', 'custom-col')}><p onClick={() => handleEditOrder(order)} className={cx('status', 'order')}>{order.status}</p></td>
                                 <td>
-                                    {order.orderItems.map((item, index) => (
+                                    {order.products.map((item, index) => (
                                         <p key={index} className={cx('name')}>{item.name}</p>
                                     ))}
                                 </td>
+                                <td className={cx('cus-col1', 'custom-col')}><p className={cx('pay','status', order.isPaid === 'Đã thanh toán' ? 'payed' : '')}>{order.isPaid}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{moment(order.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col3')}><p className={cx('date')}>{handleCompareDate(order.updatedAt, order.createdAt)}</p></td>
-                                <td className={cx('cus-col3')}>
+                                <td className={cx('cus-col4')}>
                                     <div className={cx('action')}>
                                         <span onClick={() => handleEdit(order._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
                                     </div>

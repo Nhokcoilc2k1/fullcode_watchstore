@@ -14,7 +14,7 @@ const promotionSchema = mongoose.Schema({
         require: true,
     },
     discount_value: {
-        type: String,
+        type: Number,
         require: true,
     },
     max_discount_value: {

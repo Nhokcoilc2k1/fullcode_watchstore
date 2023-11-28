@@ -5,7 +5,7 @@ import moment from 'moment/moment';
 
 const cx = classNames.bind(styles);
 
-function Comment({ reviews }) {
+function Comment({ reviews, totalRating }) {
     return (
         <div>
             {reviews?.length === 0 && (
@@ -17,7 +17,7 @@ function Comment({ reviews }) {
              <div key={review._id} className={cx('wrapper')}>
                 <h5 className={cx('name-user')}>{review.name}</h5>
                 {/* <span className={cx('address-user')}>Hồ Chí Minh- Quận Tân Phú</span> */}
-                <RatingShow value={review.totalRating} className={cx('custom-star')} /> 
+                <RatingShow value={totalRating} className={cx('custom-star')} /> 
                 <p className={cx('content-comment')}>{review.comment}</p>
                 <span className={cx('address-user')}>{moment(review.createdAt).calendar()}</span>
             </div>

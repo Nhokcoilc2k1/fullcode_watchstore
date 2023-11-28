@@ -93,7 +93,7 @@ function Cart() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {current?.cart && current?.cart?.map((el) => (
+                                    {current?.cart?.length !== 0 ? current?.cart?.map((el) => (
                                         <tr className={cx('row-product')} key={el._id}>
                                             <td className={cx('td-checkbox')}></td>
                                             <td>
@@ -125,7 +125,7 @@ function Cart() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )) : (<></>)}
                                 </tbody>
                             </table>
                         </div>

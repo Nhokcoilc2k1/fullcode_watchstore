@@ -1,32 +1,31 @@
 import mongoose from "mongoose";
 
 const orderSchema = mongoose.Schema({
-    user: {
+    orderBy: {
         type: mongoose.Schema.Types.ObjectId,
         require: true,
         ref: 'User'
     },
-    orderItems: [
+    products: [
         {
-            name: { type: String, required: true },
-            quantity: { type: Number, required: true },
-            image: { type: String, required: true },
-            price: { type: String, required: true },
-            productId: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
-                required: true,
                 ref: "Product",
             },
-            totalQyt:{ type: Number, required: true },
+            quantity: Number,
+            name: String,
+            thumbnail: String,
+            sale_price: Number,
         }
     ],
     name: {type: String, required: true},
     phone: {type: String, required: true},
     address: {type: String, required: true},
     note: {type: String},
-    totalPrice: {type: Number,required: true},
-    status: {type: String, enum: ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng','Đã giao hàng', 'Đã hủy'], default: 'pending'},
-    isPaid: {type: Boolean, required: true, default: false}
+    totalPrice: {type: Number},
+    status: {type: String, enum: ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng','Đã giao hàng', 'Đã hủy'], default: 'Chờ xác nhận'},
+    paymentMethod: {type: String, default: 'Thanh toán khi nhận hàng'},
+    isPaid: {type: String, default: 'Chưa thanh toán'}
 },{
     timestamp: true,
 });

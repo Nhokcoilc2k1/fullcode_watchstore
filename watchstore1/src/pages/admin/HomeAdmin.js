@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faElementor, faFirstOrder, faFirstOrderAlt, faProductHunt, faStumbleupon, faStumbleuponCircle } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import { faCircleRadiation, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import {SalesChart, SalesPieChart, TopProductsChart} from "./Chart";
 
 const cx = classNames.bind(styles);
 
@@ -62,9 +63,26 @@ function HomeAdmin() {
                     </div>
                 </div>
             </div>
-            <div>
+            <div className={cx('chart')}>
+                <div className={cx('barchart')}>
+                    <h2 className={cx('name-chart')}>Thống kê doanh số</h2>
+                        <SalesChart />
+                </div>
                 
-
+                <div className={cx('piechart')}>
+                    <h2 className={cx('name-chart')}>Số sản phẩm được bán theo danh mục</h2>
+                    <SalesPieChart />
+                </div>
+            </div>
+            <div className={cx('chart')}>
+                <div className={cx('piechart')}>
+                    <h2 className={cx('name-chart')}>Số sản phẩm được bán theo nhãn hiệu</h2>
+                    <SalesPieChart />
+                </div>
+                <div className={cx('barchart')}>
+                    <h2 className={cx('name-chart')}>5 sản phẩm bán chạy nhất trong tháng</h2>
+                    <TopProductsChart />
+                </div>
             </div>
         </div>
      );

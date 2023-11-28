@@ -145,7 +145,7 @@ function AccountManager() {
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{handleCompareDate(user.updatedAt, user.createdAt)}</p></td>
                                 <td className={cx('cus-col4')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleDelete(user._id, user.name)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                        <span onClick={() => handleDelete(user._id, user.name)} className={cx( 'icon-acc')}><FontAwesomeIcon icon={faTrash} /></span>
                                     </div>
                                 </td>
                             </tr>
