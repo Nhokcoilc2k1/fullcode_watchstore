@@ -16,6 +16,7 @@ import { Wrapper as PopperWrapper } from '~/components/Popper';
 import { clearMessage, logout } from '~/Redux/user/userSlice';
 import { getCurrent } from '~/Redux/user/asyncActions';
 import Swal from 'sweetalert2';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
@@ -39,24 +40,25 @@ function Header() {
     }
 
     useEffect(() => {
-        if(message) Swal.fire("Oops!", message, 'info').then(() => {
-            dispatch(clearMessage)
-            navigate('/');
+        if(message) Swal.fire("Oops!", message, 'info').then((rs) => {
+            if(rs.isConfirmed){
+                dispatch(clearMessage)
+            }
         })
-    }, [message])
+    }, [])
 
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
-                <Link to={'/'} className={cx('box-logo')}>
+                <Link to={path.HOME} className={cx('box-logo')}>
                     <img className={cx('logo')} src={images.logo} alt="Logo watchstore" />
                 </Link>
 
                 <Search />
 
                 <div className={cx('action')}>
-                    {isLoggedIn ? (
+                    {isLoggedIn && current ? (
                         <div>
                             <Tippy
                                 hideOnClick
@@ -66,8 +68,8 @@ function Header() {
                                 render={(attrs) => (
                                     <div className={cx('menu-list')} tabIndex="-1" {...attrs}>
                                         <PopperWrapper className={cx('menu-popper')}>
-                                            <Button className={cx('menu-item')} leftIcon={<FontAwesomeIcon icon={faUser} />}  to={'/account'}>Tài khoản của tôi</Button>
-                                            <Button className={cx('menu-item')} leftIcon={<FontAwesomeIcon icon={faTableList} />} to={'/don-hang'}>Đơn hàng</Button>
+                                            <Button className={cx('menu-item')} leftIcon={<FontAwesomeIcon icon={faUser} />}  to={path.ACCOUNT}>Tài khoản của tôi</Button>
+                                            <Button className={cx('menu-item')} leftIcon={<FontAwesomeIcon icon={faTableList} />} to={path.ORDER}>Đơn hàng</Button>
                                             <Button className={cx('menu-item')} leftIcon={<FontAwesomeIcon icon={faSignOut} />} onClick={logoutHandle} >Đăng xuất</Button>
                                         </PopperWrapper>
                                     </div>
@@ -92,7 +94,7 @@ function Header() {
                         </>
                     )}
 
-                    <Link className={cx('cart')} to={'/cart'}>
+                    <Link className={cx('cart')} to={path.CART}>
                         <FontAwesomeIcon icon={faCartPlus} />
                         <span className={cx('number-item')}>{current?.cart?.length || 0}</span>
                     </Link>

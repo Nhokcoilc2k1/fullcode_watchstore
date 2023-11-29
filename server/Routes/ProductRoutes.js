@@ -4,6 +4,7 @@ import Product from '../Models/ProductModel.js';
 import protect, { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
 import uploadCloud from '../config/cloudinaryConfig.js'
 import slugify from 'slugify';
+import User from '../Models/UserModel.js';
 
 const productRoute = express.Router();
 
@@ -151,9 +152,10 @@ productRoute.put(
     '/ratings',
     verifyAccessToken,
     asyncHandler(async(req, res) => {
-        const { _id, name } = req.user;
+        const { _id } = req.user;
         const {star, comment, pid} = req.body;
         if(!star || !pid) throw new Error('Mising input')
+        const user = await User.findById(_id);
         const ratingProduct = await Product.findById(pid);
         const alreadyRating = ratingProduct?.reviews?.find((el) => el.postedBy.toString() === _id);
         if(alreadyRating){
@@ -164,7 +166,7 @@ productRoute.put(
             }, {new : true})
         }else{
             await Product.findByIdAndUpdate(pid, {
-                $push: {reviews: {star, comment, postedBy: _id, name}}
+                $push: {reviews: {star, comment, postedBy: _id, name: user.name}}
             }, {new : true})
         }
         const updateProduct = await Product.findById(pid);

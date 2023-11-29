@@ -49,10 +49,19 @@ export const adminSidebar = [
     },
     {
         id: 5,
-        type: 'SINGLE',
+        type: 'PARENT',
         text: 'Quản lí khuyến mãi',
-        path: '/promotion',
-        icon:<FontAwesomeIcon icon={faCube} />
+        icon:<FontAwesomeIcon icon={faCube} />,
+        submenu: [
+            {
+                text: 'Thêm khuyến mãi mới',
+                path: '/newpromotion'
+            },
+            {
+                text: 'Quản lí khuyến mãi',
+                path: '/promotion'
+            }
+        ]
     },
     {
         id: 6,

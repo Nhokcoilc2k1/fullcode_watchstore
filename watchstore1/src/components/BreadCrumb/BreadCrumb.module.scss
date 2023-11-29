@@ -11,6 +11,7 @@
     margin: 0 auto;
     display: flex;
     align-items: center;
+    font-size: 1.4rem;
 }
 
 .link {
@@ -34,4 +35,14 @@
 
 .sublink {
     font-size: 1.4rem;
+}
+
+.separate{
+    margin: 0 6px;
+}
+
+.btn-breadcrumb{
+    &:hover{
+        color: var(--primary);
+    }
 }

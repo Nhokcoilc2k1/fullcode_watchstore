@@ -21,7 +21,7 @@ const cx = classNames.bind(styles);
 function ShippingAddress() {
     const [showPaypal, setShowPaypal] = useState(false);
     const [checked, setChecked] = useState();
-    const {current, currentCart} = useSelector((state)  => state.user);
+    const {current} = useSelector((state)  => state.user);
     const [isSuccess, setIsSuccess] = useState(false);
 
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ function ShippingAddress() {
             const data = {name, phone, address}
             const response = await apiUpdateCurrent(data);
             if(checked && checked === 'Thanh toán sau'){
-                const response = await apiCreateOrder({...values,products: currentCart, orderBy: current?._id, totalPrice})
+                const response = await apiCreateOrder({...values,products: current.cart, orderBy: current?._id, totalPrice})
                 if(response.success){
                     setIsSuccess(true);
                     setTimeout(() => {
@@ -209,7 +209,7 @@ function ShippingAddress() {
                         <div className={cx('paypal')}>
                             <Paypal 
                                 payload={{
-                                    products: currentCart,
+                                    products: current.cart,
                                     orderBy: current?._id,
                                     totalPrice,
                                     name,

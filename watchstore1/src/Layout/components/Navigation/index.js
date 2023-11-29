@@ -9,6 +9,7 @@ import { Wrapper as PopperWrapper } from '~/components/Popper';
 import CategoryItem from './CategoryItem';
 import { memo, useEffect, useState } from 'react';
 import {useSelector } from 'react-redux';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
@@ -47,19 +48,19 @@ function Navigation() {
                     </Tippy>
                 </div>
 
-                <Button className={cx('custom', 'space')} to={'/products'} primary>
+                <Button className={cx('custom', 'space')} to={path.PRODUCTS} primary>
                     Sản phẩm
                 </Button>
                 <Button className={cx('custom')} primary>
                     Sản phẩm mới
                 </Button>
-                <Button className={cx('custom')} primary>
+                {/* <Button className={cx('custom')} primary>
                     Giới thiệu
-                </Button>
+                </Button> */}
                 <Button className={cx('custom')} primary>
                     Tin tức
                 </Button>
-                <Button to={'/contact'} className={cx('custom')} primary>
+                <Button to={path.CONNTACT} className={cx('custom')} primary>
                     Liên hệ
                 </Button>
             </nav>

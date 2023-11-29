@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import TabsOrder from "./TabsOrder";
 import { logout } from "~/Redux/user/userSlice";
 import { getOrderOfUser } from "~/Redux/orders/asyncActions";
+import path from "~/ultils/path";
+import BreadCrumb from "~/components/BreadCrumb";
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +22,7 @@ function Order() {
     const navigate = useNavigate();
 
     const { orderOfUser } = useSelector(state => state.orders);
+    const {current} = useSelector(state => state.user)
 
     useEffect(() => {
         dispatch(getOrderOfUser());
@@ -48,54 +51,62 @@ function Order() {
         {name: 'Đã hủy', component: <TabsOrder data={canceledOrder} setRender={setRender}   />, number: canceledOrder.length},
     ]
 
+    const routes = [
+        { path: "/", breadcrumb: "Trang chủ" },
+        { path: "/don-hang", breadcrumb: 'Đơn hàng' },
+      ];
+
     return ( 
         <div className={cx('wrapper')}>
-            <div className={cx('row')}>
-                <div className={cx('col', 'l-3')}>
-                    <aside className={cx('navigation')}>
-                        <div className={cx('nav-header')}>
-                            <FontAwesomeIcon icon={faCircleUser} className={cx('icon')} />
-                            <div className={cx('info')}>
-                                <p className={cx('username')}></p>
-                                <p>Chưa có hạng thành viên</p>
-                            </div>
-                        </div>
-                        <Link to={'/account'} className={cx('nav-item')}>
-                            <FontAwesomeIcon icon={faUser} className={cx('icon-item')} />
-                            <span>Thông tin tài khoản</span>
-                        </Link>
-                        <Link className={cx('nav-item', 'nav-active')}>
-                            <FontAwesomeIcon icon={faTableList} className={cx('icon-item')} />
-                            <span>Đơn hàng</span>
-                        </Link>
-                        <div onClick={logoutHandle} className={cx('nav-item')}>
-                            <FontAwesomeIcon icon={faSignOut} className={cx('icon-item')} />
-                            <span>Đăng xuất</span>
-                        </div>
-                    </aside>
-                </div>
-                <div className={cx('col', 'l-9')}>
-                    <div className={cx('info-user')}>
-                        <h4>Đơn hàng của tôi</h4>
-                        <div className={cx('status')}>
-                            {config.map((entry, index) => (
-                                <button key={index} className={cx('item-status', activeTab === index ? 'active' : '')} onClick={() => setActiveTab(index)}>
-                                    {entry.name}
-                                    <span className={cx('number-order')}>({entry.number})</span>
-                                </button>
-                            ))}
-                        </div>
-                            {orderOfUser?.length === 0 ? (
-                                <div className={cx('no-order')}>
-                                    <p>Bạn chưa có đơn hàng nào</p>
-                                </div> 
-                            ):(
-                                <div className={cx('content')}>
-                                    {config[activeTab].component}
+            <BreadCrumb routes={routes} />
+            <div className={cx('box-content')}>
+                <div className={cx('row')}>
+                    <div className={cx('col', 'l-3')}>
+                        <aside className={cx('navigation')}>
+                            <div className={cx('nav-header')}>
+                                <FontAwesomeIcon icon={faCircleUser} className={cx('icon')} />
+                                <div className={cx('info')}>
+                                    <p className={cx('username')}>{current.name}</p>
+                                    <p>Chưa có hạng thành viên</p>
                                 </div>
-
-                            )
-                        }    
+                            </div>
+                            <Link to={path.ACCOUNT} className={cx('nav-item')}>
+                                <FontAwesomeIcon icon={faUser} className={cx('icon-item')} />
+                                <span>Thông tin tài khoản</span>
+                            </Link>
+                            <Link className={cx('nav-item', 'nav-active')}>
+                                <FontAwesomeIcon icon={faTableList} className={cx('icon-item')} />
+                                <span>Đơn hàng</span>
+                            </Link>
+                            <div onClick={logoutHandle} className={cx('nav-item')}>
+                                <FontAwesomeIcon icon={faSignOut} className={cx('icon-item')} />
+                                <span>Đăng xuất</span>
+                            </div>
+                        </aside>
+                    </div>
+                    <div className={cx('col', 'l-9')}>
+                        <div className={cx('info-user')}>
+                            <h4>Đơn hàng của tôi</h4>
+                            <div className={cx('status')}>
+                                {config.map((entry, index) => (
+                                    <button key={index} className={cx('item-status', activeTab === index ? 'active' : '')} onClick={() => setActiveTab(index)}>
+                                        {entry.name}
+                                        <span className={cx('number-order')}>({entry.number})</span>
+                                    </button>
+                                ))}
+                            </div>
+                                {orderOfUser?.length === 0 ? (
+                                    <div className={cx('no-order')}>
+                                        <p>Bạn chưa có đơn hàng nào</p>
+                                    </div> 
+                                ):(
+                                    <div className={cx('content')}>
+                                        {config[activeTab].component}
+                                    </div>
+    
+                                )
+                            }    
+                        </div>
                     </div>
                 </div>
             </div>

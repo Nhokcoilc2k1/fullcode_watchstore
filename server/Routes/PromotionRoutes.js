@@ -1,6 +1,7 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler'
 import Promotion from '../Models/PromotionModel.js';
+import { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
 
 const promotionRoute = express.Router();
 
@@ -53,79 +54,58 @@ promotionRoute.get(
 
 // GET SINGLE PROMO
 promotionRoute.get(
-    "/:id", 
+    "/:proid", 
     asyncHandler(async (req, res) => {
-    const promotion = await Promotion.findById(req.params.id);
-    if (promotion) {
-        res.json(promotion);    
-    } else {
-        res.status(404);
-        throw new Error("Promotions not Found");
-    }
+        const {proid} = req.params;
+    const promotion = await Promotion.findById(proid);
+    res.status(200).json({
+        success: promotion ? true : false,
+        message: promotion ? promotion : 'Đã xảy ra lỗi!'
+    })
 }))
 
 // POST PROMO
 promotionRoute.post(
     "/", 
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async(req, res) => {
-        const {name, coupon_code, discount_type, discount_value, max_discount_value, expired_at} = req.body;
-        const promotionExit = await Promotion.findOne({name})
-        if(promotionExit){
-            res.status(400);
-            throw new Error("promotion name already exist");
-        } else {
-            const promotion = new Promotion({
-                name, 
-                coupon_code, 
-                discount_type, 
-                discount_value, 
-                max_discount_value, 
-                expired_at
-            });
-            if(promotion){
-                const createPromo = await promotion.save();
-                res.status(201).json(createPromo);
-            }else{
-                res.status(400);
-                throw new Error("Invalid promotion data");
-            }
-        }
+        // const {name, coupon_code, discount_value, max_discount_value, min_order_value, expired} = req.body;
+        if(Object.keys(req.body).length === 0) throw new Error('Missing input');
+        const couponExit = await Promotion.findOne({coupon_code: req.body.coupon_code});
+        if(couponExit) throw new Error('Mã khuyến mãi đã tồn tại!');
+        const newPromotion = await Promotion.create(req.body);
+        res.status(200).json({
+            success: newPromotion ? true : false,
+            message: newPromotion ? 'Tạo mã khuyến mãi thành công!' : 'Đã xảy ra lỗi!'
+        })
+        
     }))
 // UPDATE PROMO
 promotionRoute.put(
-    "/:id",
+    "/:proid",
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async (req, res) => {
-        const {name, coupon_code, discount_type, discount_value, max_discount_value, expired_at} = req.body;
-        const promo = await Promotion.findById(req.params.id);
-
-        if(promo){
-            promo.name = name;
-            promo.coupon_code = coupon_code;
-            promo.discount_type = discount_type;
-            promo.discount_value = discount_value;
-            promo.max_discount_value = max_discount_value;
-            promo.expired_at = expired_at;
-
-            const updatePromo = await promo.save();
-            res.status(202).json(updatePromo);
-        }else{
-            res.status(404);
-            throw new Error("promotion not found");
-        }
+       const {proid} = req.params;
+       const updatePromo = await Promotion.findByIdAndUpdate(proid, {...req.body}, {new: true})
+       res.status(200).json({
+        success: updatePromo ? true : false,
+        message: updatePromo ? 'Cập nhật khuyến mãi thành công!' : 'Đã xảy ra lỗi!'
+       })
     })
 )
 
 // DELETE PROMO
 promotionRoute.delete(
-    "/:id",
+    "/:proid",
     asyncHandler(async (req, res) => {
-        const deletePromo = await Promotion.findByIdAndDelete(req.params.id);
-        if(deletePromo){
-            res.status(202).json('Delete Promo successful')
-        }else{
-            res.status(400);
-            throw new Error("Delete Unsuccessful!");
-        }
+        const {proid} = req.params;
+        const deletePromo = await Promotion.findByIdAndDelete(proid, {new : true});
+        res.status(200).json({
+            success: deletePromo ? true : false,
+            message: deletePromo ? 'Xóa khuyến mãi thành công' : 'Đã xảy ra lỗi!'
+           })
     })
 )
 

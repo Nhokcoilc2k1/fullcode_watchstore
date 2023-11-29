@@ -16,6 +16,8 @@ import { formattedNumber } from '~/ultils/helpers';
 import Swal from 'sweetalert2';
 import { apiDeleteProduct } from '~/apis/product';
 import { toast } from 'react-toastify';
+import { faIntercom } from '@fortawesome/free-brands-svg-icons';
+import CustomizeVarriant from './CustomizeVariant';
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +28,7 @@ function ProductManager() {
 
     const [reLoad, setReLoad] = useState(false);
     const [editProduct, setEditProduct] = useState(null);
+    const [customizeVarriant, setCustomVarriant] = useState(null);
 
     const [pagination, setPagination] = useState({})
 
@@ -95,10 +98,6 @@ function ProductManager() {
         return update;
     }
 
-    const handleEdit = (product) => {
-        setEditProduct(product);
-    }
-
     const handleDelete = (pid) => {
         Swal.fire({
             title: 'Xóa sản phẩm',
@@ -123,6 +122,12 @@ function ProductManager() {
         { editProduct && (
             <div className={cx('update')}>
                 <UpdateProduct editProduct={editProduct} setEditProduct={setEditProduct} setReLoad={setReLoad} />
+            </div>
+        )
+        }
+         { customizeVarriant && (
+            <div className={cx('update')}>
+                <CustomizeVarriant customizeVarriant={customizeVarriant} setCustomVarriant={setCustomVarriant} setReLoad={setReLoad} />
             </div>
         )
         }
@@ -160,8 +165,9 @@ function ProductManager() {
                             <tr className={cx('row')} key={index}>
                             <td className={cx('cus-col2')}>
                                 <div className={cx('action')}>
-                                    <span onClick={() => handleEdit(product)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
+                                    <span onClick={() => setEditProduct(product)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
                                     <span onClick={() => handleDelete(product._id)}  className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                    <span onClick={() => setCustomVarriant(product)} className={cx('icon-btn', 'varriant')}><FontAwesomeIcon icon={faIntercom} /></span>
                                 </div>
                             </td>
                             <td className={cx('cus-col2')}><p className={cx('code')}>{product._id.slice(-6)}</p></td>

@@ -6,6 +6,8 @@ export const getCurrent = createAsyncThunk(
     async(data, {rejectWithValue}) => {
         try {
             const response = await apiGetCurrent();
+            console.log(response);
+            console.log(response.rs.cart);
         return response.rs;
         } catch (error) {
             return rejectWithValue(error.response.data)

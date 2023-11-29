@@ -22,19 +22,21 @@ import OrderDetail from '~/pages/OderDetail';
 import CreateProduct from '~/pages/admin/CreateProduct/CreateProduct';
 import FinalRegister from '~/components/FinalRegister/FinalRegister';
 import ResetPassword from '~/components/ResetPassword/ResetPassword';
+import CreatePromotion from '~/pages/admin/components/CreatePromotion/CreatePromotion';
+import path from '~/ultils/path';
 
 const publicRoutes = [
-    { path: '/', component: Home, layout: LayoutHaveSlide },
-    { path: '/products', component: Products },
-    { path: '/products/:pid', component: DetailProduct },
-    { path: '/cart/:id?', component: Cart },
-    { path: '/contact', component: Contact },
-    { path: '/pay', component: Payment },
-    { path: '/account', component: Account },
-    { path: '/don-hang', component: Order },
-    { path: '/checkout', component: OrderDetail }, 
-    { path: '/finalregister/:status', component: FinalRegister }, 
-    { path: '/reset-password/:token', component: ResetPassword }, 
+    { path: path.HOME, component: Home, layout: LayoutHaveSlide },
+    { path: path.PRODUCTS, component: Products },
+    { path: path.DETAILPRODUCT_CATEGORY_PID_TITLE, component: DetailProduct },
+    { path: path.CART, component: Cart },
+    { path: path.CONNTACT, component: Contact },
+    { path: path.PAYMENT, component: Payment },
+    { path: path.ACCOUNT, component: Account },
+    { path: path.ORDER, component: Order },
+    { path: path.ORDERDETAIL, component: OrderDetail }, 
+    { path: path.FINALREGISTER, component: FinalRegister }, 
+    { path: path.RESETPASSWORD, component: ResetPassword }, 
 ];
 
 const adminRoutes = [
@@ -47,6 +49,7 @@ const adminRoutes = [
     { path: '/order', component: OrderManager },
     { path: '/account', component: AccountManager },
     { path: '/create-product', component: CreateProduct },
+    { path: '/newpromotion', component: CreatePromotion },
 ];
 
 const privateRoutes = [];

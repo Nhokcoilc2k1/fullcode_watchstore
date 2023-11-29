@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import axios from 'axios';
 import { apiGetProducts } from '~/apis/product';
+import BreadCrumb from '~/components/BreadCrumb';
 
 const cx = classNames.bind(styles);
 const filterPrice = [
@@ -138,87 +139,94 @@ function Products() {
         })
     };
 
+    const routes = [
+        { path: "/", breadcrumb: "Trang chủ" },
+        { path: "/products", breadcrumb: 'Sản phẩm' },
+      ];
     
     return (
         <div className={cx('wrapper')}>
-            <h4 className={cx('title')}>Sản phẩm</h4>
-                <div className={cx('row')}>
-                    <div className={cx('col', 'l-2-8')}>
-                        <div className={cx('box')}>
-                            {
-                                category ? 
-                                (<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameCategory}' </span>)
-                                : brandParam ?(<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameBrand}' </span>) 
-                                : (<span>Tất cả sản phẩm hiện có</span>)
-                            }
-                            <div className={cx('sort')}>
-                                <h4>Sắp xếp theo</h4>
-                                {/*  // Using a wrapper <div> tag around the reference element solves this by creating a new parentNode context. */}
-                                <div>
-                                    <Tippy
-                                        hideOnClick
-                                        trigger="click"
-                                        interactive={true}
-                                        placement="bottom-start"
-                                        render={(attrs) => (
-                                            <div className={cx('select-list')} tabIndex="-1" {...attrs}>
-                                                <PopperWrapper className={cx('select-popper')}>
-                                                    <Button onClick={() => handleSort('default')} className={cx('select-item')}>Mặc định</Button>
-                                                    <Button onClick={() => handleSort('asc')} className={cx('select-item')}>Giá thấp đến cao</Button>
-                                                    <Button onClick={() => handleSort('desc')} className={cx('select-item')}>Giá cao đến thấp</Button>
-                                                    <Button onClick={() => handleSort('appreciate')} className={cx('select-item')}>Đánh giá cao</Button>
-                                                </PopperWrapper>
-                                            </div>
-                                        )}
-                                    >
-                                        <span>
-                                            <Button
-                                                className={cx('select')}
-                                                rightIcon={<FontAwesomeIcon icon={faCaretDown} />}
-                                            >
-                                                {getButtonContent()}
-                                            </Button>
-                                        </span>
-                                    </Tippy>
+            <BreadCrumb routes={routes} />
+            <div className={cx('box-content')}>
+                <h4 className={cx('title')}>Sản phẩm</h4>
+                    <div className={cx('row')}>
+                        <div className={cx('col', 'l-2-8')}>
+                            <div className={cx('box')}>
+                                {
+                                    category ? 
+                                    (<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameCategory}' </span>)
+                                    : brandParam ?(<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameBrand}' </span>) 
+                                    : (<span>Tất cả sản phẩm hiện có</span>)
+                                }
+                                <div className={cx('sort')}>
+                                    <h4>Sắp xếp theo</h4>
+                                    {/*  // Using a wrapper <div> tag around the reference element solves this by creating a new parentNode context. */}
+                                    <div>
+                                        <Tippy
+                                            hideOnClick
+                                            trigger="click"
+                                            interactive={true}
+                                            placement="bottom-start"
+                                            render={(attrs) => (
+                                                <div className={cx('select-list')} tabIndex="-1" {...attrs}>
+                                                    <PopperWrapper className={cx('select-popper')}>
+                                                        <Button onClick={() => handleSort('default')} className={cx('select-item')}>Mặc định</Button>
+                                                        <Button onClick={() => handleSort('asc')} className={cx('select-item')}>Giá thấp đến cao</Button>
+                                                        <Button onClick={() => handleSort('desc')} className={cx('select-item')}>Giá cao đến thấp</Button>
+                                                        <Button onClick={() => handleSort('appreciate')} className={cx('select-item')}>Đánh giá cao</Button>
+                                                    </PopperWrapper>
+                                                </div>
+                                            )}
+                                        >
+                                            <span>
+                                                <Button
+                                                    className={cx('select')}
+                                                    rightIcon={<FontAwesomeIcon icon={faCaretDown} />}
+                                                >
+                                                    {getButtonContent()}
+                                                </Button>
+                                            </span>
+                                        </Tippy>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <ListProduct data={checkProducts} className={cx('l-3')} />
+                            <Pagination pagination={pagination} onPageChange={handlePageChange} />
+                        </div>
+                        <div className={cx('col', 'l-2-4')}>
+                            <div className={cx('box-check')}>
+                                <div className={cx('box-check-item')}>
+                                    <h4 className={cx('title-check')}>Đối tượng sử dụng</h4>
+                                    {used.map((item) => (
+                                        <div key={item.id} className={cx('group')}>
+                                            <input type="checkbox" checked={checkeUsed.includes(item.id)} onChange={() =>handleCheckUsed(item.id)}/>
+                                            <label>{item.desc}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={cx('box-check-item')}>
+                                    <h4 className={cx('title-check')}>Giá</h4>
+                                    {filterPrice.map((item) => (
+                                        <div key={item.id} className={cx('group')}>
+                                            <input type="checkbox" />
+                                            <label>{item.desc}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={cx('box-check-item')}>
+                                    <h4 className={cx('title-check')}>Thương hiệu</h4>
+                                    {brands.map((item) => (
+                                        <div key={item._id} className={cx('group')}>
+                                            <input type="checkbox" checked={checked.includes(item._id)} onChange={() => handleCheck(item._id)} />
+                                            <label>{item.name}</label>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-
-                        <ListProduct data={checkProducts} className={cx('l-3')} />
-                        <Pagination pagination={pagination} onPageChange={handlePageChange} />
                     </div>
-                    <div className={cx('col', 'l-2-4')}>
-                        <div className={cx('box-check')}>
-                            <div className={cx('box-check-item')}>
-                                <h4 className={cx('title-check')}>Đối tượng sử dụng</h4>
-                                {used.map((item) => (
-                                    <div key={item.id} className={cx('group')}>
-                                        <input type="checkbox" checked={checkeUsed.includes(item.id)} onChange={() =>handleCheckUsed(item.id)}/>
-                                        <label>{item.desc}</label>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className={cx('box-check-item')}>
-                                <h4 className={cx('title-check')}>Giá</h4>
-                                {filterPrice.map((item) => (
-                                    <div key={item.id} className={cx('group')}>
-                                        <input type="checkbox" />
-                                        <label>{item.desc}</label>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className={cx('box-check-item')}>
-                                <h4 className={cx('title-check')}>Thương hiệu</h4>
-                                {brands.map((item) => (
-                                    <div key={item._id} className={cx('group')}>
-                                        <input type="checkbox" checked={checked.includes(item._id)} onChange={() => handleCheck(item._id)} />
-                                        <label>{item.name}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
         </div>
     );
 }

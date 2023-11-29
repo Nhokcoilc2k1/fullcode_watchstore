@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const cx = classNames.bind(styles);
 function FormLogin({ isClose }) {
@@ -40,12 +41,13 @@ function FormLogin({ isClose }) {
         validationSchema: loginValidation,
         onSubmit : async() => {
            const response = await apiLogin(values);
+           console.log(response);
            if(response.success){
-            dispatch(login({isLoggedIn: true,  token: response.accessToken,}))
+            dispatch(login({isLoggedIn: true,  token: response.accessToken}))
             handleIsClose(false);
             navigate('/');
             window.location.reload();
-        }
+        }else Swal.fire('Lỗi đăng nhập',response.message,'error')
         },
       });
 

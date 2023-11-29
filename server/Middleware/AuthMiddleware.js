@@ -35,12 +35,8 @@ export const verifyAccessToken = asyncHandler(async(req, res, next) => {
                 success: false,
                 message: "Invalid access token"
             })
-            // req.user = decoded
-            // console.log(decoded);
-            const name = await User.findById(decoded._id).select('name')
+            console.log(decoded);
             req.user = decoded;
-            req.user.name = name.name;
-            // console.log(req.user);
             next();
         })
     }else{

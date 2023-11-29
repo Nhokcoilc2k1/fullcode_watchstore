@@ -1,14 +1,22 @@
 .wrapper {
     --color-border: #e0e0e0;
 
-    margin-top: 16px;
-    margin-bottom: 30px;
+    margin-bottom: 30px;  
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.box-content{
+    width: var(--default-layout-width);
 }
 
 .head {
     display: flex;
     align-items: center;
     margin-bottom: 32px;
+    margin-top: 16px;
 }
 
 .number-com {

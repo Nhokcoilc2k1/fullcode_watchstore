@@ -2,13 +2,14 @@ import classNames from 'classnames/bind';
 import styles from './ProductItem.module.scss';
 import Rating from '../Rating';
 import { formattedNumber } from '~/ultils/helpers';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
 function ProductItem({ product }) {
 
     return (
-        <a href={`/products/${product._id}`} className={cx('wrapper')}>
+        <a href={`${product?.category?.toLowerCase()}/${product._id}/${product?.name}`} className={cx('wrapper')}>
             <img src={product.thumbnail} alt="anh" />
             <div className={cx('info')}>
                 <h4 className={cx('name-product')}>{product.name}</h4>

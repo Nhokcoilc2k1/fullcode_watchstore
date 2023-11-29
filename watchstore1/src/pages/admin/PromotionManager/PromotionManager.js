@@ -11,23 +11,25 @@ import ToastMessage from '~/components/ToastMessage';
 import moment from 'moment';
 import queryString from 'query-string';
 import Pagination from '~/pages/components/Pagination';
+import Status from '../components/Status';
+import { apiDeletePromotion } from '~/apis/promotion';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 function PromotionManager() {
     const [promoData, setPromoData] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [showDelete, setShowDelete] = useState(false);
     const [showToast1, setShowToast1] = useState(false);
     const [showToast2, setShowToast2] = useState(false);
     const [reLoad, setReload] = useState(true);
 
     const [promoById, setPromoById] = useState({});
-    const [deleteId, setDeleteId] = useState();
     const [pagination, setPagination] = useState({});
 
     const [filters, setFilters] = useState({
-        limit: 2,
+        limit: 5,
         page: 1,
     })
 
@@ -60,9 +62,22 @@ function PromotionManager() {
         setPromoById(promo)
     }
 
-    const handleDelete = (promoId) => {
-        setShowDelete(true);
-        setDeleteId(promoId)
+    const handleDelete = async(proid) => {
+        Swal.fire({
+            title: 'Xóa sản phẩm',
+            text: 'Bạn chắc chắn muốn xóa sản phẩm này', 
+            icon: 'warning',
+            showCancelButton: true,
+        }).then(async(rs) => {
+            if(rs.isConfirmed){
+                const response = await apiDeletePromotion(proid);
+                if(response.success){
+                    toast.success(response.message)
+                    setReload(prev => !prev)
+                }
+                else toast.error(response.message);
+            }
+        })       
     }
 
     const handleCompareDate = (updatedAt, createdAt) => {
@@ -75,7 +90,7 @@ function PromotionManager() {
             <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách khuyến mãi</h2>
                 <div className={cx('header')}>
-                    <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button>
+                    {/* <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button> */}
                     <div className={cx('search')}>
                         <input placeholder="Tìm kiếm" />
                         <div className={cx('icon')}>
@@ -105,6 +120,9 @@ function PromotionManager() {
                                 <p className={cx('title')}>Ngày hết hạn</p>
                             </th>
                             <th>
+                                <p className={cx('title')}>Trạng thái</p>
+                            </th>
+                            <th>
                                 <p className={cx('title')}>Ngày tạo</p>
                             </th>
                             <th>
@@ -124,8 +142,9 @@ function PromotionManager() {
                                 <td className={cx('cus-col1')}><p className={cx('code')}>{promo._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{promo.name}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('name')}>{promo.coupon_code}</p></td>
-                                <td className={cx('cus-col')}><p className={cx('name')}>{promo.discount_value}</p></td>
-                                <td className={cx('cus-col')}><p className={cx('name')}>{moment(promo.expired_at).format("DD/MM/YYYY h:mm a")}</p></td>
+                                <td className={cx('cus-col')}><p className={cx('name')}>{promo.discount_value}%</p></td>
+                                <td className={cx('cus-col')}><p className={cx('name')}>{moment(promo.expired).format("DD/MM/YYYY h:mm a")}</p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><Status data={promo}  /></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(promo.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(promo.updatedAt, promo.createdAt)}</p></td>
                             </tr>
@@ -141,18 +160,6 @@ function PromotionManager() {
                         reLoad={setReload}
                         showToast={setShowToast1}
                     />}
-                {showDelete && 
-                    <DialogDelete 
-                        isOpen={showDelete}
-                        isClose={setShowDelete}
-                        data={deleteId}
-                        reLoad={setReload}
-                        fcDelete={deletePromoById}
-                        showToast={setShowToast2}
-                        tittle={"Xóa mã khuyến mãi"}
-                        message={"Bạn có muốn xóa mã khuyến mãi này không?"}
-                    />           
-                }
             </div>
             <div className={cx('pagination')}>
                 <Pagination pagination={pagination} onPageChange={handlePageChange} />

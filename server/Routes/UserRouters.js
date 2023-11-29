@@ -104,6 +104,7 @@ usertRouter.post(
         if(user && (await user.matchPassword(password))){
             const {password, roles, refreshToken, ...userData} = user.toObject();
             const accessToken = generateAccessToken(user._id, roles)
+            // Tạo refress token
             const newRefreshToken = generateRefreshToken(user._id);
             // Lưu refresh token vào database
             await User.findByIdAndUpdate(user._id, {refreshToken: newRefreshToken}, {new: true});
