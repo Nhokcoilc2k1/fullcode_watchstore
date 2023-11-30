@@ -14,3 +14,13 @@ export function getBase64(file) {
 export const formattedNumber = (price) => {
     return String(price).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 }
+
+export function formatPromo(number) {
+  if (number >= 1000000) {
+    return (number / 1000000).toFixed(1) + ' triệu';
+  } else if (number >= 1000) {
+    return (number / 1000).toFixed(1) + 'k';
+  } else {
+    return number.toString();
+  }
+}

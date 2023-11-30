@@ -35,7 +35,11 @@
 
 // Chi tiết sản phẩm
 .box-desc {
+    --max-lines: 15;
+    --line-height: 1.4;
+ 
     font-size: 1.4rem;
+    position: relative;
 
     p {
         margin-bottom: 8px;
@@ -45,5 +49,64 @@
         width: 600px;
         height: 360px;
         margin-bottom: 8px;
+        
     }
 }
+
+.cutoff-text{
+    max-height: calc(var(--max-lines) * 1em * var(--line-height));
+    line-height: var(--line-height);
+    overflow: hidden;
+    position: relative;
+
+    &:has(+ .more-btn:not(:checked))::before{
+        content: "";
+        position: absolute;
+        height: calc(3em * var(--line-height));
+        width: 100%;
+        bottom: 0;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, #fff);
+    }
+
+    // &:has(+ .more-btn:checked){
+    //     max-height: auto;
+    // }
+}
+
+// .cutoff-text:has(+ .more-btn:not(:checked))::before{
+//     content: "";
+//     position: absolute;
+//     height: calc(3em * var(--line-height));
+//     width: 100%;
+//     bottom: 0;
+//     pointer-events: none;
+//     background: linear-gradient(to bottom, transparent, #fff);
+// }
+
+
+.more-btn{
+    appearance: none;
+    border: 1px solid  #0066ff;
+    color:#0066ff ;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before{
+        content: 'Xem thêm';
+    }
+
+    &:checked::before{
+        content: "Thu gọn";
+    }
+
+}
+
+.cutoff-text:has(+ .more-btn:checked){
+    max-height: none;
+}
+

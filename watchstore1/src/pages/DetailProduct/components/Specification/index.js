@@ -1,5 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './Specification.module.scss';
+import { apiGetAttribute } from '~/apis/product';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
 
@@ -17,33 +19,44 @@ const specification = {
     feature: 'Lịch thứ, Lịch ngày, Giờ, phút, giây',
 };
 
-function Specification({ data }) {
+function Specification({ pid }) {
+    const [attribute, setAttribute] = useState([]);
     const RowTable = ({ data, children }) => {
         return (
-            <tr className={cx('row')}>
-                <td className={cx('specname')}>{children}</td>
-                <td className={cx('specvalue')}>{data}</td>
-            </tr>
+            <div className={cx('row')}>
+                <div className={cx('specname')} >{children}</div>
+                <div className={cx('specvalue')}>{data}</div>
+            </div>
         );
     };
+
+    const fetchApi = async() => {
+        const response = await apiGetAttribute(pid);
+        if(response.success){
+            setAttribute(response.attribute);
+        }else return;
+    }
+
+    useEffect(() => {
+        fetchApi();
+    },[pid])
 
     return (
         <div className={cx('wrapper')}>
             <h4>Thông số Olym Pianus OP990-45ADGS-GL-X</h4>
-            <table className={cx('parameter-list')}>
-                <tbody>
-                    <RowTable data={specification.machineline}>Dòng máy</RowTable>
-                    <RowTable data={specification.materialwire}>Chất liệu dây</RowTable>
-                    <RowTable data={specification.materialglass}>Chất liệu kính</RowTable>
-                    <RowTable data={specification.waterresistance}>Kháng nước</RowTable>
-                    <RowTable data={specification.facesize}>Size mặt</RowTable>
-                    <RowTable data={specification.materialsell}>Chất liệu vỏ</RowTable>
-                    <RowTable data={specification.shape}>Hình dạng</RowTable>
-                    <RowTable data={specification.colorsell}>Màu vỏ</RowTable>
-                    <RowTable data={specification.feature}>Tính năng</RowTable>
-                    <RowTable data={specification.colorface}>Màu mặt</RowTable>
-                </tbody>
-            </table>
+            <div className={cx('parameter-list')}>
+                <RowTable data={attribute.machineSeri}>Dòng máy</RowTable>
+                <RowTable data={attribute.wireMaterial}>Chất liệu dây</RowTable>
+                <RowTable data={attribute.glassMaterial}>Chất liệu kính</RowTable>
+                <RowTable data={attribute.waterResistant}>Kháng nước</RowTable>
+                <RowTable data={attribute.faceSize}>Size mặt</RowTable>
+                <RowTable data={attribute.shellMaterial}>Chất liệu vỏ</RowTable>
+                <RowTable data={attribute.shape}>Hình dạng</RowTable>
+                <RowTable data={attribute.shellColor}>Màu vỏ</RowTable>
+                <RowTable data={attribute.feature}>Tính năng</RowTable>
+                <RowTable data={attribute.faceColor}>Màu mặt</RowTable>
+            </div>
+            <input className={cx('more-btn')} type='checkbox' />
         </div>
     );
 }

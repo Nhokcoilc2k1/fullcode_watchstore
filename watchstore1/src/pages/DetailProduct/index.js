@@ -15,8 +15,8 @@ import IntroSelectSize from './components/IntroduceInfoProduct/IntroSelectSize';
 import OverLay from '../components/OverLay';
 import { Link, useParams } from 'react-router-dom';
 import { Rating, Stack } from '@mui/material';
-import { apiGetProduct, apiUpdateReview } from '~/apis/product';
-import { formattedNumber } from '~/ultils/helpers';
+import { apiGetProduct, apiGetProducts, apiUpdateReview } from '~/apis/product';
+import { formatPromo, formattedNumber } from '~/ultils/helpers';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrent } from '~/Redux/user/asyncActions';
@@ -25,15 +25,16 @@ import { apiUpdateCart } from '~/apis/user';
 import Comment from './components/Comment';
 import { apiGetBrand } from '~/apis/brand';
 import BreadCrumb from '~/components/BreadCrumb';
+import { apiGetPromotion } from '~/apis/promotion';
 
 const cx = classNames.bind(styles);
 
-const urlImg = [
-    {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
-    {url: 'https://wscdn.vn/upload/image/RA-AA0B02R19B-2081811590-287106387.jpg?size=500x500&fomat=webp'},
-    {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
-    { url: 'https://wscdn.vn/upload/image/L2-1660492967-1835041053.jpg?size=800x800&fomat=webp'},
-];
+// const urlImg = [
+//     {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
+//     {url: 'https://wscdn.vn/upload/image/RA-AA0B02R19B-2081811590-287106387.jpg?size=500x500&fomat=webp'},
+//     {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
+//     { url: 'https://wscdn.vn/upload/image/L2-1660492967-1835041053.jpg?size=800x800&fomat=webp'},
+// ];
 
 function DetailProduct() {
     const [review, setReview] = useState(false);
@@ -43,6 +44,8 @@ function DetailProduct() {
     const [comment, setComment] = useState('');
     const [product, setProduct] = useState({});
     const [brands, setBrands] = useState([]);
+    const [productSlice, setProductSlice] = useState([]);
+    const [promotion, setPromotion] = useState([]);
 
     const {pid} = useParams();
     const dispatch = useDispatch();
@@ -50,7 +53,12 @@ function DetailProduct() {
 
     const fetchProductData = async() => {
         const response = await apiGetProduct(pid);
+        const productSlice = await apiGetProducts({sort: '-totalRating', limit: 15})
+        const promotion = await apiGetPromotion({limit: 3})
         setProduct(response.productData);
+        if(productSlice.success) setProductSlice(productSlice.products);
+        if(promotion.success) setPromotion(promotion.promotions);
+        
     }
 
     useEffect(() => {
@@ -105,6 +113,7 @@ function DetailProduct() {
         //  return brand;
     }
 
+
     const config = [
         {name: 'Thông tin sản phẩm', component: <DescriptionProduct /> },
         {name: 'Chính sách bảo hành', component: <WarrantyPolicy />  },
@@ -132,8 +141,8 @@ function DetailProduct() {
                         <div className={cx('box')}>
                             <img src={product.thumbnail} alt={product.name} />
                             <div className={cx('picture')}>
-                                {urlImg.map((img, index) => (
-                                    <img key={index} src={img.url} onClick={() => setImage(img.url)} alt="anh" />
+                                {product?.images?.map((el, index) => (
+                                    <img key={index} src={el} onClick={() => setImage(el)} alt="anh" />
                                 ))}
                             </div>
                         </div>
@@ -167,22 +176,24 @@ function DetailProduct() {
                                 <span className={cx('regular-price')}>{formattedNumber(product.sale_price)} đ</span>
                                 <span className={cx('discount')}>{product.discount_value}%</span>
                             </div>
-                            <span className={cx('brand')}>Thương hiệu: {handleConvertBrand(product?.brand)}</span>
+                            <span className={cx('brand')}>Thương hiệu: Longines {handleConvertBrand(product?.brand)}</span>
                             <div className={cx('box-promo')}>
-                                <h5>Khuyến mãi áp dụng từ 10/09/2023 đến 20/09/2023</h5>
+                                <h5>Khuyến mãi khi mua sắm tại watchstore </h5>
                                 <div className={cx('pro-content')}>
-                                    <p className={cx('content')}>
-                                        Nhập mã <span>SWT9200</span>
+                                    {promotion?.map((el) => (
+                                        <p className={cx('content')}>
+                                            Nhập mã <span>{el.coupon_code}</span>
+                                            {`đơn >= ${formatPromo(el.min_order_value)} giảm 200k`}
+                                        </p>
+                                    ))}
+                                    {/* <p className={cx('content')}>
+                                        Nhập mã <span>VFF300</span>
                                         {`đơn >= 8 triệu giảm 200k`}
                                     </p>
                                     <p className={cx('content')}>
-                                        Nhập mã <span>SWT9150</span>
-                                        {`đơn >= 8 triệu giảm 200k`}
-                                    </p>
-                                    <p className={cx('content')}>
-                                        Nhập mã <span>SWT9100</span>
-                                        {`đơn >= 8 triệu giảm 200k`}
-                                    </p>
+                                        Nhập mã <span>SWT500</span>
+                                        {`đơn >= 12 triệu giảm 200k`}
+                                    </p> */}
                                 </div>
                             </div>
                             <div className={cx('control')}>
@@ -234,13 +245,13 @@ function DetailProduct() {
                                     </div>
                                 </div>
                             </div>
-                            <Specification data />
+                            <Specification pid={product._id} />
                         </div>
                     </div>
                 </div>
                 <div className={cx('footer-page')}>
-                    {/* <h4>Có thể bạn cũng thích</h4> */}
-                    {/* <ProductSlide data={products} /> */}
+                     <h4>Có thể bạn cũng thích</h4> 
+                     <ProductSlide data={productSlice} /> 
                 </div>
                 {
                     review &&

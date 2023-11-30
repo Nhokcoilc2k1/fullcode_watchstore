@@ -61,3 +61,8 @@ export const apiUpdateOrderByAdmin = (oid, data) => instance({
     method: 'put',
     data
 })
+
+export const apiGetAttribute = (pid) => instance({
+    url: `/attribute/${pid}`,
+    method: 'get'
+})

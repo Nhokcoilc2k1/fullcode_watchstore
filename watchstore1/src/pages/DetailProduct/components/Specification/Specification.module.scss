@@ -1,5 +1,7 @@
 .wrapper {
+
     margin-top: 20px;
+    position: relative;
 
     h4 {
         font-size: 1.6rem;
@@ -10,9 +12,55 @@
 }
 
 .parameter-list {
+    --max-lines: 8;
+    --line-height: 1.4;
+
     width: 100%;
     text-align: left;
     margin-top: 16px;
+
+
+    max-height: calc(var(--max-lines) * 1em * var(--line-height));
+    line-height: var(--line-height);
+    overflow: hidden;
+    position: relative;
+    font-size: 1.4rem;
+
+    &:has(~ .more-btn:not(:checked))::before{
+        content: "";
+        position: absolute;
+        height: calc(3em * var(--line-height));
+        width: 100%;
+        bottom: 0;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, #fff);
+    }
+}
+
+.more-btn{
+    appearance: none;
+    border: 1px solid  #0066ff;
+    color:#0066ff ;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 6px;
+
+    &::before{
+        content: 'Xem thêm';
+    }
+
+    &:checked::before{
+        content: "Thu gọn";
+    }
+
+}
+
+.parameter-list:has(~ .more-btn:checked){
+    max-height: none;
 }
 
 .row {

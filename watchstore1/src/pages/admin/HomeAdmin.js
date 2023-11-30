@@ -56,7 +56,7 @@ function HomeAdmin() {
     const total = order.reduce((sum, el) => sum + el.totalPrice, 0)
 
     const databar = [
-        { month: 'Tháng 12', sales: total },
+        { month: 'Tháng 12', sales: 50000 },
       ];
     
 
