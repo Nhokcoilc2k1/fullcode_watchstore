@@ -3,7 +3,7 @@ const path = {
     HOME: '/',
     ALL: '*',
     PRODUCTS: '/products',
-    DETAILPRODUCT_CATEGORY_PID_TITLE: '/:category/:pid/:title',
+    DETAILPRODUCT_CATEGORY_PID_TITLE: '/:pid/:title',
     DETAILPRODUCT:'/products/:pid',
     CART: '/cart/:id?',
     CONNTACT:  '/contact',
@@ -14,5 +14,5 @@ const path = {
     FINALREGISTER: '/finalregister/:status',
     RESETPASSWORD: '/reset-password/:token',
 }
-
+// /:category/:pid/:title
 export default path;

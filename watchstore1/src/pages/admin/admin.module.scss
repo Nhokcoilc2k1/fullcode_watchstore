@@ -444,8 +444,15 @@
 .barchart{
     flex-basis: 46%;
     background-color: #fff;
+    
 }
 
+.box-chart{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
 
 .piechart{
     flex-basis: 46%;

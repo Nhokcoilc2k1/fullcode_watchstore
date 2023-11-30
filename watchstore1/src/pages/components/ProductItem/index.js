@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 function ProductItem({ product }) {
 
     return (
-        <a href={`${product?.category?.toLowerCase()}/${product._id}/${product?.name}`} className={cx('wrapper')}>
+        <a href={`${product._id}/${product?.name}`} className={cx('wrapper')}>
             <img src={product.thumbnail} alt="anh" />
             <div className={cx('info')}>
                 <h4 className={cx('name-product')}>{product.name}</h4>
@@ -23,5 +23,5 @@ function ProductItem({ product }) {
         </a>
     );
 }
-
+// {product?.category?.toLowerCase()}/${product._id}/${product?.name}
 export default ProductItem;

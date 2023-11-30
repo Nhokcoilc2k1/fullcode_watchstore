@@ -10,9 +10,9 @@ const data = [
   { name: 'Sản phẩm E', value: 1 }
 ];
 
-const databar = [
-    { month: 'Tháng 12', sales: 5000 },
-  ];
+// const databar = [
+//     { month: 'Tháng 12', sales: 5000 },
+//   ];
 
   const datap = [
     { product: 'Sản phẩm A', sales: 500 },
@@ -60,15 +60,15 @@ export const SalesPieChart = () => {
   );
 };
 
-export const SalesChart = () => {
+export const SalesChart = ({data}) => {
     return (
-      <BarChart width={600} height={400} data={databar}>
+      <BarChart width={300} height={400} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="sales" fill="#8884d8" />
+        <Bar dataKey='sales' fill="#8884d8" />
       </BarChart>
     );
   };

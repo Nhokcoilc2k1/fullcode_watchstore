@@ -40,6 +40,8 @@ function HomeAdmin() {
 
     const customer = user.filter(el => el.roles !== 'admin')
 
+  
+
     useEffect(() => {
         fetchApi()
     }, [])
@@ -51,9 +53,10 @@ function HomeAdmin() {
     
       ];
     
+    const total = order.reduce((sum, el) => sum + el.totalPrice, 0)
 
     const databar = [
-        { month: 'Tháng 12', sales: 5000 },
+        { month: 'Tháng 12', sales: total },
       ];
     
 
@@ -114,7 +117,7 @@ function HomeAdmin() {
             <div className={cx('chart')}>
                 <div className={cx('barchart')}>
                     <h2 className={cx('name-chart')}>Thống kê doanh số</h2>
-                        <SalesChart />
+                    <div className={cx('box-chart')}><SalesChart data={databar} /></div>
                 </div>
                 
                 <div className={cx('piechart')}>

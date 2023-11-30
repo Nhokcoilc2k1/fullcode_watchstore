@@ -107,14 +107,14 @@ function DetailProduct() {
 
     const config = [
         {name: 'Thông tin sản phẩm', component: <DescriptionProduct /> },
-        {name: 'Chính sách bảo hành', component:  <IntroSelectSize /> },
-        {name: 'Hướng dẫn chọn size', component: <WarrantyPolicy /> },
+        {name: 'Chính sách bảo hành', component: <WarrantyPolicy />  },
+        {name: 'Hướng dẫn chọn size', component:  <IntroSelectSize /> },
     ]
 
     const routes = [
-        { path: "/:category", breadcrumb: product?.category },
+        // { path: "/:category", breadcrumb: product?.category },
         { path: "/", breadcrumb: "Trang chủ" },
-        { path: "/:category/:pid/:title", breadcrumb: product?.name },
+        { path: "/:pid/:title", breadcrumb: product?.name },
       ];
 
     return (
