@@ -15,6 +15,8 @@ import Swal from 'sweetalert2';
 import Congration from '../components/Congration';
 import { apiCreateOrder } from '~/apis/product';
 import { useNavigate } from 'react-router-dom';
+import { apiGetPromotion } from '~/apis/promotion';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -23,13 +25,40 @@ function ShippingAddress() {
     const [checked, setChecked] = useState();
     const {current} = useSelector((state)  => state.user);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [promotion, setPromotion] = useState([]);
+    const [couponCode, setCouponCode] = useState('');
 
     const navigate = useNavigate();
+
+    const fetchPromo = async() => {
+        const response = await apiGetPromotion();
+        if(response.success){
+            setPromotion(response.promotions)
+        }else return;
+    }
+
+    useEffect(() => {
+        fetchPromo();
+    },[])
 
     const provisional = current?.cart?.reduce((acum, el) => {
         return acum + el.product.sale_price * el.quantity;
     },0);
-    const totalPrice = provisional;
+
+    let totalPrice;
+    let discount;
+
+    const handleCouponCode = () => {
+        const code = promotion.find(el => el.coupon_code === couponCode);
+        if(code){
+            if(provisional >= code.min_order_value){
+               totalPrice = +provisional - +code.discount_value;
+               discount = code.discount_value;
+            }else toast.error('Không đủ điều kiện dùng mã giảm giá!')
+        }else toast.error('Mã giảm giá không tồn tại!')
+    }
+
+    // const totalPrice = provisional;
 
 
 
@@ -167,8 +196,8 @@ function ShippingAddress() {
                         </div>
                     ))}
                     <div className={cx('code-promo')}>
-                        <input placeholder="Nhập mã khuyến mãi" />
-                        <button>Áp dụng</button>
+                        <input placeholder="Nhập mã khuyến mãi" onChange={e => setCouponCode(e.target.value)} />
+                        <button onClick={handleCouponCode}>Áp dụng</button>
                     </div>
                     <div className={cx('box-item')}>
                         <p>Tạm tính</p>
@@ -176,7 +205,7 @@ function ShippingAddress() {
                     </div>
                     <div className={cx('box-item')}>
                         <p>Khuyến mãi</p>
-                        <p className={cx('active')}>0 đ</p>
+                        <p className={cx('active')}>{discount} đ</p>
                     </div>
                     <div className={cx('box-item')}>
                         <p className={cx('total')}>Tổng tiền</p>

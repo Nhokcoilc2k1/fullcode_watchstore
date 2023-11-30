@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import DescriptionProduct from './components/IntroduceInfoProduct/DescriptionProduct';
 import IntroSelectSize from './components/IntroduceInfoProduct/IntroSelectSize';
 import OverLay from '../components/OverLay';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Rating, Stack } from '@mui/material';
 import { apiGetProduct, apiGetProducts, apiUpdateReview } from '~/apis/product';
 import { formatPromo, formattedNumber } from '~/ultils/helpers';
@@ -26,6 +26,7 @@ import Comment from './components/Comment';
 import { apiGetBrand } from '~/apis/brand';
 import BreadCrumb from '~/components/BreadCrumb';
 import { apiGetPromotion } from '~/apis/promotion';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
@@ -39,15 +40,15 @@ const cx = classNames.bind(styles);
 function DetailProduct() {
     const [review, setReview] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState();
     const [star, setStar] = useState(0);
     const [comment, setComment] = useState('');
     const [product, setProduct] = useState({});
-    const [brands, setBrands] = useState([]);
     const [productSlice, setProductSlice] = useState([]);
     const [promotion, setPromotion] = useState([]);
 
     const {pid} = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const {current} = useSelector(state => state.user);
 
@@ -56,6 +57,7 @@ function DetailProduct() {
         const productSlice = await apiGetProducts({sort: '-totalRating', limit: 15})
         const promotion = await apiGetPromotion({limit: 3})
         setProduct(response.productData);
+        setImage(response?.productData?.thumbnail)
         if(productSlice.success) setProductSlice(productSlice.products);
         if(promotion.success) setPromotion(promotion.promotions);
         
@@ -64,15 +66,6 @@ function DetailProduct() {
     useEffect(() => {
        if(pid) fetchProductData();
     }, [pid]);
-
-    const fetchBrand = async() => {
-        const rs = await apiGetBrand();
-        setBrands(rs.brands);
-    }
-
-    useEffect(() => {
-        fetchBrand();
-    },[])
 
     const addToCartHandle = async() => {
         const response = await apiUpdateCart({ pid, action: 'increase', name: product.name, sale_price: product.sale_price, thumbnail: product.thumbnail})
@@ -85,6 +78,17 @@ function DetailProduct() {
             dispatch(getCurrent());
         }
         else toast.error(response.message);
+    }
+
+    const handlePayMent = async() => {
+        const response = await apiUpdateCart({ pid, action: 'increase', name: product.name, sale_price: product.sale_price, thumbnail: product.thumbnail})
+        if(!current) return Swal.fire({
+            title: "Cảnh báo",
+            text: "Vui lòng đăng nhập trước", 
+        })
+        if(response.success){      
+            navigate(path.PAYMENT);
+        }else toast.error(response.message);
     }
 
     const handleWriteReview = () => {
@@ -108,10 +112,9 @@ function DetailProduct() {
         else toast.error('Đã xảy ra lỗi');
     }
 
-    const handleConvertBrand = (bid) => {
-        //  const brand = brands?.find(el => el._id === bid).name
-        //  return brand;
-    }
+    const images = product.images;
+
+    console.log(images);
 
 
     const config = [
@@ -119,6 +122,8 @@ function DetailProduct() {
         {name: 'Chính sách bảo hành', component: <WarrantyPolicy />  },
         {name: 'Hướng dẫn chọn size', component:  <IntroSelectSize /> },
     ]
+
+    const filterPromo = promotion.filter(el => el.status !== false);
 
     const routes = [
         // { path: "/:category", breadcrumb: product?.category },
@@ -139,9 +144,9 @@ function DetailProduct() {
                 <div className={cx('row')}>
                     <div className={cx('col', 'l-6')}>
                         <div className={cx('box')}>
-                            <img src={product.thumbnail} alt={product.name} />
+                            <img src={image} alt={product.name} />
                             <div className={cx('picture')}>
-                                {product?.images?.map((el, index) => (
+                                {images?.map((el, index) => (
                                     <img key={index} src={el} onClick={() => setImage(el)} alt="anh" />
                                 ))}
                             </div>
@@ -176,24 +181,16 @@ function DetailProduct() {
                                 <span className={cx('regular-price')}>{formattedNumber(product.sale_price)} đ</span>
                                 <span className={cx('discount')}>{product.discount_value}%</span>
                             </div>
-                            <span className={cx('brand')}>Thương hiệu: Longines {handleConvertBrand(product?.brand)}</span>
+                            <span className={cx('brand')}>Thương hiệu: Longines </span>
                             <div className={cx('box-promo')}>
                                 <h5>Khuyến mãi khi mua sắm tại watchstore </h5>
                                 <div className={cx('pro-content')}>
-                                    {promotion?.map((el) => (
-                                        <p className={cx('content')}>
+                                    {filterPromo?.map((el, index) => (
+                                        <p key={index} className={cx('content')}>
                                             Nhập mã <span>{el.coupon_code}</span>
-                                            {`đơn >= ${formatPromo(el.min_order_value)} giảm 200k`}
+                                            {`đơn >= ${formatPromo(el.min_order_value)} giảm ${formatPromo(el.discount_value)}`}
                                         </p>
                                     ))}
-                                    {/* <p className={cx('content')}>
-                                        Nhập mã <span>VFF300</span>
-                                        {`đơn >= 8 triệu giảm 200k`}
-                                    </p>
-                                    <p className={cx('content')}>
-                                        Nhập mã <span>SWT500</span>
-                                        {`đơn >= 12 triệu giảm 200k`}
-                                    </p> */}
                                 </div>
                             </div>
                             <div className={cx('control')}>
@@ -215,7 +212,7 @@ function DetailProduct() {
                                         >
                                             Thêm vào giỏ hàng
                                         </Button>
-                                        <Button primary className={cx('custom-btn')}>
+                                        <Button onClick={handlePayMent} primary className={cx('custom-btn')}>
                                             Mua ngay- Freeship
                                             <span className={cx('insert-text')}>Kiểm tra hàng trước khi thanh toán</span>
                                         </Button>

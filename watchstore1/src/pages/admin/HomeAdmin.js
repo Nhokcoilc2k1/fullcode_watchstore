@@ -47,10 +47,21 @@ function HomeAdmin() {
     }, [])
 
     const dataTop = [
-        { product: 'Product A', sales: 500 },
-      { product: 'Product B', sales: 400 },
-      { product: 'Product C', sales: 300 },
+        { product: 'Đồng Hồ Tissot 35mm Nữ T050.207.11.011.04', sales: 1 },
+      { product: 'Đồng Hồ Olym Pianus 42mm Nam OP990-45ADGS-GL-X', sales: 1 },
+      { product: 'Đồng Hồ Orient 41.7mm Nam RA-AA0B02R19B', sales: 1 },
     
+      ];
+
+      const dataCate = [
+        { name: 'Đồng hồ nam', value: 2 },
+        { name: 'Đồng hồ nữ', value: 1 },
+      ];
+      
+      const databrand = [
+        { name: 'PIANUS', value: 2 },
+        { name: 'ORIENT', value: 1 },
+        { name: 'TISSOT', value: 1 },
       ];
     
     const total = order.reduce((sum, el) => sum + el.totalPrice, 0)
@@ -122,17 +133,17 @@ function HomeAdmin() {
                 
                 <div className={cx('piechart')}>
                     <h2 className={cx('name-chart')}>Số sản phẩm được bán theo danh mục</h2>
-                    <SalesPieChart />
+                    <SalesPieChart data={dataCate} />
                 </div>
             </div>
             <div className={cx('chart')}>
                 <div className={cx('piechart')}>
                     <h2 className={cx('name-chart')}>Số sản phẩm được bán theo nhãn hiệu</h2>
-                    <SalesPieChart />
+                    <SalesPieChart data={databrand} />
                 </div>
                 <div className={cx('barchart')}>
                     <h2 className={cx('name-chart')}>5 sản phẩm bán chạy nhất trong tháng</h2>
-                    <TopProductsChart />
+                    <TopProductsChart data={dataTop} />
                 </div>
             </div>
         </div>
