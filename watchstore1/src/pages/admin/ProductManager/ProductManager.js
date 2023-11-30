@@ -1,13 +1,10 @@
 import classNames from 'classnames/bind';
 import styles from '../admin.module.scss';
-import Button from '~/components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPen, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useCallback, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { getAllBrand } from '../BrandManager/BrandServer';
 import { getAllCategory } from '../CategoryManager/CategoryServer';
-import ProductDialog from './ProductDialog';
-import DialogDelete from '../components/DialogDelete';
 import moment from 'moment';
 import Pagination from '~/pages/components/Pagination';
 import queryString from 'query-string';
@@ -167,7 +164,7 @@ function ProductManager() {
                                 <div className={cx('action')}>
                                     <span onClick={() => setEditProduct(product)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
                                     <span onClick={() => handleDelete(product._id)}  className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
-                                    <span onClick={() => setCustomVarriant(product)} className={cx('icon-btn', 'varriant')}><FontAwesomeIcon icon={faIntercom} /></span>
+                                    <span onClick={() => setCustomVarriant(product._id)} className={cx('icon-btn', 'varriant')}><FontAwesomeIcon icon={faIntercom} /></span>
                                 </div>
                             </td>
                             <td className={cx('cus-col2')}><p className={cx('code')}>{product._id.slice(-6)}</p></td>

@@ -55,3 +55,9 @@ export const apiDeleteOrderUser = (oid) => instance({
     url: `/orders/${oid}`,
     method: 'delete',
 })
+
+export const apiUpdateOrderByAdmin = (oid, data) => instance({
+    url: `/orders/status/${oid}`,
+    method: 'put',
+    data
+})

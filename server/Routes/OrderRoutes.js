@@ -37,13 +37,13 @@ orderRouter.put(
     isAdmin,
     asyncHandler(async (req, res) => {
         const {oid} = req.params
-        const {status} = req.body
+        const {status , isPaid} = req.body
         if(!status) throw new Error('Missing status');
-        const response = await Order.findByIdAndUpdate(oid, {status},{new : true})
+        const response = await Order.findByIdAndUpdate(oid, {status: status, isPaid: isPaid},{new : true})
         
         return res.json({
             success: response ? true : false,
-            response: response ? response : 'Đã xảy ra lỗi'
+            message: response ? "Cập nhật trạng thái đơn hàng thành công!" : 'Đã xảy ra lỗi!'
         })
             
 }))
@@ -132,36 +132,36 @@ orderRouter.delete(
 )
 
 // UPDATE ORDER
-orderRouter.put(
-    '/:id',
-    verifyAccessToken,
-    isAdmin,
-    asyncHandler(async(req, res) => {
-        const {status} = req.body;
-        const order = await Order.findById(req.params.id)
-        if(order){
-            order.status = status
-            const updateOrder = await order.save();
-            res.json(updateOrder);
-        }else{
-            res.status(400);
-            throw new Error("update unsucess");
-        }
-    })
-)
+// orderRouter.put(
+//     '/:id',
+//     verifyAccessToken,
+//     isAdmin,
+//     asyncHandler(async(req, res) => {
+//         const {status} = req.body;
+//         const order = await Order.findById(req.params.id)
+//         if(order){
+//             order.status = status
+//             const updateOrder = await order.save();
+//             res.json(updateOrder);
+//         }else{
+//             res.status(400);
+//             throw new Error("update unsucess");
+//         }
+//     })
+// )
 
 // GET ORDER ID
-orderRouter.get(
-    "/by/:id",
-    asyncHandler(async (req, res) => {
-        const order = await Order.findById(req.params.id);
-        if(order){
-            res.json(order);
-        }else{
-            res.status(404);
-            throw new Error('order is not Found');
-        }
-    })
-)
+// orderRouter.get(
+//     "/by/:id",
+//     asyncHandler(async (req, res) => {
+//         const order = await Order.findById(req.params.id);
+//         if(order){
+//             res.json(order);
+//         }else{
+//             res.status(404);
+//             throw new Error('order is not Found');
+//         }
+//     })
+// )
 
 export default orderRouter;

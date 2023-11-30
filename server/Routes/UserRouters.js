@@ -9,6 +9,7 @@ import sendMail from '../utils/sendmail.js';
 import crypto from 'crypto';
 import makeToken from 'uniqid';
 import Product from '../Models/ProductModel.js';
+import { log } from 'console';
 
 const usertRouter = express.Router();
 
@@ -109,7 +110,7 @@ usertRouter.post(
             // Lưu refresh token vào database
             await User.findByIdAndUpdate(user._id, {refreshToken: newRefreshToken}, {new: true});
             // Lưu refresh token vào cookie
-            res.cookie("refreshToken", refreshToken, {httpOnly: true, maxAge: 7*24*60*60*1000})
+            res.cookie("refreshToken", newRefreshToken, {httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000})
             if(user.status){
                 return res.status(200).json({
                     success: true,
@@ -117,7 +118,10 @@ usertRouter.post(
                     userData
                 })
             }else{
-                return res.status(400).json("Tài khoản ngưng hoạt động. Vui lòng đăng nhập tài khoản khác")
+                return res.status(400).json({
+                    success: false,
+                    message: 'Tài khoản ngưng hoạt động. Vui lòng đăng nhập tài khoản khác'
+                })
             }
         }else{
             return res.status(400).json({
@@ -134,14 +138,15 @@ usertRouter.get(
     verifyAccessToken,
     asyncHandler(async(req, res) => {
         const {_id} = req.user
-        const user = await User.findById(_id).select('-refreshToken -password').populate({
-            path: 'cart',
-            populate: {
-                path: 'product',
-                select: 'name thumbnail sale_price'
-            }
-        })
- 
+        const user = await User.findById(_id).select('-refreshToken -password')
+        // .populate({
+        //     path: 'cart',
+        //     populate: {
+        //         path: 'product',
+        //         select: 'name thumbnail sale_price'
+        //     }
+        // })
+
         return res.status(200).json({
             success: user ? true : false,
             rs: user ? user : 'User not found'
@@ -158,6 +163,8 @@ usertRouter.post(
         if(!cookie && !cookie.refreshToken) throw new Error('No refresh token in cookies');
         // Check xem có hợp lệ hay không
         const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET)
+        // console.log(rs);
+        // Check xem token có khớp với token đã lưu trong db không
         const response = await User.findOne({_id: rs._id, refreshToken: cookie.refreshToken})
         return res.status(200).json({
                 success: response ? true : false,
@@ -241,6 +248,8 @@ usertRouter.put(
 
 usertRouter.get(
     '/',
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async(req, res) => {
         const queries = {...req.query};
         const excludeFields = ['limit', 'sort', 'page', 'fields'];
@@ -251,13 +260,7 @@ usertRouter.get(
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
-        // const query = {}
-        // if(req.query.q){
-        //     query = {$or: [
-        //         {name : {$regex: req.query.q, $options: 'i'}},
-        //         {email : {$regex: req.query.q, $options: 'i'}}
-        //     ]
-        // }
+
         if(req.query.q){
             delete formatedQueries.q;
             formatedQueries['$or'] = [
@@ -266,7 +269,7 @@ usertRouter.get(
             ]
         }
         
-        let queryCommand = User.find(formatedQueries);
+        let queryCommand = User.find(formatedQueries).select('-password -refreshToken');
        
         // Sorting
         if (req.query.sort) {
@@ -377,21 +380,21 @@ usertRouter.put(
     })
 )
 
-// usertRouter.put(
-//     '/:uid',
-//     verifyAccessToken,
-//     isAdmin,
-//     asyncHandler(async(req, res) => {
-//         const {uid} = req.params;
-//         const {status} = req.body;
-//         if(!uid || !status) throw new Error("Missing input");
-//         const user = await User.findByIdAndUpdate(uid, {status: status}, {new: true}).select('-password -roles -refreshToken');
-//         return res.status(200).json({
-//             success: user ? true : false,
-//             message: user ? 'Cập nhật người dùng thành công' : 'Đã xảy ra lỗi!'
-//         })
-//     })
-// )
+usertRouter.put(
+    '/:uid',
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async(req, res) => {
+        const {uid} = req.params;
+        const {status} = req.body;
+        // if(!uid || !status) throw new Error("Missing input");
+        const user = await User.findByIdAndUpdate(uid, {status: status}, {new: true})
+        return res.status(200).json({
+            success: user ? true : false,
+            message: user ? 'Cập nhật người dùng thành công' : 'Đã xảy ra lỗi!'
+        })
+    })
+)
 
 
 usertRouter.delete(

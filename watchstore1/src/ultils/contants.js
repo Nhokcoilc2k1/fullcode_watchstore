@@ -19,17 +19,36 @@ export const adminSidebar = [
     },
     {
         id: 2,
-        type: 'SINGLE',
+        type: 'PARENT',
         text: 'Quản lí danh mục',
-        path: '/category',
-        icon: <FontAwesomeIcon icon={faNewspaper} />
+        icon: <FontAwesomeIcon icon={faNewspaper} />,
+        submenu: [
+            {
+                text: 'Thêm sản danh mục mới',
+                path: '/create-category'
+            },
+            {
+                text: 'Quản lí danh mục',
+                path: '/category',
+
+            }
+        ]
     },
     {
         id: 3,
-        type: 'SINGLE',
+        type: 'PARENT',
         text: 'Quản lí nhãn hiệu',
-        path: '/brand',
-        icon: <FontAwesomeIcon icon={faNewspaper} />
+        icon: <FontAwesomeIcon icon={faNewspaper} />,
+        submenu: [
+            {
+                text: 'Thêm sản nhãn hiệu mới',
+                path: '/create-brand'
+            },
+            {
+                text: 'Quản lí nhãn  hiệu',
+                path: '/brand',
+            }
+        ]
     },
     {
         id: 4,

@@ -1,15 +1,16 @@
 import classNames from "classnames/bind";
-import styles from './CreatePromotion.module.scss';
+import styles from './Promotion.module.scss';
 import { useFormik } from "formik";
 import Button from "~/components/Button";
-import { apiCreatePromotion } from "~/apis/promotion";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
+import { apiUpdatePromotion } from "~/apis/promotion";
 
 const cx = classNames.bind(styles)
 
-function CreatePromotion() {
+function UpdatePromotion({editPromotion, setEditPromotion, render}) {
 
-    const {values ,resetForm, errors, handleChange,handleSubmit, handleBlur, touched} = useFormik({
+    const {values, setValues , errors, handleChange,handleSubmit, handleBlur, touched} = useFormik({
         initialValues: {
             name: '',
             coupon_code: '',
@@ -21,15 +22,29 @@ function CreatePromotion() {
         // validationSchema: ,
         
         onSubmit : async() => {
-            const response = await apiCreatePromotion(values);
-            console.log(response);
+            const response = await apiUpdatePromotion(editPromotion._id,values);
             if(response.success) {
-                resetForm();
                 toast.success(response.message)
+                setEditPromotion(null);
             }
             else toast.error(response.message);
         },
       });
+
+      console.log(editPromotion);
+      
+      useEffect(() => {
+        if(editPromotion){
+            setValues({
+                name: editPromotion.name,
+                coupon_code: editPromotion.coupon_code,
+                discount_value: editPromotion.discount_value,
+                min_order_value: editPromotion.min_order_value,
+                expired: editPromotion.expired.slice(0,10),
+                status: editPromotion.status
+            })
+      }
+      }, [editPromotion])
 
     const active = [
         {title: 'active', value: true},
@@ -39,7 +54,8 @@ function CreatePromotion() {
         <div className={cx('wrapper', 'update-page')}>
             <div className={cx('inner')}>
                 <div className={cx('box-header')}>
-                    <h2 className={cx('header-name')}>Thêm khuyến mãi mới</h2>
+                    <h2 className={cx('header-name')}>Cập nhật khuyến mãi</h2>
+                    <Button onClick={() => setEditPromotion(null)} className={cx('header-btn')}>Quay lại</Button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className={cx('box-input')}>
@@ -123,8 +139,8 @@ function CreatePromotion() {
                             >
                                 <option value="">--CHOOSE--</option>
                                 {
-                                    active?.map((el, index)=> (
-                                        <option key={index} value={el.value}>{el.title}</option>
+                                    active?.map(el => (
+                                        <option key={el.name} value={el.value}>{el.title}</option>
                                     ))
                                 }
                             </select>
@@ -143,4 +159,5 @@ function CreatePromotion() {
      );
 }
 
-export default CreatePromotion;
+
+export default UpdatePromotion;

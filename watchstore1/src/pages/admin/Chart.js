@@ -11,17 +11,6 @@ const data = [
 ];
 
 const databar = [
-    { month: 'Tháng 1', sales: 500 },
-    { month: 'Tháng 2', sales: 800 },
-    { month: 'Tháng 3', sales: 1200 },
-    { month: 'Tháng 4', sales: 900 },
-    { month: 'Tháng 5', sales: 1500 },
-    { month: 'Tháng 6', sales: 1100 },
-    { month: 'Tháng 7', sales: 1100 },
-    { month: 'Tháng 8', sales: 900 },
-    { month: 'Tháng 9', sales: 1500 },
-    { month: 'Tháng 10', sales: 1100 },
-    { month: 'Tháng 11', sales: 1100 },
     { month: 'Tháng 12', sales: 5000 },
   ];
 

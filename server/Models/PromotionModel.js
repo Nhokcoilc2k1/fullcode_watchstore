@@ -12,7 +12,6 @@ const promotionSchema = mongoose.Schema({
     status: {
         type: Boolean,
         require: true,
-        default: true
     },
     discount_value: {
         type: Number,
@@ -20,10 +19,6 @@ const promotionSchema = mongoose.Schema({
     },
     min_order_value: {
         type: Number,
-        require: true,
-    },
-    max_discount_value: {
-        type :Number,
         require: true,
     },
     expired: {

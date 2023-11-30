@@ -81,24 +81,44 @@ promotionRoute.post(
         })
         
     }))
-// UPDATE PROMO
+// UPDATE STATUS PROMO
 promotionRoute.put(
-    "/:proid",
+    "/status/:proid",
     verifyAccessToken,
     isAdmin,
     asyncHandler(async (req, res) => {
        const {proid} = req.params;
-       const updatePromo = await Promotion.findByIdAndUpdate(proid, {...req.body}, {new: true})
-       res.status(200).json({
-        success: updatePromo ? true : false,
-        message: updatePromo ? 'Cập nhật khuyến mãi thành công!' : 'Đã xảy ra lỗi!'
-       })
+       const {status} = req.body;
+        const updatePromo = await Promotion.findByIdAndUpdate(proid, {status: status}, {new: true})
+        res.status(200).json({
+            success: updatePromo ? true : false,
+            message: updatePromo ? updatePromo : 'Đã xảy ra lỗi!'
+        })
+
     })
+)
+
+// UPDATE ALL PROMO
+promotionRoute.put(
+    '/:proid',
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async (req, res) => {
+        const {proid} = req.params;
+         const updatePromo = await Promotion.findByIdAndUpdate(proid, {...req.body}, {new: true})
+         res.status(200).json({
+             success: updatePromo ? true : false,
+             message: updatePromo ? "Cập nhật khuyến mãi thành công" : 'Đã xảy ra lỗi!'
+         })
+ 
+     })
 )
 
 // DELETE PROMO
 promotionRoute.delete(
     "/:proid",
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async (req, res) => {
         const {proid} = req.params;
         const deletePromo = await Promotion.findByIdAndDelete(proid, {new : true});

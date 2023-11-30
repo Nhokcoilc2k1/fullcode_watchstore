@@ -1,6 +1,8 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler'
 import Category from '../Models/CategoryModel.js';
+import { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
+import uploadCloud from '../config/cloudinaryConfig.js';
 
 const categoryRoutes = express.Router();
 
@@ -57,38 +59,37 @@ categoryRoutes.get(
     "/:id", 
     asyncHandler(async (req, res) => {
     const category = await Category.findById(req.params.id);
-    if (category) {
-        res.json(category);    
-    } else {
-        res.status(404);
-        throw new Error("Category not Found");
-    }
+    res.status(200).json({
+        success: category ? true : false,
+        message: category ? category : 'Đã xảy ra lỗi'
+    })
 }))
 
 // POST BRAND
 categoryRoutes.post(
     "/", 
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {name, status, description, image} = req.body;
+        const {name, status, description} = req.body;
         const categoryExit = await Category.findOne({name})
-        if(categoryExit){
-            res.status(400);
-            throw new Error("Category name already exist");
-        } else {
-            const category = new Category({
-                name,
-                status,
-                description,
-                image,
-            });
-            if(category){
-                const createCategory = await category.save();
-                res.status(201).json(createCategory);
-            }else{
-                res.status(400);
-                throw new Error("Invalid create data");
-            }
-        }
+        if(categoryExit) throw new Error("Mã danh mục đã tồn tại");
+        if(!name) throw new Error("Đầu vào không hợp lệ");
+        const image = req?.files?.image[0].path
+        const category = new Category({
+            name,
+            status,
+            description,
+            image
+        })
+        const newCategory = await category.save();
+        res.status(200).json({
+            success: newCategory ? true : false,
+            message: newCategory ? 'Thêm danh mục thành công!' : 'Đã xảy ra lỗi'
+        })
     }))
 
 // UPDATE BRAND
@@ -112,17 +113,33 @@ categoryRoutes.put(
     })
     )
 
+categoryRoutes.put(
+    '/status/:cid',
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async(req, res) => {
+        const {cid} = req.params;
+        const {status} = req.body;
+        const updateCate = await Category.findByIdAndUpdate(cid, {status: status}, {new: true})
+        res.status(200).json({
+            success: updateCate ? true : false,
+            message: updateCate ? updateCate : 'Đã xảy ra lỗi!'
+        })
+    })
+)
+
 // DELETE BRAND
 categoryRoutes.delete(
-    "/:id",
+    "/:cid",
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async (req, res) => {
-        const deleteCategory = await Category.findByIdAndDelete(req.params.id);
-        if(deleteCategory){
-            res.status(200).json('Delete successful');
-        }else{
-            res.status(404);
-            throw new Error('Unsuccesful');
-        }
+        const { cid } = req.params;
+        const response = await Category.findByIdAndDelete(cid, {new : true});
+        res.status(200).json({
+            success: response ? true : false,
+            message: response ? 'Xóa danh mục thành công!' : 'Đã xảy ra lỗi!'
+        })
     }))
 
 // SEARCH 

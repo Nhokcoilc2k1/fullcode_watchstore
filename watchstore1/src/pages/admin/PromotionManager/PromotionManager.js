@@ -1,32 +1,24 @@
 import classNames from 'classnames/bind';
 import styles from '../admin.module.scss';
-import Button from '~/components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSearch, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import { deletePromoById } from './PromotionServer';
-import PromotionDialog from './PromotionDialog';
-import DialogDelete from '../components/DialogDelete';
-import ToastMessage from '~/components/ToastMessage';
+import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import queryString from 'query-string';
 import Pagination from '~/pages/components/Pagination';
-import Status from '../components/Status';
 import { apiDeletePromotion } from '~/apis/promotion';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import SwitchPromo from './SwitchPromo';
+import UpdatePromotion from './UpdatePromotion';
 
 const cx = classNames.bind(styles);
 
 function PromotionManager() {
     const [promoData, setPromoData] = useState([]);
-    const [showDialog, setShowDialog] = useState(false);
-    const [showToast1, setShowToast1] = useState(false);
-    const [showToast2, setShowToast2] = useState(false);
     const [reLoad, setReload] = useState(true);
-
-    const [promoById, setPromoById] = useState({});
     const [pagination, setPagination] = useState({});
+    const [editPromotion, setEditPromotion] = useState(null);
 
     const [filters, setFilters] = useState({
         limit: 5,
@@ -57,15 +49,10 @@ function PromotionManager() {
         })
     }
 
-    const handleEdit = (promo) => {
-        setShowDialog(true);
-        setPromoById(promo)
-    }
-
-    const handleDelete = async(proid) => {
+    const handleDelete = async(proid, name) => {
         Swal.fire({
-            title: 'Xóa sản phẩm',
-            text: 'Bạn chắc chắn muốn xóa sản phẩm này', 
+            title: 'Xóa khuyến mãi',
+            text: `Bạn chắc chắn muốn xóa khuyến mãi ${name}`, 
             icon: 'warning',
             showCancelButton: true,
         }).then(async(rs) => {
@@ -85,8 +72,18 @@ function PromotionManager() {
         return update;
     }
 
+   const render = useCallback(() => {
+        setReload(!reLoad);
+   },[]);
+
     return ( 
         <div className={cx('wrapper')}>
+            { editPromotion && (
+            <div className={cx('update')}>
+                <UpdatePromotion editPromotion={editPromotion} setEditPromotion={setEditPromotion} render={render} />
+            </div>
+            )
+            }
             <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách khuyến mãi</h2>
                 <div className={cx('header')}>
@@ -135,8 +132,8 @@ function PromotionManager() {
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleEdit(promo)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
-                                        <span onClick={() => handleDelete(promo._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                        <span onClick={() => setEditPromotion(promo)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
+                                        <span onClick={() => handleDelete(promo._id, promo.name)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
                                     </div>
                                 </td>
                                 <td className={cx('cus-col1')}><p className={cx('code')}>{promo._id.slice(-6)}</p></td>
@@ -144,32 +141,17 @@ function PromotionManager() {
                                 <td className={cx('cus-col')}><p className={cx('name')}>{promo.coupon_code}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('name')}>{promo.discount_value}%</p></td>
                                 <td className={cx('cus-col')}><p className={cx('name')}>{moment(promo.expired).format("DD/MM/YYYY h:mm a")}</p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><Status data={promo}  /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPromo proid={promo._id} status={promo.status} render={render} /></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(promo.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(promo.updatedAt, promo.createdAt)}</p></td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                {showDialog && 
-                    <PromotionDialog 
-                        isOpen={showDialog}
-                        isClose={setShowDialog}
-                        data={promoById}
-                        setData={setPromoById}
-                        reLoad={setReload}
-                        showToast={setShowToast1}
-                    />}
             </div>
             <div className={cx('pagination')}>
                 <Pagination pagination={pagination} onPageChange={handlePageChange} />
             </div>
-            {showToast1 && 
-                <ToastMessage tittle={"Thành công!"} message={"Thêm mã khuyến mãi thành công."} type={"success"} duration={5000} />
-            }
-            {showToast2 && 
-                <ToastMessage tittle={"Thành công!"} message={"Xóa mã khuyến mãi thành công."} type={"success"} duration={5000} />
-            }
         </div>
      );
 }

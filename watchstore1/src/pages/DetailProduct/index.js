@@ -89,7 +89,6 @@ function DetailProduct() {
             setReview(true);
         }
     }
-    console.log(product);
 
     const submitComment = async(e) => {
         e.preventDefault();

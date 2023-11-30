@@ -12,6 +12,7 @@ import usertRouter from "./Routes/UserRouters.js";
 import orderRouter from "./Routes/OrderRoutes.js";
 import postRoute from "./Routes/PostRouter.js";
 import cookieParser from "cookie-parser";
+import attributeRoute from "./Routes/AttributeRoutes.js";
 
 dotenv.config();
 connectDatabase();
@@ -38,6 +39,7 @@ app.use("/api/products", productRoute);
 app.use("/api/users", usertRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/posts", postRoute);
+app.use("/api/attribute", attributeRoute);
 
 
 // ERROR HANDLER

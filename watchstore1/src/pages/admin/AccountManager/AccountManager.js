@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 import styles from '../admin.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Status from '../components/Status';
 import moment from 'moment';
 import queryString from 'query-string';
@@ -12,6 +12,7 @@ import { useDebounce } from '~/hooks';
 import { render } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import SwitchAccount from './SwitchAccount';
 
 const cx = classNames.bind(styles);
 
@@ -88,6 +89,10 @@ function AccountManager() {
         setQueries({...queries, q: e.target.value})
     }
 
+    const render = useCallback(() => {
+        setReLoad(!reLoad);
+   },[]);
+
     // const handleUpdate = async(e) => {
     //     const response = await apiUpdateUserByAdmin()
     // }
@@ -140,7 +145,7 @@ function AccountManager() {
                                 <td><p className={cx('name')}>{user.name}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('code')}>{user.phone}</p></td>
                                 <td><p className={cx('name')}>{user.email}</p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><Status data={user} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchAccount uid={user._id} status={user.status} render={render}  /></p></td>
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{moment(user.createdAt).format("DD/MM/YYYY")}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{handleCompareDate(user.updatedAt, user.createdAt)}</p></td>
                                 <td className={cx('cus-col4')}>

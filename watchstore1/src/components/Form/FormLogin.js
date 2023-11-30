@@ -4,11 +4,11 @@ import { useFormik} from 'formik';
 
 import Button from '~/components/Button';
 import OverLay from '~/pages/components/OverLay';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import FormRegister from './FormRegister';
-import { useDispatch, useSelector } from 'react-redux';
-import Error from '../LoadingError/Error';
-import Loading from '../LoadingError/Loading';
+import { useDispatch } from 'react-redux';
+// import Error from '../LoadingError/Error';
+// import Loading from '../LoadingError/Loading';
 import { loginValidation } from './SignupValidation';
 import { apiForgotPassword, apiLogin } from '~/apis/user';
 import { login } from '~/Redux/user/userSlice';
@@ -41,8 +41,9 @@ function FormLogin({ isClose }) {
         validationSchema: loginValidation,
         onSubmit : async() => {
            const response = await apiLogin(values);
-           console.log(response);
+        //    console.log(response);
            if(response.success){
+            // dispatch(getCurrent());
             dispatch(login({isLoggedIn: true,  token: response.accessToken}))
             handleIsClose(false);
             navigate('/');

@@ -24,6 +24,8 @@ import FinalRegister from '~/components/FinalRegister/FinalRegister';
 import ResetPassword from '~/components/ResetPassword/ResetPassword';
 import CreatePromotion from '~/pages/admin/components/CreatePromotion/CreatePromotion';
 import path from '~/ultils/path';
+import CreateCategory from '~/pages/admin/components/CreateCategory/CreateCategory';
+import CreateBrand from '~/pages/admin/components/CreateBrand/CreateBrand';
 
 const publicRoutes = [
     { path: path.HOME, component: Home, layout: LayoutHaveSlide },
@@ -50,6 +52,8 @@ const adminRoutes = [
     { path: '/account', component: AccountManager },
     { path: '/create-product', component: CreateProduct },
     { path: '/newpromotion', component: CreatePromotion },
+    { path: '/create-category', component: CreateCategory },
+    { path: '/create-brand', component: CreateBrand },
 ];
 
 const privateRoutes = [];

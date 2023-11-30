@@ -2,6 +2,7 @@ import  Jwt  from "jsonwebtoken";
 import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModel.js';
 
+
 //xác thực và giải mã token JWT (JSON Web Token) để xác định người dùng đã xác thực.
 const protect = asyncHandler(
     async(req, res, next) => {
@@ -35,7 +36,7 @@ export const verifyAccessToken = asyncHandler(async(req, res, next) => {
                 success: false,
                 message: "Invalid access token"
             })
-            console.log(decoded);
+            // console.log(decoded);
             req.user = decoded;
             next();
         })

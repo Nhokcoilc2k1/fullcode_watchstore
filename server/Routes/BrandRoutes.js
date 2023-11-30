@@ -1,7 +1,8 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import Brand from '../Models/BrandModel.js';
-import protect from '../Middleware/AuthMiddleware.js';
+import protect, { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
+import uploadCloud from '../config/cloudinaryConfig.js';
 
 const brandRoute = express.Router();
 
@@ -59,38 +60,37 @@ brandRoute.get(
     "/:id", 
     asyncHandler(async (req, res) => {
     const brand = await Brand.findById(req.params.id);
-    if (brand) {
-        res.json(brand);    
-    } else {
-        res.status(404);
-        throw new Error("Brands not Found");
-    }
+    res.status(200).json({
+        success: brand ? true : false,
+        message: brand ? brand : 'Đã xảy ra lỗi'
+    })
 }))
 
 // POST BRAND
 brandRoute.post(
     "/", 
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {name, image, description, status} = req.body;
+        const {name, status, description} = req.body;
         const brandExit = await Brand.findOne({name})
-        if(brandExit){
-            res.status(400);
-            throw new Error("Brand name already exist");
-        } else {
-            const brand = new Brand({
-                name,
-                image,
-                description,
-                status,
-            });
-            if(brand){
-                const createBrand = await brand.save();
-                res.status(201).json(createBrand);
-            }else{
-                res.status(400);
-                throw new Error("Invalid brand data");
-            }
-        }
+        if(brandExit) throw new Error("Mã danh mục đã tồn tại");
+        if(!name) throw new Error("Đầu vào không hợp lệ");
+        const image = req?.files?.image[0].path
+        const brand = new Brand({
+            name,
+            status,
+            description,
+            image
+        })
+        const newBrand = await brand.save();
+        res.status(200).json({
+            success: newBrand ? true : false,
+            message: newBrand ? 'Thêm nhãn hiệu thành công!' : 'Đã xảy ra lỗi!'
+        })
     }))
 
 // UPDATE BRAND
@@ -114,17 +114,36 @@ brandRoute.put(
     })
     )
 
+// UPDATE STATUS Brand
+brandRoute.put(
+    "/status/:bid",
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async (req, res) => {
+       const {bid} = req.params;
+       const {status} = req.body;
+        const updateBrand = await Brand.findByIdAndUpdate(bid, {status: status}, {new: true})
+        res.status(200).json({
+            success: updateBrand ? true : false,
+            message: updateBrand ? updateBrand : 'Đã xảy ra lỗi!'
+        })
+
+    })
+)
+
+
 // DELETE BRAND
 brandRoute.delete(
-    "/:id",
+    "/:bid",
+    verifyAccessToken,
+    isAdmin,
     asyncHandler(async (req, res) => {
-        const deleteBrand = await Brand.findByIdAndDelete(req.params.id);
-        if(deleteBrand){
-            res.status(200).json('Delete successful');
-        }else{
-            res.status(404);
-            throw new Error('Unsuccesful');
-        }
+        const { bid } = req.params;
+        const response = await Brand.findByIdAndDelete(bid, {new : true});
+        res.status(200).json({
+            success: response ? true : false,
+            message: response ? 'Xóa nhãn hiệu thành công!' : 'Đã xảy ra lỗi!'
+        })
     }))
 
 // SEARCH

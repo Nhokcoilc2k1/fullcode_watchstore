@@ -6,7 +6,7 @@ import { updateOrder } from "./OrderServer";
 const status = ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng','Đã giao hàng', 'Đã hủy']
 
 
-function OrderDialog({isOpen, isClose, data, setData, showToast, reLoad}) {
+function OrderDialog({isOpen, isClose, data, setData, reLoad}) {
 
     const handleChange = (e) => {
         setData(prev => ({
@@ -20,7 +20,6 @@ function OrderDialog({isOpen, isClose, data, setData, showToast, reLoad}) {
         const result = await updateOrder(data._id, data);
         if(result){
             isClose(false);
-            // showToast(true);
             reLoad((prev) => !prev);
         }else{
             console.log("error");

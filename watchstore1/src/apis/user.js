@@ -30,6 +30,11 @@ export const apiGetCurrent = () => instance({
     method: 'get',
 })
 
+export const apiRefreshToken = () => instance({
+    url: '/users/refreshtoken',
+    method: 'post',
+})
+
 export const apiUpdateCurrent = (data) => instance({
     url: '/users/current',
     method: 'put',
@@ -58,7 +63,13 @@ export const apiDeleteUser = (uid) => instance({
     method: 'delete',
 })
 
-export const apiUpdateUserByAdmin = (uid) => instance({
+// export const apiUpdateUserByAdmin = (uid) => instance({
+//     url: '/users/' + uid,
+//     method: 'put',
+// })
+
+export const apiUpdateStatusUser = (uid, data) => instance({
     url: '/users/' + uid,
     method: 'put',
+    data
 })

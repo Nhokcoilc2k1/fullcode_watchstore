@@ -6,8 +6,9 @@ export const getCurrent = createAsyncThunk(
     async(data, {rejectWithValue}) => {
         try {
             const response = await apiGetCurrent();
-            console.log(response);
-            console.log(response.rs.cart);
+            // if(response.message === 'Invalid access token'){
+            //     const rs = await apiRefreshToken();
+            // }
         return response.rs;
         } catch (error) {
             return rejectWithValue(error.response.data)

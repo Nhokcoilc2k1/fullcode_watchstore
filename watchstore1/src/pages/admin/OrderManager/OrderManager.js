@@ -2,11 +2,9 @@ import classNames from 'classnames/bind';
 import styles from '../admin.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faSearch, } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import { getOrderById } from './OrderServer';
+import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
-import OrderDialog from './OrderDialog';
-import queryString from 'query-string';
+// import queryString from 'query-string';
 import Pagination from '~/pages/components/Pagination';
 import { apiGetOrder } from '~/apis/product';
 import UpdateOrder from './UpdateOrder';
@@ -17,8 +15,6 @@ const cx = classNames.bind(styles);
 
 function OrderManager() {
     const [dataOrder, setDataOrder] = useState([]);
-    const [showDialog, setShowDialog] = useState(false);
-    const [orderById, setOrderById] = useState({});
     const [reLoad, setReLoad] = useState(false);
     const [pagination, setPagination] = useState({});
     const [editOrder, setEditOrder] = useState(null);
@@ -46,31 +42,20 @@ function OrderManager() {
         })
     }
 
-    const handleEdit = async(id) => {
-        try {
-            const edit = await getOrderById(id);
-            setOrderById(edit?.data);
-        } catch (error) {
-            console.log(error);
-        }
-    setShowDialog(true);
-}
-
-
     const handleCompareDate = (updatedAt, createdAt) => {
         const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY h:mm a");
         return update;
     }
 
-    const handleEditOrder = (order) => {
-        setEditOrder(order);
-    }
+    const render = useCallback(() => {
+        setReLoad(!reLoad);
+   },[reLoad]);
 
     return ( 
         <div className={cx('wrapper')}>
             { editOrder && (
             <div className={cx('update')}>
-                <UpdateOrder editOrder={editOrder} setEditOrder={setEditOrder} />
+                <UpdateOrder editOrder={editOrder} setEditOrder={setEditOrder} render={render} />
             </div>
             )
             }
@@ -129,7 +114,7 @@ function OrderManager() {
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{order._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{order.name}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('code')}>{order.phone}</p></td>
-                                <td className={cx('cus-col1', 'custom-col')}><p onClick={() => handleEditOrder(order)} className={cx('status', 'order')}>{order.status}</p></td>
+                                <td className={cx('cus-col1', 'custom-col')}><p onClick={() => setEditOrder(order)} className={cx('status', 'order')}>{order.status}</p></td>
                                 <td>
                                     {order.products.map((item, index) => (
                                         <p key={index} className={cx('name')}>{item.name}</p>
@@ -140,7 +125,7 @@ function OrderManager() {
                                 <td className={cx('cus-col3')}><p className={cx('date')}>{handleCompareDate(order.updatedAt, order.createdAt)}</p></td>
                                 <td className={cx('cus-col4')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleEdit(order._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
+                                        <span onClick={() => setEditOrder(order)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
                                     </div>
                                 </td>
                             </tr>
@@ -149,16 +134,6 @@ function OrderManager() {
                         }
                     </tbody>
                 </table>
-                {
-                    showDialog && 
-                    <OrderDialog 
-                    reLoad={setReLoad} 
-                    isClose={setShowDialog}
-                    isOpen={showDialog}
-                    data={orderById}
-                    setData={setOrderById}
-                    />
-                }
             </div>
             <div className={cx('pagination')}>
                 <Pagination pagination={pagination} onPageChange={handlePageChange}/>
