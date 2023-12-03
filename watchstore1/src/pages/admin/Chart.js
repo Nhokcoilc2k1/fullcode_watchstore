@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, Legend, Tooltip,BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area } from 'recharts';
+import { PieChart, Pie, Cell, Legend, Tooltip,BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import React from 'react';
 // Dữ liệu ví dụ
 // const dataCate = [
@@ -36,8 +36,12 @@ import React from 'react';
 
   ];
 
+  const formatValue = (value) => {
+      return `${(value / 1000000)}M`
+  };
+
 // Màu sắc cho các phần tử trong biểu đồ
-const colors = [ '#52aa54', '#ff0000', '#f53e2d', '#b1c236','#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#008800'];
+const colors = ['#52aa54' , '#ff0000' , '#ffc658',  '#f53e2d','#8884d8' , '#b1c236', '#82ca9d', '#ff7f50', '#008800'];
 
 export const SalesPieChart = ({data}) => {
   return (
@@ -64,10 +68,10 @@ export const SalesPieChart = ({data}) => {
 
 export const SalesChart = ({data}) => {
     return (
-      <BarChart width={300} height={400} data={data}>
+      <BarChart width={250} height={400} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
-        <YAxis />
+        <YAxis tickFormatter={formatValue} />
         <Tooltip />
         <Legend />
         <Bar dataKey='sales' fill="#52aa54" />
@@ -77,13 +81,28 @@ export const SalesChart = ({data}) => {
   
 export const TopProductsChart = ({data}) => {
     return (
-        <BarChart width={600} height={400} data={data}>
+        <BarChart width={500} height={500} data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="product" />
           <YAxis />
           <Tooltip />
-          <Legend />
-          <Bar dataKey="sales" fill="#52aa54" />
+          <Legend
+          layout="horizontal"
+          align="center"
+          verticalAlign="bottom"
+          wrapperStyle={{ paddingBottom: 20 }}
+          payload={data.map((entry, index) => ({
+            id: `legend-${index}`,
+            value: entry.product,
+            type: 'square',
+            color: colors[index % colors.length],
+          }))}
+        />
+          <Bar dataKey="sales" >
+          {data.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+        ))}
+          </Bar>
         </BarChart>
       );
   };

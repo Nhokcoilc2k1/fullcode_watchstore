@@ -21,6 +21,14 @@ brandRoute.get(
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
+
+        if(req.query.q){
+            delete formatedQueries.q;
+            formatedQueries['$or'] = [
+                {name : {$regex: req.query.q, $options: 'i'}},
+                // {coupon_code : {$regex: req.query.q, $options: 'i'}}
+            ]
+        }
         let queryCommand = Brand.find(formatedQueries);
 
         if(req.query.fields){
@@ -95,22 +103,21 @@ brandRoute.post(
 
 // UPDATE BRAND
 brandRoute.put(
-    "/:id",
+    "/:bid",
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {name, image, description, status} = req.body;
-        const brand = await Brand.findById(req.params.id);
-        if(brand){
-            brand.name = name;
-            brand.image = image;
-            brand.description = description;
-            brand.status = status;
-
-            const updateProduct = await brand.save();
-            res.json(updateProduct);
-        }else{
-            res.status(404);
-            throw new Error('brand not found');
-        }
+        const { bid } = req.params;
+        const files = req?.files
+        if(files?.image) req.body.image = files?.image[0]?.path;
+        const updateBrand = await Brand.findByIdAndUpdate(bid, {...req.body}, {new: true})
+        return res.status(200).json({
+            success: updateBrand ? true : false,
+            message: updateBrand ? updateBrand : 'Đã xảy ra lỗi!'
+        })
     })
     )
 

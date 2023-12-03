@@ -23,8 +23,6 @@ function UpdateOrder({editOrder, setEditOrder, render}) {
         } else toast.error(response.message)
     }
 
-    console.log(editOrder._id);
-
     const handlePrivision = (price, quantity) => {
         const privision = price*quantity;
         return formattedNumber(privision)
@@ -129,7 +127,7 @@ function UpdateOrder({editOrder, setEditOrder, render}) {
                     </div>
                     <div className={cx('ctrl-create', 'update')}>
                         <Button type="submit" className={cx('control-btn', 'update-btn')}>
-                            Cập nhật sản phẩm
+                            Cập nhật đơn hàng
                         </Button>
                     </div>
                 </form>

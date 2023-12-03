@@ -20,10 +20,37 @@ productRoute.get(
         let queryString = JSON.stringify(queries);
         queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, matchedEl => `$${matchedEl}`);
         const formatedQueries = JSON.parse(queryString);
+        let brandQueryObject = {}
+        let categoryQueryObject = {}
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
-        let queryCommand = Product.find(formatedQueries);
+        if(queries?.category) {
+            delete formatedQueries.category
+            const categoryArray = queries.category?.split(',')
+            const categoryQuery = categoryArray.map(el => ({category: {$regex: el, $options: 'i'}}))
+            categoryQueryObject = {$or: categoryQuery}
+        }
+        if(queries?.brand){
+            delete formatedQueries.brand
+            const brandArray = queries.brand?.split(',')
+            const brandQuery = brandArray.map(el => ({brand: {$regex: el, $options: 'i'}}))
+            brandQueryObject = {$or: brandQuery}
+        }
+        let queryObject = {}
+
+        if(queries?.q){
+            delete formatedQueries.q
+            queryObject = { $or: [
+                {name: {$regex: queries.q, $options: 'i'}},
+                {brand: {$regex: queries.q, $options: 'i'}},
+                {category: {$regex: queries.q, $options: 'i'}}
+            ]
+
+            }
+        }
+        const q = {...brandQueryObject,...categoryQueryObject,...queryObject, ...formatedQueries}
+        let queryCommand = Product.find(q);
        
         // Sorting
         if (req.query.sort) {
@@ -45,7 +72,7 @@ productRoute.get(
         // limit: số object lấy về 1 lần gọi api
         // skip: 2. bỏ qua 2 cái đầu
         const page = +req.query.page  || 1
-        const limit = +req.query.limit  || process.env.LIMIT_PRODUCT
+        const limit = +req.query.limit  
         const skip = (page - 1) * limit
         queryCommand = queryCommand.skip(skip).limit(limit)
 
@@ -53,7 +80,7 @@ productRoute.get(
         //  Số lượng sp thỏa mãn điều kiện !== số lượng sản phẩm trả về 1 lần gọi api
         try {
             const response = await queryCommand.exec();
-            const counts = await Product.find(formatedQueries).countDocuments();
+            const counts = await Product.find(q).countDocuments();
             return res.status(200).json({
               success: response ? true : false,
               products: response ? response : 'Cannot get products',

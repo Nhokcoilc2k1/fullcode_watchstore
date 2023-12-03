@@ -22,7 +22,7 @@ const RatingShow = ({ value, text, className }) => {
 
             {value >= 5 ? <FontAwesomeIcon icon={faStar} /> : <FontAwesomeIcon icon={faStarRegurlar} />}
 
-            <span className={cx('number-star')}>{text && text}</span>
+            <p className={cx('number-star')}>{text}</p>
         </div>
     );
 };

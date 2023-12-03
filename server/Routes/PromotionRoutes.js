@@ -20,6 +20,15 @@ promotionRoute.get(
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
+
+        if(req.query.q){
+            delete formatedQueries.q;
+            formatedQueries['$or'] = [
+                {name : {$regex: req.query.q, $options: 'i'}},
+                {coupon_code : {$regex: req.query.q, $options: 'i'}}
+            ]
+        }
+        
         let queryCommand = Promotion.find(formatedQueries);
 
         if(req.query.fields){

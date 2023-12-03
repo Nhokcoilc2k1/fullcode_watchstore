@@ -4,50 +4,44 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSearch, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
-import queryString from 'query-string';
-import Pagination from '~/pages/components/Pagination';
-import { apiDeletePromotion } from '~/apis/promotion';
+import { apiDeletePromotion, apiGetPromotion } from '~/apis/promotion';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import SwitchPromo from './SwitchPromo';
 import UpdatePromotion from './UpdatePromotion';
+import { handleCompareDate } from '~/ultils/helpers';
+import { Pagination } from '~/Layout/components/Pagination';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from '~/hooks';
 
 const cx = classNames.bind(styles);
 
 function PromotionManager() {
     const [promoData, setPromoData] = useState([]);
     const [reLoad, setReload] = useState(true);
-    const [pagination, setPagination] = useState({});
     const [editPromotion, setEditPromotion] = useState(null);
-
-    const [filters, setFilters] = useState({
-        limit: 5,
-        page: 1,
+    const [queries, setQueries] = useState({
+        q: ""
     })
 
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const requestUrl = `http://localhost:5000/api/promotions?${paramString}`;
-                const response = await fetch(requestUrl);
-                const responseJson = await response.json();
-                const {promotions , pagination} = responseJson;
-                setPromoData(promotions)
-                setPagination(pagination);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-         fetchApi();
-    },[reLoad, filters])
+    const [params] = useSearchParams();
 
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
+    const fetchApi = async (params) => {
+        const response = await apiGetPromotion({...params, limit:process.env.REACT_APP_LIMIT })
+        if(response.success) setPromoData(response)
     }
+
+    const queriesDebounced = useDebounce(queries.q, 800);
+
+    useEffect(() => {
+        const queries= Object.fromEntries([...params])
+         if(queriesDebounced){
+            queries.q = queriesDebounced
+             delete queries.page 
+         }
+         fetchApi(queries);
+    },[queriesDebounced, params])
+
 
     const handleDelete = async(proid, name) => {
         Swal.fire({
@@ -67,14 +61,13 @@ function PromotionManager() {
         })       
     }
 
-    const handleCompareDate = (updatedAt, createdAt) => {
-        const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY h:mm a");
-        return update;
+    const handleInputSearch = (e) => {
+        setQueries({...queries, q: e.target.value})
     }
 
    const render = useCallback(() => {
         setReload(!reLoad);
-   },[]);
+   },[reLoad]);
 
     return ( 
         <div className={cx('wrapper')}>
@@ -89,7 +82,7 @@ function PromotionManager() {
                 <div className={cx('header')}>
                     {/* <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button> */}
                     <div className={cx('search')}>
-                        <input placeholder="Tìm kiếm" />
+                        <input placeholder="Tìm kiếm mã khuyến mãi theo tên và mã khuyến mãi" value={queries.q} onChange={handleInputSearch} />
                         <div className={cx('icon')}>
                             <FontAwesomeIcon icon={faSearch} />
                         </div>
@@ -128,7 +121,7 @@ function PromotionManager() {
                         </tr>
                     </thead>
                     <tbody>
-                    {promoData.map((promo, index) => (
+                    {promoData?.promotions?.map((promo, index) => (
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col')}>
                                     <div className={cx('action')}>
@@ -150,7 +143,7 @@ function PromotionManager() {
                 </table>
             </div>
             <div className={cx('pagination')}>
-                <Pagination pagination={pagination} onPageChange={handlePageChange} />
+                <Pagination totalCount={promoData?.pagination?.counts}/>
             </div>
         </div>
      );

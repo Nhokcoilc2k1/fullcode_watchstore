@@ -2,24 +2,18 @@ import classNames from "classnames/bind";
 import styles from './CreateProduct.module.scss';
 import { useFormik} from 'formik';
 import { useCallback, useEffect, useState } from "react";
-import { getAllBrand } from "../BrandManager/BrandServer";
-import { getAllCategory } from "../CategoryManager/CategoryServer";
 import Button from "~/components/Button";
 import { createProductValidation } from "~/components/Form/SignupValidation";
 import MarkdownEditor from "./MarkdownEditor";
 import { getBase64 } from "~/ultils/helpers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { saveAll } from "../ProductManager/ProductServer";
-import { createProduct } from "~/Redux/Reducers/ProductSlice";
-import { useDispatch } from "react-redux";
 import { apiCreateProduct } from "~/apis/product";
 import { toast } from "react-toastify";
+import { apiGetBrand } from "~/apis/brand";
+import { apiGetCategory } from "~/apis";
 
 const cx = classNames.bind(styles)
 
 function CreateProduct() {
-    // const dispatch = useDispatch();
     const [categoryData, setCategoryData] = useState([]);
     const [branData, setBrandData] = useState();
     const [thumbnail, setThumbnail] = useState();
@@ -33,7 +27,6 @@ function CreateProduct() {
         images: [],
     })
 
-    // const [hoverElm, setHoverElm] = useState(null)
 
     const handlePriviewThumd = async(file) => {
         const base64Thumb = await getBase64(file)
@@ -71,10 +64,10 @@ function CreateProduct() {
     useEffect(() => {
         const fetchApi = async() => {
             try {
-                const brand = await getAllBrand();
-                const category = await getAllCategory();
-                setCategoryData(category?.data.categorys);
-                setBrandData(brand?.data.brands);
+                const brand = await apiGetBrand();
+                const category = await apiGetCategory();
+                setCategoryData(category?.categorys);
+                setBrandData(brand?.brands);
             } catch (error) {
                 console.log(error);
             }
@@ -94,8 +87,8 @@ function CreateProduct() {
         validationSchema: createProductValidation,
         
         onSubmit : async() => {
-            // if(values.category) values.category = categoryData?.find(el => el._id === values.category)?.name
-            // if(values.brand) values.brand = branData?.find(el => el._id === values.brand)?.name
+            if(values.category) values.category = categoryData?.find(el => el._id === values.category)?.name
+            if(values.brand) values.brand = branData?.find(el => el._id === values.brand)?.name
             // console.log({...values,...payload, thumbnail, images});
             const finalPayload = {...values,...payload, thumbnail, images};
             const formData = new FormData()
@@ -121,10 +114,6 @@ function CreateProduct() {
             }
         },
       });
-
-    //   const handleRemoveImg = (name) => {
-    //       if(preview.images?.some(el => el.name === name)) setPreview(prev => ({...prev, images: prev.images?.filter(el => el.name !== name)}))
-    //   }
 
     return ( <div className={cx('wrapper')}>
         <div className={cx('inner')}>
@@ -256,15 +245,10 @@ function CreateProduct() {
                         {preview.images.length > 0 && <div className={cx('thumb')}>
                             {preview.images?.map((el, index) => (
                                 <div 
-                                    // onMouseEnter={() => setHoverElm(el.name)} 
                                     key={index} 
                                     className={cx('preview-img')}
-                                    // onMouseLeave={() => setHoverElm(null)}
                                     >
                                     <img src={el.path} alt="product" className={cx('thumb-img')} />
-                                    {/* {hoverElm === el.name && <div className={cx('overlay')} onClick={() => handleRemoveImg(el.name)}>
-                                            <FontAwesomeIcon icon={faTrashCan} className={cx('icon')} />
-                                        </div>}  */}
                                 </div>
                             ))}
                             </div>}

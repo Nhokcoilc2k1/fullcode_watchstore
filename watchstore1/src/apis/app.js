@@ -1,8 +1,9 @@
 import instance from "~/axios"
 
-export const apiGetCategory = () => instance({
+export const apiGetCategory = (params) => instance({
     url: '/categorys',
     method: 'get',
+    params
 })
 
 export const apiCreateCategory = (data) => instance({
@@ -20,4 +21,10 @@ export const apiUpdateStatusCategory = (cid, data) => instance({
 export const apiDeleteCategory = (cid) => instance({
     url: '/categorys/' + cid,
     method: 'delete',
+})
+
+export const apiUpdateCategory = (cid, data) => instance({
+    url: '/categorys/' + cid,
+    method: 'put',
+    data
 })

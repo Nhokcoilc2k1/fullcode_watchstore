@@ -4,47 +4,42 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faSearch, } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
-// import queryString from 'query-string';
-import Pagination from '~/pages/components/Pagination';
 import { apiGetOrder } from '~/apis/product';
 import UpdateOrder from './UpdateOrder';
-
+import { Pagination } from '~/Layout/components/Pagination';
+import { useSearchParams } from 'react-router-dom';
+import { handleCompareDate } from '~/ultils/helpers';
+import { useDebounce } from '~/hooks';
 
 const cx = classNames.bind(styles);
 
-
 function OrderManager() {
-    const [dataOrder, setDataOrder] = useState([]);
+    const [dataOrder, setDataOrder] = useState();
     const [reLoad, setReLoad] = useState(false);
-    const [pagination, setPagination] = useState({});
     const [editOrder, setEditOrder] = useState(null);
-
-    const [filters, setFilters] = useState({
-        limit: 5,
-        page: 1,
+    const [queries, setQueries] = useState({
+        q: ""
     })
 
+    const [params] = useSearchParams();
+    const fetchOrder = async(params) => {
+        const response = await apiGetOrder({...params, limit:process.env.REACT_APP_LIMIT })
+        if(response.success) setDataOrder(response)
+     }
+
+    const queriesDebounced = useDebounce(queries.q, 800);
+
     useEffect(() => {
-         const fetchOrder = async() => {
-            const response = await apiGetOrder(filters);
-            const {orders, pagination} = response
-            console.log(orders);
-            setDataOrder(orders)
-            setPagination(pagination);
+         const queries= Object.fromEntries([...params])
+         if(queriesDebounced){
+            queries.q = queriesDebounced
+             delete queries.page 
          }
-         fetchOrder();
-    },[reLoad, filters])
+         fetchOrder(queries);
+    },[queriesDebounced, params])
 
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
-    }
-
-    const handleCompareDate = (updatedAt, createdAt) => {
-        const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY h:mm a");
-        return update;
+    const handleInputSearch = (e) => {
+        setQueries({...queries, q: e.target.value})
     }
 
     const render = useCallback(() => {
@@ -62,9 +57,8 @@ function OrderManager() {
             <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách đơn hàng</h2>
                 <div className={cx('header')}>
-                    {/* <Button className={cx('btn')}>Thêm mới</Button> */}
                     <div className={cx('search')}>
-                        <input placeholder="Tìm kiếm" />
+                        <input placeholder="Tìm kiếm đơn hàng theo tên và số điện thoại" value={queries.q} onChange={handleInputSearch}/>
                         <div className={cx('icon')}>
                             <FontAwesomeIcon icon={faSearch} />
                         </div>
@@ -107,8 +101,8 @@ function OrderManager() {
                     </thead>
                     <tbody>
                         {
-                            dataOrder?.length !== 0 ? 
-                            dataOrder?.map((order,index) => (
+                            dataOrder?.orders?.length !== 0 ? 
+                            dataOrder?.orders?.map((order,index) => (
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{index + 1}</p></td>
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{order._id.slice(-6)}</p></td>
@@ -136,7 +130,7 @@ function OrderManager() {
                 </table>
             </div>
             <div className={cx('pagination')}>
-                <Pagination pagination={pagination} onPageChange={handlePageChange}/>
+                <Pagination totalCount={dataOrder?.pagination?.counts} />
             </div>
         </div>
      );

@@ -4,8 +4,10 @@ import {
     usePayPalScriptReducer
 } from "@paypal/react-paypal-js";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { getCurrent } from "~/Redux/user/asyncActions";
 import { apiCreateOrder } from "~/apis/product";
 
 // This value is from the props in the UI
@@ -15,6 +17,7 @@ const style = {"layout":"vertical"};
 const ButtonWrapper = ({ currency, showSpinner, amount, payload, setIsSuccess, setShowPaypal }) => {
     const [{ isPending, options }, dispatch] = usePayPalScriptReducer();
     const navigate = useNavigate();
+    const dispatchUser = useDispatch();
 
 
     useEffect(() => {
@@ -32,6 +35,7 @@ const ButtonWrapper = ({ currency, showSpinner, amount, payload, setIsSuccess, s
         if(response.success){
             setIsSuccess(true)
             setShowPaypal(false)
+            dispatchUser(getCurrent())
             setTimeout(() => {
                 Swal.fire('Chúc mừng!','Bạn đã đặt hàng thành công!', 'success').then(() => {
                     navigate('/don-hang')

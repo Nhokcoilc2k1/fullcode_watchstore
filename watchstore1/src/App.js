@@ -1,15 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRoutes, adminRoutes } from './routes';
 import { DefaultLayout } from './Layout';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import LayoutAdmin from './Layout/LayoutAdmin';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import OrderDetail from './pages/OderDetail';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getCategories } from './Redux/app/asyncActions';
+import { getBrands } from './Redux/brand/asyncActions';
 
 function App() {
     const { current } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getCategories());
+        dispatch(getBrands());
+    },[])
    
     // const token = window.localStorage.getItem("userInfo");
     return (

@@ -1,8 +1,9 @@
 import instance from "~/axios"
 
-export const apiGetPromotion = () => instance({
+export const apiGetPromotion = (params) => instance({
     url: '/promotions',
     method: 'get',
+    params
 })
 
 export const apiCreatePromotion = (data) => instance({

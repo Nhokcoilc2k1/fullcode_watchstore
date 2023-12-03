@@ -21,6 +21,15 @@ categoryRoutes.get(
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
+
+        if(req.query.q){
+            delete formatedQueries.q;
+            formatedQueries['$or'] = [
+                {name : {$regex: req.query.q, $options: 'i'}},
+                // {coupon_code : {$regex: req.query.q, $options: 'i'}}
+            ]
+        }
+
         let queryCommand = Category.find(formatedQueries);
 
         if(req.query.fields){
@@ -94,22 +103,21 @@ categoryRoutes.post(
 
 // UPDATE BRAND
 categoryRoutes.put(
-    "/:id",
+    "/:cid",
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {name, status, description, image} = req.body;
-        const category = await Category.findById(req.params.id);
-         
-        if(category){
-            category.name = name;
-            category.status = status;
-            category.description = description;
-            category.image = image;
-            const updateProduct = await category.save();
-            res.json(updateProduct);
-        }else{
-            res.status(404);
-            throw new Error('category not found');
-        }
+        const { cid } = req.params;
+        const files = req?.files
+        if(files?.image) req.body.image = files?.image[0]?.path;
+        const updateCate = await Category.findByIdAndUpdate(cid, {...req.body}, {new: true})
+        return res.status(200).json({
+            success: updateCate ? true : false,
+            message: updateCate ? 'Cập nhật sản phẩm thành công!' : 'Đã xảy ra lỗi!'
+        })
     })
     )
 

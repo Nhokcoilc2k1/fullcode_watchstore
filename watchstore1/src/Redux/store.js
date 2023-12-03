@@ -10,6 +10,7 @@ import { persistReducer, persistStore,  FLUSH,
   REGISTER, } from 'redux-persist';
 import userSlice from "./user/userSlice";
 import orderSlice from "./orders/orderSlice";
+import brandSlice from "./brand/brandSlice";
 
 const commonConfig = {
   key: 'shop/user',
@@ -26,6 +27,7 @@ export const store = configureStore({
       app: appSlice,
       products: productSlice,
       orders: orderSlice,
+      brands: brandSlice,
       user: persistReducer(userConfig, userSlice)
     },
     middleware: (getDefaultMiddleware) =>

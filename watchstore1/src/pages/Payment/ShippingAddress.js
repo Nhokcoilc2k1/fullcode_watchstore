@@ -17,8 +17,11 @@ import { apiCreateOrder } from '~/apis/product';
 import { useNavigate } from 'react-router-dom';
 import { apiGetPromotion } from '~/apis/promotion';
 import { toast } from 'react-toastify';
+import { getCurrent } from '~/Redux/user/asyncActions';
 
 const cx = classNames.bind(styles);
+let totalPrice;
+let discount;
 
 function ShippingAddress() {
     const [showPaypal, setShowPaypal] = useState(false);
@@ -27,6 +30,8 @@ function ShippingAddress() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [promotion, setPromotion] = useState([]);
     const [couponCode, setCouponCode] = useState('');
+    const [render, setRender] = useState(false);
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
@@ -45,8 +50,7 @@ function ShippingAddress() {
         return acum + el.product.sale_price * el.quantity;
     },0);
 
-    let totalPrice;
-    let discount;
+    
 
     const handleCouponCode = () => {
         const code = promotion.find(el => el.coupon_code === couponCode);
@@ -54,6 +58,7 @@ function ShippingAddress() {
             if(provisional >= code.min_order_value){
                totalPrice = +provisional - +code.discount_value;
                discount = code.discount_value;
+               setRender(!render);
             }else toast.error('Không đủ điều kiện dùng mã giảm giá!')
         }else toast.error('Mã giảm giá không tồn tại!')
     }
@@ -71,16 +76,17 @@ function ShippingAddress() {
         },    
         validationSchema: shipAddressValidation,
         onSubmit : async() => {
-            const {name, phone, address, note} = values;
-            const data = {name, phone, address}
+            const { address} = values;
+            const data = { address}
             const response = await apiUpdateCurrent(data);
             if(checked && checked === 'Thanh toán sau'){
                 const response = await apiCreateOrder({...values,products: current.cart, orderBy: current?._id, totalPrice})
                 if(response.success){
                     setIsSuccess(true);
+                    // dispatch(getCurrent());
                     setTimeout(() => {
                         Swal.fire('Chúc mừng','Bạn đã đặt hàng thành công', 'success').then(() => {
-                            navigate('/don-hang')
+                            navigate('/don-hang');
                         }, 3000)
                     })
                 }
@@ -197,7 +203,7 @@ function ShippingAddress() {
                     ))}
                     <div className={cx('code-promo')}>
                         <input placeholder="Nhập mã khuyến mãi" onChange={e => setCouponCode(e.target.value)} />
-                        <button onClick={handleCouponCode}>Áp dụng</button>
+                        <button type='button' onClick={handleCouponCode}>Áp dụng</button>
                     </div>
                     <div className={cx('box-item')}>
                         <p>Tạm tính</p>
@@ -205,11 +211,11 @@ function ShippingAddress() {
                     </div>
                     <div className={cx('box-item')}>
                         <p>Khuyến mãi</p>
-                        <p className={cx('active')}>{discount} đ</p>
+                        <p className={cx('active')}>{ discount ? formattedNumber(discount) : ''} đ</p>
                     </div>
                     <div className={cx('box-item')}>
                         <p className={cx('total')}>Tổng tiền</p>
-                        <p className={cx('total')}>{formattedNumber(totalPrice)} đ</p>
+                        <p className={cx('total')}>{formattedNumber(totalPrice ? totalPrice : provisional)} đ</p>
                     </div>    
                     <div className={cx('box-select')}>
                         {payment.map(el => (

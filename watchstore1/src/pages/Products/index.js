@@ -7,141 +7,63 @@ import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import ListProduct from '../components/ListProduct';
 import Button from '~/components/Button';
-import Pagination from '../components/Pagination';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import queryString from 'query-string';
-import axios from 'axios';
+import {  useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { apiGetProducts } from '~/apis/product';
 import BreadCrumb from '~/components/BreadCrumb';
+import { Pagination } from '~/Layout/components/Pagination';
+import SearchItem from '../components/SearchItm';
+import { useSelector } from 'react-redux';
+import { sorts, used } from '~/ultils/contants';
 
 const cx = classNames.bind(styles);
-const filterPrice = [
-    {id: 1,desc: 'dưới 3 triệu'},
-    {id: 2,desc: '3 - 6 triệu'},
-    {id: 3,desc: '6 - 12 triệu'},
-    {id: 4,desc: '12 - 35 triệu'},
-    {id: 5,desc: '35 - 100 triệu'},
-];
-
-const used = [
-    {id: 'Nam',desc: 'Nam'},
-    {id: "Nữ",desc: 'Nữ'},
-];
 
 function Products() {
-    // window.scrollTo(0,0);
-    const [sortOrder, setSortOrder] = useState(null);
-    const [brands, setBrands] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [pagination, setPagination] = useState({});
-    const [checked, setChecked] = useState([]);
-    const [checkeUsed, setCheckedUsed] = useState([]);
+    const [products, setProducts] = useState(null);
+    const [totalCount, setTotalCount] = useState();
+    const [sort, setSort] = useState('');
 
-    const [filters, setFilters] = useState({
-        limit: 11,
-        page: 1,
-    })
+    const {brands} = useSelector(state => state.brands)
+    const [params] = useSearchParams();
+    const fetchProductByCategory = async(queries) => {
+        const response = await apiGetProducts(queries);
+        console.log(response);
+        if(response.success) {
+            setProducts(response.products)
+            setTotalCount(response.pagination.counts)
+        };
+    }
 
-    const localtion = useLocation();
-    const searchParams = new URLSearchParams(localtion.search);
-    const category = searchParams.get('category');
-    const nameCategory = searchParams.get('name');
-    const brandParam = searchParams.get('brand');
-    const nameBrand = searchParams.get('namebrand');
 
     useEffect(() => {
-        const fetchApi = async() => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const response = await axios.get(`http://localhost:5000/api/products?${paramString}`);
-                const brandResult = await axios.get('http://localhost:5000/api/brands');
-                const results = response.data;
-                const {products, pagination} = results;
-                setBrands(brandResult.data.brands);
-                setProducts(products);
-                setPagination(pagination);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchApi();
-    }, [filters , checked, category])
+        let param = []
+        for(let i of params.entries()) param.push(i)
+        const queries = {limit: 10}
+        for(let i of params) queries[i[0]] = i[1]
+        console.log(queries);
+        fetchProductByCategory(queries);
+        window.scrollTo(0,0)
+    },[params])
 
-    const handleSort = (sort) => {
-        setSortOrder(sort);
-    }
-
-    const getButtonContent = () => {
-        if (sortOrder === 'asc') {
-          return 'Giá thấp đến cao';
-        } else if (sortOrder === 'desc') {
-          return 'Giá cao đến thấp';
-        } else if(sortOrder === 'appreciate') {
-          return 'Đánh giá cao';
-        }else{
-            return 'Mặc định';
-        }
-      };
-
-    const filterProducts = category 
-    ? products.filter(el => el.category === category) 
-    : brandParam ? products.filter(el => el.brand === brandParam) 
-    : products;
-
-    const sortedProducts = sortOrder
-    ? filterProducts.slice().sort((a, b) => {
-        if (sortOrder === 'asc') {
-          return a.price - b.price;
-        } else if(sortOrder === 'desc') {
-          return b.price - a.price;
-        }else if(sortOrder === 'appreciate'){
-            return b.totalRating - a.totalRating;
-        } else {
-            return filterProducts;
-        }
-      })
-    : filterProducts;
-
-    const handleCheck = (id) => {
-        setChecked((prev) => {
-            const isChecked = checked.includes(id);
-
-            if (isChecked) {
-                return checked.filter((item) => item !== id);
-            } else {
-                return [...prev, id];
-            }
-        });
-    };
-    
-    const handleCheckUsed = (id) => {
-        setCheckedUsed((prev) => {
-            const isChecked = checkeUsed.includes(id);
-
-            if (isChecked) {
-                return checkeUsed.filter((item) => item !== id);
-            } else {
-                return [...prev, id];
-            }
-        });
-    }
+    const {category} = useParams();
 
 
-    // const check1Product = sortedProducts.filter(el => checkeUsed.includes(el.name))
-    
-    const checkProducts = checked.length === 0 ? sortedProducts : sortedProducts.filter(el => checked.includes(el.brand) ) ;
-    
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
-    };
+    // const getButtonContent = () => {
+    //     if (sortOrder === 'asc') {
+    //       return 'Giá thấp đến cao';
+    //     } else if (sortOrder === 'desc') {
+    //       return 'Giá cao đến thấp';
+    //     } else if(sortOrder === 'appreciate') {
+    //       return 'Đánh giá cao';
+    //     }else{
+    //         return 'Mặc định';
+    //     }
+    //   };
+
 
     const routes = [
         { path: "/", breadcrumb: "Trang chủ" },
-        { path: "/products", breadcrumb: 'Sản phẩm' },
+        { path: "/:category", breadcrumb: category },
       ];
     
     return (
@@ -153,10 +75,7 @@ function Products() {
                         <div className={cx('col', 'l-2-8')}>
                             <div className={cx('box')}>
                                 {
-                                    category ? 
-                                    (<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameCategory}' </span>)
-                                    : brandParam ?(<span>{filterProducts.length} sản phẩm được tìm thấy theo '{nameBrand}' </span>) 
-                                    : (<span>Tất cả sản phẩm hiện có</span>)
+                                    (<span>Tất cả sản phẩm hiện có</span>)
                                 }
                                 <div className={cx('sort')}>
                                     <h4>Sắp xếp theo</h4>
@@ -170,10 +89,11 @@ function Products() {
                                             render={(attrs) => (
                                                 <div className={cx('select-list')} tabIndex="-1" {...attrs}>
                                                     <PopperWrapper className={cx('select-popper')}>
-                                                        <Button onClick={() => handleSort('default')} className={cx('select-item')}>Mặc định</Button>
-                                                        <Button onClick={() => handleSort('asc')} className={cx('select-item')}>Giá thấp đến cao</Button>
-                                                        <Button onClick={() => handleSort('desc')} className={cx('select-item')}>Giá cao đến thấp</Button>
-                                                        <Button onClick={() => handleSort('appreciate')} className={cx('select-item')}>Đánh giá cao</Button>
+                                                        {/* <Button onClick={() => handleSort('default')} className={cx('select-item')}>Mặc định</Button>
+                                                        <Button onClick={() => handleSort('appreciate')} className={cx('select-item')}>Đánh giá cao</Button> */}
+                                                        {sorts.map(el => (
+                                                            <Button onClick={() => setSort('asc')}  className={cx('select-item')}>{el.name}</Button>
+                                                        ))}
                                                     </PopperWrapper>
                                                 </div>
                                             )}
@@ -183,7 +103,8 @@ function Products() {
                                                     className={cx('select')}
                                                     rightIcon={<FontAwesomeIcon icon={faCaretDown} />}
                                                 >
-                                                    {getButtonContent()}
+                                                
+                                                    {/* {getButtonContent()} */}
                                                 </Button>
                                             </span>
                                         </Tippy>
@@ -191,37 +112,34 @@ function Products() {
                                 </div>
                             </div>
     
-                            <ListProduct data={checkProducts} className={cx('l-3')} />
-                            <Pagination pagination={pagination} onPageChange={handlePageChange} />
+                            <ListProduct data={products} className={cx('l-3')} />
+                            <Pagination totalCount={totalCount} />
                         </div>
                         <div className={cx('col', 'l-2-4')}>
                             <div className={cx('box-check')}>
                                 <div className={cx('box-check-item')}>
                                     <h4 className={cx('title-check')}>Đối tượng sử dụng</h4>
-                                    {used.map((item) => (
+                                    {/* {used.map((item) => (
                                         <div key={item.id} className={cx('group')}>
-                                            <input type="checkbox" checked={checkeUsed.includes(item.id)} onChange={() =>handleCheckUsed(item.id)}/>
+                                            <input type="checkbox"  />
                                             <label>{item.desc}</label>
                                         </div>
-                                    ))}
+                                    ))} */}
+                                    <SearchItem dataCategory={used} type='category' />
                                 </div>
                                 <div className={cx('box-check-item')}>
                                     <h4 className={cx('title-check')}>Giá</h4>
-                                    {filterPrice.map((item) => (
-                                        <div key={item.id} className={cx('group')}>
+                                    {/* {filterPrice.map((item) => (
+                                        <div key={item._id} className={cx('group')}>
                                             <input type="checkbox" />
-                                            <label>{item.desc}</label>
+                                            <label>{item.name}</label>
                                         </div>
-                                    ))}
+                                    ))} */}
+                                    {/* <SearchItem  dataCategory='price' /> */}
                                 </div>
                                 <div className={cx('box-check-item')}>
                                     <h4 className={cx('title-check')}>Thương hiệu</h4>
-                                    {brands.map((item) => (
-                                        <div key={item._id} className={cx('group')}>
-                                            <input type="checkbox" checked={checked.includes(item._id)} onChange={() => handleCheck(item._id)} />
-                                            <label>{item.name}</label>
-                                        </div>
-                                    ))}
+                                    <SearchItem dataBrand={brands} type='brand'  />
                                 </div>
                             </div>
                         </div>

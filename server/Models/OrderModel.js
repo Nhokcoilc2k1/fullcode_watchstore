@@ -27,7 +27,7 @@ const orderSchema = mongoose.Schema({
     paymentMethod: {type: String, default: 'Thanh toán khi nhận hàng'},
     isPaid: {type: String, default: 'Chưa thanh toán'}
 },{
-    timestamp: true,
+    timestamps: true,
 });
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

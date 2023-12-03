@@ -50,7 +50,7 @@ function ProductSlide({data, children }) {
                     ref={SlideRef}
                     onSlideChange={onSlideChange}
                 >
-                    {data.map((item, index) => (
+                    {data?.map((item, index) => (
                         <SwiperSlide key={index}>
                             <ProductItem  product={item} />
                         </SwiperSlide>

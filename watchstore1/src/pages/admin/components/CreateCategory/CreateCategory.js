@@ -58,7 +58,7 @@ function CreateCategory() {
         <div className={cx('wrapper', 'update-page')}>
             <div className={cx('inner')}>
                 <div className={cx('box-header')}>
-                    <h2 className={cx('header-name')}>Thêm khuyến danh mục mới</h2>
+                    <h2 className={cx('header-name')}>Thêm danh mục mới</h2>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className={cx('box-input')}>

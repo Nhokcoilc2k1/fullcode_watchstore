@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 //     });
 // };
 
-const generateAccessToken = (id, roles) => jwt.sign({_id: id, roles}, process.env.JWT_SECRET, {expiresIn: '2d'});
-const generateRefreshToken = (id) => jwt.sign({_id: id}, process.env.JWT_SECRET, {expiresIn: '7d'});
+const generateAccessToken = (id, roles) => jwt.sign({_id: id, roles}, process.env.JWT_SECRET, {expiresIn: '7d'});
+const generateRefreshToken = (id) => jwt.sign({_id: id}, process.env.JWT_SECRET, {expiresIn: '10d'});
 
 export  { generateAccessToken, generateRefreshToken};

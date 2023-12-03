@@ -1,0 +1,35 @@
+.wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.box{
+    display: flex;
+    align-items: center;
+}
+
+// PagiItem
+.pagiItem{
+    width: 40px;
+    height: 40px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    font-size: 1.7rem;
+    border-radius: 50%;
+
+    &:hover:not(.no-hover){
+        background-color: gray;
+        cursor: pointer;
+    }
+}
+
+
+.color-bg{
+    background-color: gray;
+}

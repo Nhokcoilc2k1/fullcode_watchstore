@@ -1,0 +1,35 @@
+.group {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+
+    input {
+        width: 16px;
+        height: 16px;
+    }
+
+    label {
+        margin-left: 12px;
+    }
+}
+
+.box{
+padding: 10px;
+}
+
+.sort-price{
+    display: flex;
+    // align-items: center;
+    margin: 8px 0 12px;
+
+}
+
+.input-price{
+    border: 1px solid #d1d1d1;
+    width: 100%;
+    height: 30px;
+}
+
+.sort-btn{
+    margin-top: 6px;
+}

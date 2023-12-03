@@ -8,10 +8,10 @@ import {SalesChart, SalesPieChart, TopProductsChart} from "./Chart";
 import { apiGetOrder, apiGetProducts } from "~/apis/product";
 import { apiGetCategory } from "~/apis";
 import { apiGetBrand } from "~/apis/brand";
-import { apiGetPromotion } from "~/apis/promotion";
 import { useEffect, useState } from "react";
 import { apiGetUsers } from "~/apis/user";
-import { apiGetPost } from "~/apis/post";
+import { apiGetPosts } from "~/apis/post";
+import path from "~/ultils/path";
 
 const cx = classNames.bind(styles);
 
@@ -22,6 +22,9 @@ function HomeAdmin() {
     const [order, setOrder] = useState([]);
     const [user, setUser] = useState([]);
     const [post, setPost] = useState([]);
+    const [start, setStart] = useState('');
+    const [end, setEnd] = useState('');
+    const [sort, setSort] = useState();
 
     const fetchApi = async() => {
         const product = await apiGetProducts();
@@ -34,17 +37,23 @@ function HomeAdmin() {
         setUser(user.users);
         const order = await apiGetOrder();
         setOrder(order.orders);
-        const post = await apiGetPost();
+        const post = await apiGetPosts();
         setPost(post.posts)
     }
 
     const customer = user.filter(el => el.roles !== 'admin')
 
-  
-
     useEffect(() => {
         fetchApi()
     }, [])
+
+    const handleSortPrice = async() => {
+        const response = await apiGetOrder({createdAt: {gte: start, lt: end}});
+        if(response.success){
+            setSort()
+        }
+        console.log(start, end);
+    }
 
     const dataTop = [
         { product: 'Đồng Hồ Tissot 35mm Nữ T050.207.11.011.04', sales: 1 },
@@ -64,13 +73,14 @@ function HomeAdmin() {
         { name: 'TISSOT', value: 1 },
       ];
     
-    const total = order.reduce((sum, el) => sum + el.totalPrice, 0)
+    const sales = order.reduce((sum, el) => sum + el.totalPrice, 0)
+
+    const data = [{month: start,  }]
 
     const databar = [
-        { month: 'Tháng 12', sales: 50000 },
+        { month: 'Tháng 12', sales },
       ];
     
-
     return ( 
         <div className={cx('wrapper')}>
             <div className={cx('box-header')}>
@@ -78,7 +88,7 @@ function HomeAdmin() {
                     <FontAwesomeIcon className={cx('box-icon', 'blue')}  icon={faProductHunt} />
                     <div className={cx('box-name')}>
                         <p>Tổng số sản phẩm</p>
-                        <p className={cx('box-num')}>{product.length}</p>
+                        <p className={cx('box-num')}>{product?.length}</p>
                         <Link className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
@@ -128,7 +138,14 @@ function HomeAdmin() {
             <div className={cx('chart')}>
                 <div className={cx('barchart')}>
                     <h2 className={cx('name-chart')}>Thống kê doanh số</h2>
-                    <div className={cx('box-chart')}><SalesChart data={databar} /></div>
+                    <div className={cx('box-chart')}>
+                       <div className={cx('sort-order')}>
+                            <input type="date" onChange={e => setStart(e.target.value)} />
+                            <input type="date" onChange={e => setEnd(e.target.value)} />
+                            <button onClick={handleSortPrice} className={cx('sort')}>Lọc kết quả</button>
+                       </div>
+                        <SalesChart data={databar} />
+                    </div>
                 </div>
                 
                 <div className={cx('piechart')}>

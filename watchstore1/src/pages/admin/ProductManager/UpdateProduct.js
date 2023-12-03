@@ -3,17 +3,17 @@ import styles from '../CreateProduct/CreateProduct.module.scss';
 import { memo, useCallback, useEffect, useState } from "react";
 import Button from "~/components/Button";
 import { createProductValidation } from "~/components/Form/SignupValidation";
-import { getAllBrand } from "../BrandManager/BrandServer";
-import { getAllCategory } from "../CategoryManager/CategoryServer";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import MarkdownEditor from "../CreateProduct/MarkdownEditor";
 import { getBase64 } from "~/ultils/helpers";
 import { apiUpdateProduct } from "~/apis/product";
+import { apiGetBrand } from "~/apis/brand";
+import { apiGetCategory } from "~/apis";
 
 const cx = classNames.bind(styles)
 
-function UpdateProduct({editProduct, setEditProduct, setReLoad}) {
+function UpdateProduct({editProduct, setEditProduct, render}) {
 
     const [categoryData, setCategoryData] = useState([]);
     const [branData, setBrandData] = useState();
@@ -68,10 +68,10 @@ function UpdateProduct({editProduct, setEditProduct, setReLoad}) {
     useEffect(() => {
         const fetchApi = async() => {
             try {
-                const brand = await getAllBrand();
-                const category = await getAllCategory();
-                setCategoryData(category?.data.categorys);
-                setBrandData(brand?.data.brands);
+                const brand = await apiGetBrand();
+                const category = await apiGetCategory();
+                setCategoryData(category?.categorys);
+                setBrandData(brand?.brands);
             } catch (error) {
                 console.log(error);
             }
@@ -91,25 +91,26 @@ function UpdateProduct({editProduct, setEditProduct, setReLoad}) {
         validationSchema: createProductValidation,
         
         onSubmit : async() => {
-            // if(values.category) values.category = categoryData?.find(el => el._id === values.category)?.name
-            // if(values.brand) values.brand = branData?.find(el => el._id === values.brand)?.name
+            if(values.category) values.category = categoryData?.find(el => el._id === values.category)?.name
+            if(values.brand) values.brand = branData?.find(el => el._id === values.brand)?.name
             // console.log({...values,...payload, thumbnail, images});
             const finalPayload = {...values,...payload, thumbnail, images};
             const formData = new FormData()
             for(let i of Object.entries(finalPayload)) formData.append(i[0], i[1])
 
-            if(finalPayload.thumbnail) formData.append('thumbnail', finalPayload.thumbnail.length  === 0 ? thumbnail : finalPayload.thumbnail[0])
+            if(finalPayload.thumbnail) formData.append('thumbnail', finalPayload.thumbnail.length  === 0 ? preview.thumb : finalPayload.thumbnail[0])
             if(finalPayload.images){
-                const images1 = finalPayload.images.length === 0 ? images : finalPayload.images
+                const images1 = finalPayload.images.length === 0 ? preview.images : finalPayload.images
                 for(let image of images1) formData.append('images', image)
             }
             console.log(finalPayload);
             console.log(formData);
+            console.log(editProduct);
 
             const response =  await apiUpdateProduct(formData, editProduct._id);
             if(response.success){
                 toast.success(response.message)
-                setReLoad(prev => !prev)
+                render()
                 setEditProduct(null)
             }else{
                 toast.error(response.message)

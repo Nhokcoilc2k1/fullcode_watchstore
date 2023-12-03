@@ -3,64 +3,48 @@ import styles from '../admin.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useEffect, useState } from 'react';
-import Status from '../components/Status';
 import moment from 'moment';
-import queryString from 'query-string';
-import Pagination from '~/pages/components/Pagination';
-import { apiDeleteUser, apiGetUsers, apiUpdateUserByAdmin } from '~/apis/user';
+import { apiDeleteUser, apiGetUsers } from '~/apis/user';
 import { useDebounce } from '~/hooks';
-import { render } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import SwitchAccount from './SwitchAccount';
+import { Pagination } from '~/Layout/components/Pagination';
+import { useSearchParams } from 'react-router-dom';
+import { handleCompareDate } from '~/ultils/helpers';
 
 const cx = classNames.bind(styles);
 
 function AccountManager() {
     const [reLoad, setReLoad] = useState(false);
-    const [pagination, setPagination] = useState({});
     const [users, setUsers] = useState([]);
+    const [totalCount, setTotalCount] = useState();
     const [queries, setQueries] = useState({
         q: ""
     })
 
-    const [filters, setFilters] = useState({
-        limit: 2,
-        page: 1,
-    })
+    const [params] = useSearchParams();
 
     const fetchUsers = async(params) => {
-        const response = await apiGetUsers(params)
-        if(response.success) setUsers(response.users)
+        const response = await apiGetUsers({...params, limit:process.env.REACT_APP_LIMIT })
+        if(response.success) {
+            setUsers(response?.users)
+            setTotalCount(response?.pagination?.counts)
+        }
     }
 
-    const debounced = useDebounce(queries.q, 800);
+    const queriesDebounced = useDebounce(queries.q, 800);
 
     useEffect(() => {
-        // const fetchApi = async () => {
-        //     try {
-        //         const paramString = queryString.stringify(filters);
-        //         const requestUrl = `http://localhost:5000/api/users?${paramString}`;
-        //         const response = await fetch(requestUrl);
-        //         const responseJson = await response.json();
-        //         const {users,pagination} = responseJson;
-        //         setUserData(users);
-        //         setPagination(pagination);
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }
-        const params = {}
-        if(debounced) params.q = debounced
-         fetchUsers(params)
-    },[debounced, reLoad])
+        const queries = Object.fromEntries([...params])
+        if(queriesDebounced){
+            queries.q = queriesDebounced
+             delete queries.page 
+        }
+         fetchUsers(queries)
+    },[queriesDebounced, params])
 
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
-    }
+
 
     const handleDelete = (uid, name) => {
         Swal.fire({
@@ -73,16 +57,11 @@ function AccountManager() {
                 if(response.success){
                     render();
                     toast.success(response.message)
-                    setReLoad(prev => !prev)
+                    setReLoad(!reLoad)
                 }else toast.error(response.message)
             }
         })
         
-    }
-
-    const handleCompareDate = (updatedAt, createdAt) => {
-        const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY");
-        return update;
     }
 
     const handleInputSearch = (e) => {
@@ -91,11 +70,7 @@ function AccountManager() {
 
     const render = useCallback(() => {
         setReLoad(!reLoad);
-   },[]);
-
-    // const handleUpdate = async(e) => {
-    //     const response = await apiUpdateUserByAdmin()
-    // }
+   },[reLoad]);
 
     return ( 
         <div className={cx('wrapper')}>
@@ -150,7 +125,7 @@ function AccountManager() {
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{handleCompareDate(user.updatedAt, user.createdAt)}</p></td>
                                 <td className={cx('cus-col4')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleDelete(user._id, user.name)} className={cx( 'icon-acc')}><FontAwesomeIcon icon={faTrash} /></span>
+                                        <span onClick={() => handleDelete(user?._id, user?.name)} className={cx( 'icon-acc')}><FontAwesomeIcon icon={faTrash} /></span>
                                     </div>
                                 </td>
                             </tr>
@@ -159,7 +134,7 @@ function AccountManager() {
                 </table>
             </div>
             <div className={cx('pagination')}>
-                <Pagination pagination={pagination} onPageChange={handlePageChange}/>
+                <Pagination totalCount={totalCount}/>
             </div>
         </div>
      );

@@ -5,74 +5,64 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
-import queryString from 'query-string';
-import Pagination from '~/pages/components/Pagination';
-import { getPostById, updatePost } from './PostServer';
-import Status from '../components/Status';
-import PostDialog from './PostDialog';
-import DialogDelete from '../components/DialogDelete';
+import { handleCompareDate } from '~/ultils/helpers';
+import { Pagination } from '~/Layout/components/Pagination';
+import SwitchPost from './SwitchPost';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from '~/hooks';
+import { apiGetPosts } from '~/apis/post';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 function PostManager() {
     const [postData, setPostData] = useState([]);
     const [reload, setReLoad] = useState(false);
-    const [postById, setPostById] = useState({});
-    const [showDialog, setShowDialog] = useState(false);
-    const [showDelete, setShowDelete] = useState(false);
-    const [id, setId] = useState();
-    const [pagination, setPagination] = useState({});
-
-    const [filters, setFilters] = useState({
-        limit: 5,
-        page: 1,
+    const [editPost, setEditPost] = useState(null);
+    const [queries, setQueries] = useState({
+        q: ""
     })
 
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const requestUrl = `http://localhost:5000/api/posts?${paramString}`;
-                const response = await fetch(requestUrl);
-                const responseJson = await response.json();
-                const {posts,pagination} = responseJson;
-                setPostData(posts);
-                setPagination(pagination);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-         fetchApi();
-        
-    }, [reload, filters]);
-
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
+    const [params] = useSearchParams();
+    const queriesDebounced = useDebounce(queries.q, 800);
+ 
+    const fetchBrand= async(params) => {
+        const response = await apiGetPosts({...params, limit : process.env.REACT_APP_LIMIT })
+        if(response.success) setPostData(response)
     }
 
-    const handleEdit = async(id) => {
-        try {
-            const edit = await getPostById(id);
-            setPostById(edit?.data);
-        } catch (error) {
-            console.log(error);
-        }
-    setShowDialog(true);
-}
+    useEffect(() => {
+        const queries= Object.fromEntries([...params])
+         if(queriesDebounced){
+            queries.q = queriesDebounced
+             delete queries.page 
+         }
+        fetchBrand(queries);
+    }, [queriesDebounced, params ]);
 
-const handleDelete = (brandID) => {
-    setShowDelete(true);
-    setId(brandID);
-}
 
-const handleCompareDate = (updatedAt, createdAt) => {
-    const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY h:mm a");
-    return update;
-}
+    const handleDelete = async(cid, name) => {
+        Swal.fire({
+            title: 'Xóa nhãn hiệu',
+            text: `Bạn chắc chắn muốn xóa nhãn hiệu ${name}`, 
+            icon: 'warning',
+            showCancelButton: true,
+        }).then(async(rs) => {
+            if(rs.isConfirmed){
+                // const response = await apiDeleteBrand(cid);
+                // if(response.success){
+                //     toast.success(response.message)
+                //     setReLoad(!reload)
+                // }
+                // else toast.error(response.message);
+            }
+        })       
+    }
 
+    const handleInputSearch = (e) => {
+        setQueries({...queries, q: e.target.value})
+    }
 
     return ( 
         <div className={cx('wrapper')}>
@@ -81,7 +71,7 @@ const handleCompareDate = (updatedAt, createdAt) => {
                 <div className={cx('header')}>
                     <Button className={cx('btn')}>Thêm mới</Button>
                     <div className={cx('search')}>
-                        <input placeholder="Tìm kiếm" />
+                        <input placeholder="Tìm kiếm bài viết..." />
                         <div className={cx('icon')}>
                             <FontAwesomeIcon icon={faSearch} />
                         </div>
@@ -114,51 +104,27 @@ const handleCompareDate = (updatedAt, createdAt) => {
                         </tr>
                     </thead>
                     <tbody>
-                    {postData.map((post, index) => (
+                    {postData?.posts?.map((post, index) => (
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleEdit(post._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
-                                        <span onClick={() => handleDelete(post._id)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
+                                        <span onClick={() => setEditPost(post)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
+                                        <span onClick={() => handleDelete(post._id, post.name)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
                                     </div>
                                 </td>
                                 <td className={cx('cus-col')}><p className={cx('code')}>{post._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{post.title}</p></td>
                                 <td className={cx('cus-col1')}><p className={cx('image')}><img src={post.image} alt={post.description} /></p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><Status data={post} update={updatePost} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPost data={postData} /></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(post.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(post.updatedAt, post.createdAt)}</p></td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                {showDialog && 
-                    <PostDialog 
-                        isOpen={showDialog}
-                        isClose={setShowDialog}
-                        // data={productById}
-                        // setData={setProductById}
-                        // reLoad={setReLoad}
-                        // showToast={setShowToast1}
-                        // brands={branData}
-                        // categorys={categoryData}
-                    />
-                }
-                {showDelete && 
-                    <DialogDelete 
-                        isOpen={showDelete}
-                        isClose={setShowDelete}
-                        // data={deleteId}
-                        // showToast={setShowToast2}
-                        reLoad={setReLoad}
-                        tittle={"Xóa bài viết"}
-                        message={"Bạn muốn xóa bài viết này không?"}
-                        // fcDelete={deleteProductById}
-                    />
-                }
             </div>
             <div className={cx('pagination')}>
-                <Pagination pagination={pagination} onPageChange={handlePageChange}/>
+                <Pagination />
             </div>
         </div>
      );

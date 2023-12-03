@@ -8,7 +8,7 @@ const postRoute = express.Router();
 postRoute.post(
     "/",
     asyncHandler(async(req, res) => {
-        const {title,content, description} = req.body;
+        const {title,content,image, description} = req.body;
         if(!title || !content || !description) throw new Error('Missing input');
         const postdExit = await Post.findOne({title});
         if(postdExit){
@@ -19,6 +19,7 @@ postRoute.post(
                 title,
                 description,
                 content,
+                image
             });
             if(post){
                 const createPost = await post.save();
@@ -106,6 +107,18 @@ postRoute.get(
           } catch (err) {
             throw new Error(err.message);
           }
+    })
+)
+
+postRoute.get(
+    '/:poid',
+    asyncHandler(async(req, res) => {
+        const { poid } = req.params;
+        const post = await Post.findById(poid);
+        res.status(200).json({
+            success: post ? true : false,
+            post: post ? post : 'Đã xảy ra lỗi'
+        })
     })
 )
 

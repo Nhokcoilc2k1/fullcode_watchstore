@@ -2,7 +2,6 @@ import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
 import Slogan from '../components/Slogan';
 import ProductSlide from '../components/ProductSilde';
-import { products } from '~/assets/data/Product';
 import TypeWatch from '../components/TypeWatch';
 import Brand from '../components/Brand';
 import ListProduct from '../components/ListProduct';

@@ -1,8 +1,9 @@
 import instance from "~/axios"
 
-export const apiGetBrand = () => instance({
+export const apiGetBrand = (params) => instance({
     url: '/brands',
     method: 'get',
+    params
 })
 
 export const apiCreateBrand = (data) => instance({
@@ -20,4 +21,10 @@ export const apiUpdateStatusBrand = (bid, data) => instance({
 export const apiDeleteBrand = (bid) => instance({
     url: '/brands/' + bid,
     method: 'delete',
+})
+
+export const apiUpdateBrand = (bid, data) => instance({
+    url: `/brands/${bid}`,
+    method: 'put',
+    data
 })

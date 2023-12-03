@@ -14,14 +14,17 @@ orderRouter.post(
     asyncHandler(async (req, res) => {
         const {_id} = req.user
         const {products, totalPrice, name, address, phone, note, status, paymentMethod, isPaid} = req.body
-        if(address){
-            await User.findByIdAndUpdate(_id, {cart: []})
-        }
+        // if(address){
+        //     await User.findByIdAndUpdate(_id, {cart: []})
+        // }
         const data = {products, totalPrice, name, address, phone, note, orderBy: _id }
         if(status) data.status = status
         if(paymentMethod) data.paymentMethod = paymentMethod
         if(isPaid) data.isPaid = isPaid
         const rs = await Order.create(data);
+        if(rs){
+            await User.findByIdAndUpdate(_id, {cart: []})
+        }
         return res.json({
             success: rs ? true : false,
             rs: rs ? rs : 'Đã xảy ra lỗi'
@@ -79,7 +82,17 @@ orderRouter.get(
 
         //  Filtering
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
+
+        if(req.query.q){
+            delete formatedQueries.q;
+            formatedQueries['$or'] = [
+                {name : {$regex: req.query.q, $options: 'i'}},
+                {phone : {$regex: req.query.q, $options: 'i'}}
+            ]
+        }
+
         let queryCommand = Order.find(formatedQueries);
+
 
         if(req.query.fields){
             const fields = req.query.fields.split(',').join(' ');

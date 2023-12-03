@@ -11,7 +11,7 @@ function ListProduct({ data, className, children }) {
     return (
         <div className={cx('wrapper')}>
             <div className={cx('row')}>
-                {data.map((item,index) => (
+                {data?.map((item,index) => (
                     <div className={classes} key={index}>
                         <ProductItem product={item} />
                     </div>

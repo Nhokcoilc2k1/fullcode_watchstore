@@ -26,6 +26,8 @@ import CreatePromotion from '~/pages/admin/components/CreatePromotion/CreateProm
 import path from '~/ultils/path';
 import CreateCategory from '~/pages/admin/components/CreateCategory/CreateCategory';
 import CreateBrand from '~/pages/admin/components/CreateBrand/CreateBrand';
+import Post from '~/pages/Post';
+import PostItem from '~/pages/PostItem';
 
 const publicRoutes = [
     { path: path.HOME, component: Home, layout: LayoutHaveSlide },
@@ -39,6 +41,8 @@ const publicRoutes = [
     { path: path.ORDERDETAIL, component: OrderDetail }, 
     { path: path.FINALREGISTER, component: FinalRegister }, 
     { path: path.RESETPASSWORD, component: ResetPassword }, 
+    { path: path.POST, component: Post }, 
+    { path: path.POSTITEM, component: PostItem }, 
 ];
 
 const adminRoutes = [

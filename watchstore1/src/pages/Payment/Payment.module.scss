@@ -153,8 +153,8 @@
     }
 
     input:not(:placeholder-shown) ~ button{
-        background-color: #0066ff;
-        color: #fff;
+        background-color: var(--primary);
+        color: var(--text-color);
     }
 }
 

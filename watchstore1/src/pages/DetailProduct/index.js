@@ -23,7 +23,6 @@ import { getCurrent } from '~/Redux/user/asyncActions';
 import Swal from 'sweetalert2';
 import { apiUpdateCart } from '~/apis/user';
 import Comment from './components/Comment';
-import { apiGetBrand } from '~/apis/brand';
 import BreadCrumb from '~/components/BreadCrumb';
 import { apiGetPromotion } from '~/apis/promotion';
 import path from '~/ultils/path';
@@ -87,7 +86,10 @@ function DetailProduct() {
             text: "Vui lòng đăng nhập trước", 
         })
         if(response.success){      
-            navigate(path.PAYMENT);
+            // dispatch(getCurrent())
+            setTimeout(() => {
+                navigate(path.PAYMENT);
+            },400)
         }else toast.error(response.message);
     }
 
@@ -114,9 +116,6 @@ function DetailProduct() {
 
     const images = product.images;
 
-    console.log(images);
-
-
     const config = [
         {name: 'Thông tin sản phẩm', component: <DescriptionProduct /> },
         {name: 'Chính sách bảo hành', component: <WarrantyPolicy />  },
@@ -126,7 +125,7 @@ function DetailProduct() {
     const filterPromo = promotion.filter(el => el.status !== false);
 
     const routes = [
-        // { path: "/:category", breadcrumb: product?.category },
+        { path: "/:category", breadcrumb: product?.category },
         { path: "/", breadcrumb: "Trang chủ" },
         { path: "/:pid/:title", breadcrumb: product?.name },
       ];
@@ -181,7 +180,7 @@ function DetailProduct() {
                                 <span className={cx('regular-price')}>{formattedNumber(product.sale_price)} đ</span>
                                 <span className={cx('discount')}>{product.discount_value}%</span>
                             </div>
-                            <span className={cx('brand')}>Thương hiệu: Longines </span>
+                            <span className={cx('brand')}>Thương hiệu: {product.brand} </span>
                             <div className={cx('box-promo')}>
                                 <h5>Khuyến mãi khi mua sắm tại watchstore </h5>
                                 <div className={cx('pro-content')}>

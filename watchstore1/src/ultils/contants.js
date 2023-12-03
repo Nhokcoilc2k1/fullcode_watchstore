@@ -113,3 +113,39 @@ export const adminSidebar = [
         icon:<FontAwesomeIcon icon={faAddressCard} /> 
     },
 ]
+
+export const sorts = [
+    {
+        id: 1,
+        value: '',
+        text: 'mặc định'
+    },
+    {
+        id: 2,
+        value: 'sale_price',
+        text: 'Giá thấp đến cao'
+    },
+    {
+        id: 3,
+        value: '-sale_price',
+        text: 'Giá cao đến thấp'
+    },
+    {
+        id: 4,
+        value: 'totalRating',
+        text: 'Đánh giá cao'
+    },
+]
+
+export const used = [
+    {_id: 'Nam', name: 'đồng hồ nam'},
+    {_id: "Nữ", name: 'đồng hồ nữ'},
+];
+
+export const filterPrice = [
+    {_id: 1, name: 'dưới 3 triệu', value: 3000000},
+    {_id: 2, name: '3 - 6 triệu'},
+    {_id: 3, name: '6 - 12 triệu'},
+    {_id: 4, name: '12 - 35 triệu'},
+    {_id: 5, name: '35 - 100 triệu'},
+];

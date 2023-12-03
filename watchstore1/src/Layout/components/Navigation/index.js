@@ -7,21 +7,17 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import Button from '~/components/Button';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import CategoryItem from './CategoryItem';
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import {useSelector } from 'react-redux';
 import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
 function Navigation() {
-    const [category, setCategory] = useState([]);
 
     const {categories} = useSelector(state => state.app);
-    useEffect(() => {
-        setCategory(categories);
-    }, [categories])
    
-    const data = category.filter(el => el.status === true);
+    const data = categories.filter(el => el.status === true);
 
     return (
         <div className={cx('wrapper')}>
@@ -57,7 +53,7 @@ function Navigation() {
                 {/* <Button className={cx('custom')} primary>
                     Giới thiệu
                 </Button> */}
-                <Button className={cx('custom')} primary>
+                <Button to={path.POST} className={cx('custom')} primary>
                     Tin tức
                 </Button>
                 <Button to={path.CONNTACT} className={cx('custom')} primary>

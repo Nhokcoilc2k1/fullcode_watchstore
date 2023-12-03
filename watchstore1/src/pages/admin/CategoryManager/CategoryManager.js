@@ -4,68 +4,47 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSearch, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
-import queryString from 'query-string';
-import Pagination from '~/pages/components/Pagination';
 import SwitchCategory from './SwitchCategory';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
-import { apiDeleteCategory } from '~/apis';
+import { apiDeleteCategory, apiGetCategory } from '~/apis';
+import UpdateCategory from './UpdateCategory';
+import { Pagination } from '~/Layout/components/Pagination';
+import { handleCompareDate } from '~/ultils/helpers';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from '~/hooks';
 
 const cx = classNames.bind(styles);
 
 function CategoryManager() {
     const [categoryData, setCategoryData] = useState([]);
     const [reLoad, setReLoad] = useState(false);
-
-    const [searchValue, setSearchValue] = useState('');
-    const [pagination, setPagination] = useState({});
-
-    const [filters, setFilters] = useState({
-        limit: 4,
-        page: 1,
+    const [editCategory, setEditCategory] = useState(null);
+    const [queries, setQueries] = useState({
+        q: ""
     })
 
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const requestUrl = `http://localhost:5000/api/categorys?${paramString}`;
-                const response = await fetch(requestUrl);
-                const responseJson = await response.json();
-                const {categorys , pagination} = responseJson;
-                setCategoryData(categorys);
-                setPagination(pagination);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-         fetchApi();
-    },[reLoad, filters])
+    const [params] = useSearchParams();
 
-    const handlePageChange = (newPage) => {
-        setFilters({
-            ...filters,
-            page: newPage
-        })
+    const fetchCateggory = async(params) => {
+        const response = await apiGetCategory({...params, limit : process.env.REACT_APP_LIMIT })
+        console.log(response);
+        if(response.success) setCategoryData(response)
     }
 
+    const queriesDebounced = useDebounce(queries.q, 800);
+
     useEffect(() => {
-        if(!searchValue){
-            setReLoad((prev) => !prev);
-            return;
-        }
-        fetch(`http://localhost:5000/api/categorys/search/${searchValue}`)
-            .then(res => res.json())
-            .then(res => setCategoryData(res))
-    },[searchValue])
+        const queries= Object.fromEntries([...params])
+         if(queriesDebounced) {
+            queries.q = queriesDebounced
+            delete queries.page
+         }
+        fetchCateggory(queries);
+    },[queriesDebounced, params])
 
-    const handleEdit = (data) => {
-
-    }
-
-    const handleCompareDate = (updatedAt, createdAt) => {
-        const update = createdAt === updatedAt ? '' : moment(updatedAt).format("DD/MM/YYYY h:mm a");
-        return update;
+    const handleInputSearch = (e) => {
+        setQueries({...queries, q: e.target.value})
     }
 
     const render = useCallback(() => {
@@ -92,12 +71,17 @@ function CategoryManager() {
 
     return ( 
         <div className={cx('wrapper')}>
+             { editCategory && (
+                    <div className={cx('update')}>
+                        <UpdateCategory editCategory={editCategory} setEditCategory={setEditCategory} render={render} />
+                    </div>
+                )
+            }
             <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách danh mục</h2>
                 <div className={cx('header')}>
-                    {/* <Button onClick={() => setShowDialog(true)} className={cx('btn')}>Thêm mới</Button> */}
                     <div className={cx('search')}>
-                        <input value={searchValue} placeholder="Tìm kiếm" onChange={e => setSearchValue(e.target.value)}/>
+                        <input  placeholder="Tìm kiếm danh mục theo tên..." value={queries.q} onChange={handleInputSearch} />
                         <div className={cx('icon')}>
                             <FontAwesomeIcon icon={faSearch} />
                         </div>
@@ -116,11 +100,11 @@ function CategoryManager() {
                         </tr>
                     </thead>
                     <tbody>
-                    {categoryData.map((category, index) => (
+                    {categoryData?.categorys?.map((category, index) => (
                             <tr className={cx('row')} key={index}>
                                 <td className={cx('cus-col')}>
                                     <div className={cx('action')}>
-                                        <span onClick={() => handleEdit(category)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
+                                        <span onClick={() => setEditCategory(category)} className={cx('icon-btn')}><FontAwesomeIcon icon={faPen} /></span>
                                         <span onClick={() => handleDelete(category._id, category.name)} className={cx('icon-btn')}><FontAwesomeIcon icon={faTrash} /></span>
                                     </div>
                                 </td>
@@ -136,7 +120,7 @@ function CategoryManager() {
                 </table>
             </div>
             <div className={cx('pagination')}>
-                <Pagination pagination={pagination} onPageChange={handlePageChange} />
+                <Pagination totalCount={categoryData?.pagination?.counts} />
             </div>
         </div>
      );

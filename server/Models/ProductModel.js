@@ -68,12 +68,16 @@ const productSchema = mongoose.Schema({
         default: 0
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: 'Category',
+        type: String,
+        require: true
     },
     brand: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Brand',
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: 'Brand',
+        type: String,
+        require: true
     },
 },{
     timestamps: true
