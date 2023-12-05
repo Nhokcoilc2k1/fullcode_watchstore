@@ -1,28 +1,27 @@
 import classNames from 'classnames/bind';
 import styles from './Brand.module.scss';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
 function Brand() {
-    const [brand, setBrand] = useState([]);
+    const {brands} = useSelector(state => state.brands)
 
-    useEffect(() => {
-        const fetchApi = async() => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/brands`);
-                const results = response?.data?.brands;
-                setBrand(results);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchApi();
-    }, []);
+    const data = brands.filter(el => el.status === true);
+    const [params] = useSearchParams();
+    const navigate = useNavigate();
 
-    const data = brand.filter(el => el.status === true);
+    const handleClick = (name) => {
+        const queries= Object.fromEntries([...params])
+        queries.brand = name
+        navigate({
+            pathname: `${path.PRODUCTS}`,
+            search: createSearchParams(queries).toString()
+        })
+    }
+
     return (
         <div className={cx('wrapper')}>
             <h2>THƯƠNG HIỆU NỔI BẬT</h2>
@@ -31,9 +30,9 @@ function Brand() {
                 <div className={cx('row')}>
                     {data.map((item) => (
                         <div key={item._id} className={cx('col', 'l-2', 'item')}>
-                            <Link to={`/products?brand=${item._id}&namebrand=${item.name}`}>
+                            <div onClick={() => handleClick(item.name)} className={cx('btn')}>
                                 <img src={item.image} alt={item.description} />
-                            </Link>
+                            </div>
                         </div>
                     ))}
                 </div>

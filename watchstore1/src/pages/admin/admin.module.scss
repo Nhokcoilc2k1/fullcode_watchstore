@@ -423,6 +423,11 @@
     background-color:  #358600;
 }
 
+.cancel-o{
+    background-color: red;
+    opacity: 0.8;
+}
+
 // PRODUCT
 .update{
     position: absolute;
@@ -477,6 +482,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    align-items: center;
 
     input{
         font-size: 1.6rem;
@@ -485,6 +491,7 @@
         border: 1px solid #d1d1d1;
         height: 36px;
         border-radius: 4px;
+        padding: 4px 6px 4px 12px;
     }
 }
 

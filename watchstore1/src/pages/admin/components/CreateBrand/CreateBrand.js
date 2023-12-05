@@ -40,6 +40,7 @@ function CreateBrand() {
             for(let i of Object.entries(data)) formData.append(i[0], i[1])
             if(data.image) formData.append('image', data.image[0])
             const response = await apiCreateBrand(formData);
+            console.log(response);
             if(response.success){
                 toast.success(response.message);
                 resetForm();

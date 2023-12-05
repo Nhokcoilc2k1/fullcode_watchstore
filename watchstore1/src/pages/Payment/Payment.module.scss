@@ -243,6 +243,46 @@
     padding: 0 30px;
 }
 
+// Promo
+.box-promo{
+    margin-top: 20px;
+}
+
+.header-pro{
+    font-size: 1.5rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.content {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+
+    span {
+        font-size: 1.4rem;
+        color: var(--black);
+        font-weight: 600;
+        margin-right: 4px;
+    }
+
+    &:last-child {
+        border-bottom: 1px solid transparent;
+    }
+
+    &::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background-color: var(--text-color);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+    }
+}
+
 // responsive
 .row {
     display: flex;

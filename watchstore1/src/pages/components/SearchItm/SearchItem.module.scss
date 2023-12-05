@@ -13,6 +13,21 @@
     }
 }
 
+.box-brand{
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    
+    input {
+        width: 16px;
+        height: 16px;
+    }
+
+    label {
+        margin-left: 12px;
+    }
+}
+
 .box{
 padding: 10px;
 }

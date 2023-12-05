@@ -10,8 +10,8 @@ const formattedNumber = (price) => {
 
 function SearchProductItem({data}) {
     return (
-        <Link to={`/products/${data._id}`} className={cx('wrapper')}>
-            <img className={cx('product-img')} src={data.image} alt={data.name} />
+        <Link to={`${data?.category?.toLowerCase()}/${data._id}/${data?.name}`} className={cx('wrapper')}>
+            <img className={cx('product-img')} src={data.thumbnail} alt={data.name} />
             <div className={cx('info')}>
                 <h4 className={cx('name')}>{data.name}</h4>
                 <span className={cx('sale-price')}>{formattedNumber(data.sale_price)} đ</span>

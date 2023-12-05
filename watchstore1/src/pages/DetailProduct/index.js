@@ -45,6 +45,7 @@ function DetailProduct() {
     const [product, setProduct] = useState({});
     const [productSlice, setProductSlice] = useState([]);
     const [promotion, setPromotion] = useState([]);
+    const [reload, setReload] = useState(false);
 
     const {pid} = useParams();
     const navigate = useNavigate();
@@ -64,7 +65,7 @@ function DetailProduct() {
 
     useEffect(() => {
        if(pid) fetchProductData();
-    }, [pid]);
+    }, [pid, reload]);
 
     const addToCartHandle = async() => {
         const response = await apiUpdateCart({ pid, action: 'increase', name: product.name, sale_price: product.sale_price, thumbnail: product.thumbnail})
@@ -89,6 +90,7 @@ function DetailProduct() {
             // dispatch(getCurrent())
             setTimeout(() => {
                 navigate(path.PAYMENT);
+                window.location.reload();
             },400)
         }else toast.error(response.message);
     }
@@ -110,6 +112,7 @@ function DetailProduct() {
         if(response.status) {
             toast.success('Bình luận thành công');
             setReview(false);
+            setReload(!reload);
         }
         else toast.error('Đã xảy ra lỗi');
     }
@@ -241,7 +244,7 @@ function DetailProduct() {
                                     </div>
                                 </div>
                             </div>
-                            <Specification pid={product._id} />
+                            <Specification pid={product._id} name={product.name} />
                         </div>
                     </div>
                 </div>

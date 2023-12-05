@@ -3,9 +3,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo } from "react";
 import { generateRange } from "~/ultils/helpers";
 
-function usePagination(totalProductCount, currentPage, siblingCount = 1) {
+function usePagination(totalProductCount, currentPage, limit = null, siblingCount = 1) {
     const paginationArray = useMemo(() => {
-        const pageSize = process.env.REACT_APP_LIMIT || 10
+        let pageSize;
+
+        if(limit){
+             pageSize = limit || 10
+        }else{
+             pageSize = process.env.REACT_APP_LIMIT || 10
+        }
+        // const pageSize = process.env.REACT_APP_LIMIT || 10
         const paginationCount = Math.ceil(totalProductCount / pageSize)
         const totalPaginationItem = siblingCount + 5
 

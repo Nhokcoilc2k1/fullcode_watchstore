@@ -27,6 +27,7 @@ function Post() {
         { path: "/post", breadcrumb: 'Tin tức' },
       ];
 
+
     return ( 
         <div className={cx('wrapper')}>
             <BreadCrumb routes={routes} />
@@ -56,7 +57,7 @@ function Post() {
                         <div className={cx('sidebar')}>
                             <h5 className={cx('list')}>Các bài viết gần đây</h5>
                             <div className={cx('list-post')}>
-                                {post?.map(el => (
+                                {post?.filter(el => el.status === true).map(el => (
                                     <div key={el._id} className={cx('list-item')}>
                                         <p className={cx('item-title')}>{el.title}</p>
                                         <p className={cx('item-date')}>{moment(el.createdAt).format('MMM DD, YYYY')}</p>

@@ -10,6 +10,7 @@ import CategoryItem from './CategoryItem';
 import { memo } from 'react';
 import {useSelector } from 'react-redux';
 import path from '~/ultils/path';
+import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -18,6 +19,19 @@ function Navigation() {
     const {categories} = useSelector(state => state.app);
    
     const data = categories.filter(el => el.status === true);
+    const [params] = useSearchParams();
+    const navigate = useNavigate();
+
+    // sort: '-createdAd'
+    const handleNewProduct = () => {
+        const queries= Object.fromEntries([...params])
+        queries.sort = '-createdAt'
+        navigate({
+            pathname: `${path.PRODUCTS}`,
+            search: createSearchParams(queries).toString()
+        })
+        window.location.reload()
+    }
 
     return (
         <div className={cx('wrapper')}>
@@ -47,7 +61,7 @@ function Navigation() {
                 <Button className={cx('custom', 'space')} to={path.PRODUCTS} primary>
                     Sản phẩm
                 </Button>
-                <Button className={cx('custom')} primary>
+                <Button onClick={() => handleNewProduct()} className={cx('custom')} primary>
                     Sản phẩm mới
                 </Button>
                 {/* <Button className={cx('custom')} primary>

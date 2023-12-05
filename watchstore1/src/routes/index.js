@@ -28,6 +28,7 @@ import CreateCategory from '~/pages/admin/components/CreateCategory/CreateCatego
 import CreateBrand from '~/pages/admin/components/CreateBrand/CreateBrand';
 import Post from '~/pages/Post';
 import PostItem from '~/pages/PostItem';
+import CreatePost from '~/pages/admin/components/CreatePost';
 
 const publicRoutes = [
     { path: path.HOME, component: Home, layout: LayoutHaveSlide },
@@ -58,6 +59,7 @@ const adminRoutes = [
     { path: '/newpromotion', component: CreatePromotion },
     { path: '/create-category', component: CreateCategory },
     { path: '/create-brand', component: CreateBrand },
+    { path: '/create-post', component: CreatePost },
 ];
 
 const privateRoutes = [];

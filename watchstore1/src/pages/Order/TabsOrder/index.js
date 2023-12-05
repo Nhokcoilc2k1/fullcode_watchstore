@@ -1,9 +1,9 @@
 import classNames from "classnames/bind";
 import styles from '../Order.module.scss'
 import { formattedNumber } from "~/ultils/helpers";
-import { memo, useState } from "react";
+import { memo } from "react";
 import Swal from "sweetalert2";
-import { apiDeleteOrderUser } from "~/apis/product";
+import { apiCancelOrderUser } from "~/apis/product";
 import { toast } from "react-toastify";
 
 const cx = classNames.bind(styles);
@@ -22,7 +22,7 @@ function TabsOrder({data, setRender }) {
             confirmButtonText: "Đồng ý"
         }).then(async(result) => {
             if(result.isConfirmed){
-                const response = await apiDeleteOrderUser(oid);
+                const response = await apiCancelOrderUser(oid, {status: 'Đã hủy'});
                 if(response.success){
                     setRender(prev => !prev)
                     toast.success(response.message)

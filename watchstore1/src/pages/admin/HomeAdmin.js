@@ -5,82 +5,97 @@ import { faElementor,  faFirstOrderAlt, faProductHunt, faStumbleuponCircle } fro
 import { Link } from "react-router-dom";
 import { faCircleRadiation, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import {SalesChart, SalesPieChart, TopProductsChart} from "./Chart";
-import { apiGetOrder, apiGetProducts } from "~/apis/product";
-import { apiGetCategory } from "~/apis";
-import { apiGetBrand } from "~/apis/brand";
+import { apiGetOrder, apiGetOrderStatistical, apiGetProducts } from "~/apis/product";
 import { useEffect, useState } from "react";
 import { apiGetUsers } from "~/apis/user";
 import { apiGetPosts } from "~/apis/post";
-import path from "~/ultils/path";
+import { useSelector } from "react-redux";
 
 const cx = classNames.bind(styles);
 
 function HomeAdmin() {
     const [product, setProduct] = useState([]);
-    const [brand, setBrand] = useState([]);
-    const [category, setCategory] = useState([]);
     const [order, setOrder] = useState([]);
     const [user, setUser] = useState([]);
     const [post, setPost] = useState([]);
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
-    const [sort, setSort] = useState();
+    const [filterData, setFilterData] = useState(null);
+    const [sellTop, setSellTop] = useState([]);
+    const [both, setBoth] = useState([]);
+
+    const {categories} = useSelector(state => state.app);
+    const {brands} = useSelector(state => state.brands);
+    const today = new Date();
+    
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const currentMonth = today.getMonth()
 
     const fetchApi = async() => {
         const product = await apiGetProducts();
         setProduct(product.products)
-        const category = await apiGetCategory();
-        setCategory(category.categorys)
-        const brand = await apiGetBrand();
-        setBrand(brand.brands)
         const user = await apiGetUsers()
         setUser(user.users);
-        const order = await apiGetOrder();
+        const order = await apiGetOrder({createdAt: {gte: startOfMonth, lte: endOfMonth}});
         setOrder(order.orders);
         const post = await apiGetPosts();
         setPost(post.posts)
+        const topSellProduct = await apiGetProducts({sort: '-sold', limit: 5, fields: 'sold name', createdAt: {gte: startOfMonth, lte: endOfMonth}})
+        if(topSellProduct.success) setSellTop(topSellProduct.products)
+        const dataBraCate = await apiGetOrderStatistical();
+        if(dataBraCate.success) setBoth(dataBraCate.orders)
     }
 
-    const customer = user.filter(el => el.roles !== 'admin')
-
+    const customer = user.filter(el => el.roles !== 'admin');
+    
     useEffect(() => {
         fetchApi()
     }, [])
 
     const handleSortPrice = async() => {
-        const response = await apiGetOrder({createdAt: {gte: start, lt: end}});
-        if(response.success){
-            setSort()
+        const startSort = new Date(start)
+        const endSort = new Date(end)
+        if(start && end){
+            const response = await apiGetOrder({ fields: 'totalPrice', createdAt: {gte: startSort, lte: endSort}})
+            if(response.success) setFilterData(response.orders);
         }
-        console.log(start, end);
     }
 
-    const dataTop = [
-        { product: 'Đồng Hồ Tissot 35mm Nữ T050.207.11.011.04', sales: 1 },
-      { product: 'Đồng Hồ Olym Pianus 42mm Nam OP990-45ADGS-GL-X', sales: 1 },
-      { product: 'Đồng Hồ Orient 41.7mm Nam RA-AA0B02R19B', sales: 1 },
-    
-      ];
+    let databar = []
+    if(filterData){
+        const saleSort = filterData.filter(el => el.status !== 'Đã hủy').reduce((sum, el) => sum + el.totalPrice, 0);
+        databar = [
+        { month: `${start} đến ${end}`, sales: saleSort},
+    ];
+    } else {
+        const sales = order.filter(el => el.status !== 'Đã hủy').reduce((sum, el) => sum + el.totalPrice, 0);
+        databar = [
+            { month: `Tháng ${currentMonth + 1}`, sales: sales},
+        ];
+    }
 
-      const dataCate = [
-        { name: 'Đồng hồ nam', value: 2 },
-        { name: 'Đồng hồ nữ', value: 1 },
-      ];
+    let filterBrand = [];
+    let filterCategory = [];
+    both?.forEach((el) => {
+        el?.products?.forEach((item) => {
+            filterBrand.push({name: item.product.brand, sold: item.quantity})
+            filterCategory.push({name: item.product.category, sold: item.quantity})
+        })
+    })
+    
+    const databrand = Array.from(filterBrand.reduce((map, item) => {
+    const { name, sold } = item;
+    map.set(name, (map.get(name) || 0) + sold);
+    return map;
+    }, new Map()), ([name, sold]) => ({ name, sold }));
+
+    const dataCate = Array.from(filterCategory.reduce((map, item) => {
+    const { name, sold } = item;
+    map.set(name, (map.get(name) || 0) + sold);
+    return map;
+    }, new Map()), ([name, sold]) => ({ name, sold }));
       
-      const databrand = [
-        { name: 'PIANUS', value: 2 },
-        { name: 'ORIENT', value: 1 },
-        { name: 'TISSOT', value: 1 },
-      ];
-    
-    const sales = order.reduce((sum, el) => sum + el.totalPrice, 0)
-
-    const data = [{month: start,  }]
-
-    const databar = [
-        { month: 'Tháng 12', sales },
-      ];
-    
     return ( 
         <div className={cx('wrapper')}>
             <div className={cx('box-header')}>
@@ -89,15 +104,15 @@ function HomeAdmin() {
                     <div className={cx('box-name')}>
                         <p>Tổng số sản phẩm</p>
                         <p className={cx('box-num')}>{product?.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <Link to={'/manager'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
                 <div className={cx('box-item')}>
                     <FontAwesomeIcon className={cx('box-icon', 'brown')}  icon={faElementor} />
                     <div className={cx('box-name')}>
                         <p>Tổng số nhãn hiệu</p>
-                        <p className={cx('box-num')}>{brand.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <p className={cx('box-num')}>{brands.length}</p>
+                        <Link to={'/brand'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
                 <div className={cx('box-item')}>
@@ -105,7 +120,7 @@ function HomeAdmin() {
                     <div className={cx('box-name')}>
                         <p>Tổng số bài viết</p>
                         <p className={cx('box-num')}>{post.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <Link to={'/post'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
             </div>
@@ -115,7 +130,7 @@ function HomeAdmin() {
                     <div className={cx('box-name')}>
                         <p>Tổng số đơn hàng</p>
                         <p className={cx('box-num')}>{order.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <Link to={'/order'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
                 <div className={cx('box-item')}>
@@ -123,15 +138,15 @@ function HomeAdmin() {
                     <div className={cx('box-name')}>
                         <p>Tổng số người dùng</p>
                         <p className={cx('box-num')}>{customer.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <Link to={'/account'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
                 <div className={cx('box-item')}>
                     <FontAwesomeIcon className={cx('box-icon', 'orange')}  icon={faCircleRadiation} />
                     <div className={cx('box-name')}>
                         <p>Tổng số danh mục</p>
-                        <p className={cx('box-num')}>{category.length}</p>
-                        <Link className={cx('box-btn')}>Xem chi tiết</Link>
+                        <p className={cx('box-num')}>{categories.length}</p>
+                        <Link to={'/category'} className={cx('box-btn')}>Xem chi tiết</Link>
                     </div>
                 </div>
             </div>
@@ -141,6 +156,7 @@ function HomeAdmin() {
                     <div className={cx('box-chart')}>
                        <div className={cx('sort-order')}>
                             <input type="date" onChange={e => setStart(e.target.value)} />
+                            <span>đến</span>
                             <input type="date" onChange={e => setEnd(e.target.value)} />
                             <button onClick={handleSortPrice} className={cx('sort')}>Lọc kết quả</button>
                        </div>
@@ -160,7 +176,7 @@ function HomeAdmin() {
                 </div>
                 <div className={cx('barchart')}>
                     <h2 className={cx('name-chart')}>5 sản phẩm bán chạy nhất trong tháng</h2>
-                    <TopProductsChart data={dataTop} />
+                    <TopProductsChart data={sellTop} />
                 </div>
             </div>
         </div>

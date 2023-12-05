@@ -19,7 +19,7 @@ const specification = {
     feature: 'Lịch thứ, Lịch ngày, Giờ, phút, giây',
 };
 
-function Specification({ pid }) {
+function Specification({ pid , name}) {
     const [attribute, setAttribute] = useState([]);
     const RowTable = ({ data, children }) => {
         return (
@@ -43,7 +43,7 @@ function Specification({ pid }) {
 
     return (
         <div className={cx('wrapper')}>
-            <h4>Thông số Olym Pianus OP990-45ADGS-GL-X</h4>
+            <h4>{`Thông số ${name}`}</h4>
             <div className={cx('parameter-list')}>
                 <RowTable data={attribute.machineSeri}>Dòng máy</RowTable>
                 <RowTable data={attribute.wireMaterial}>Chất liệu dây</RowTable>

@@ -90,7 +90,7 @@ export const adminSidebar = [
         submenu: [
             {
                 text: 'Thêm bài viết mới',
-                path: '/create-product'
+                path: '/create-post'
             },
             {
                 text: 'Quản lí bài viết',
@@ -118,7 +118,7 @@ export const sorts = [
     {
         id: 1,
         value: '',
-        text: 'mặc định'
+        text: 'Mặc định'
     },
     {
         id: 2,
@@ -143,9 +143,10 @@ export const used = [
 ];
 
 export const filterPrice = [
-    {_id: 1, name: 'dưới 3 triệu', value: 3000000},
-    {_id: 2, name: '3 - 6 triệu'},
-    {_id: 3, name: '6 - 12 triệu'},
-    {_id: 4, name: '12 - 35 triệu'},
-    {_id: 5, name: '35 - 100 triệu'},
+    {_id: 1, name: 'dưới 3 triệu', value: [0,3000000]},
+    {_id: 2, name: '3 - 6 triệu', value: [3000000,6000000]},
+    {_id: 3, name: '6 - 12 triệu', value: [6000000, 12000000]},
+    {_id: 4, name: '12 - 35 triệu', value: [12000000, 35000000]},
+    {_id: 5, name: '35 - 100 triệu', value: [35000000, 100000000]},
 ];
+

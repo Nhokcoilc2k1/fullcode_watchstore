@@ -40,7 +40,7 @@ function PromotionManager() {
              delete queries.page 
          }
          fetchApi(queries);
-    },[queriesDebounced, params])
+    },[queriesDebounced, params, reLoad])
 
 
     const handleDelete = async(proid, name) => {

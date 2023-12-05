@@ -1,6 +1,5 @@
 import classNames from 'classnames/bind';
 import styles from './Navigation.module.scss';
-import { NavLink } from 'react-router-dom';
 import { createSlug } from '~/ultils/helpers';
 
 const cx = classNames.bind(styles);
@@ -12,15 +11,13 @@ function CategoryItem({ data }) {
             {/* <h5>{title}</h5> */}
             <div>
                 {data.map((el, index) => (
-                    // key={createSlug(el.title)}
-                    // to={createSlug(el.title)}
-                    <NavLink  
+                    <a  
                         key={createSlug(el.name)} 
-                        to={el.name}
+                        href={`${el.name}`}
                         className={cx('cate-item')}
                     >
                         {el.name}
-                    </NavLink>
+                    </a>
                 ))}
             </div>
         </div>

@@ -41,7 +41,7 @@ function CategoryManager() {
             delete queries.page
          }
         fetchCateggory(queries);
-    },[queriesDebounced, params])
+    },[queriesDebounced, params, reLoad])
 
     const handleInputSearch = (e) => {
         setQueries({...queries, q: e.target.value})

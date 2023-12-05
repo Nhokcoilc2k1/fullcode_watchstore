@@ -139,42 +139,46 @@ orderRouter.delete(
         const response = await Order.findByIdAndDelete(oid, {new: true});
         return res.status(200).json({
             success: response ? true : false,
-            message: response ? 'Hủy đơn hàng thành công!' : 'Đã xảy ra lỗi!'
+            message: response ? 'Xóa đơn hàng thành công!' : 'Đã xảy ra lỗi!'
         })
     })
 )
 
-// UPDATE ORDER
-// orderRouter.put(
-//     '/:id',
-//     verifyAccessToken,
-//     isAdmin,
-//     asyncHandler(async(req, res) => {
-//         const {status} = req.body;
-//         const order = await Order.findById(req.params.id)
-//         if(order){
-//             order.status = status
-//             const updateOrder = await order.save();
-//             res.json(updateOrder);
-//         }else{
-//             res.status(400);
-//             throw new Error("update unsucess");
-//         }
-//     })
-// )
+orderRouter.put(
+    "/statusbyuser/:oid",
+    verifyAccessToken,
+    asyncHandler(async (req, res) => {
+        const {oid} = req.params
+        const {status} = req.body
+        if(!status) throw new Error('Missing status');
+        const response = await Order.findByIdAndUpdate(oid, {status: status},{new : true})
+        
+        return res.json({
+            success: response ? true : false,
+            message: response ? "Hủy đơn hàng thành công!" : 'Đã xảy ra lỗi!'
+        })
+            
+})
+)
 
-// GET ORDER ID
-// orderRouter.get(
-//     "/by/:id",
-//     asyncHandler(async (req, res) => {
-//         const order = await Order.findById(req.params.id);
-//         if(order){
-//             res.json(order);
-//         }else{
-//             res.status(404);
-//             throw new Error('order is not Found');
-//         }
-//     })
-// )
+// Lấy order có sản phẩm bán theo danh mục và nhãn hiệu
+orderRouter.get(
+    '/filterbc',
+    asyncHandler(async(req, res) => {
+        const orders = await Order.find({ status: { $nin: ['Chờ xác nhận','Đã hủy'] } }).select('products').populate({
+            path: 'products',
+            populate: {
+                path: 'product',
+                select: 'brand category'
+            }
+        })
+
+        res.status(200).json({
+            success: orders ? true : false,
+            orders: orders ? orders : 'Đã xảy ra lỗi!'
+        })
+    })
+)
+
 
 export default orderRouter;

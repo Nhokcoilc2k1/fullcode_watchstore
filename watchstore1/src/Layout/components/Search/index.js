@@ -7,54 +7,65 @@ import SearchProductItem from '~/components/SearchProductItem';
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
 import { useEffect, useState } from 'react';
-import queryString from 'query-string';
-import axios from 'axios';
 import { useDebounce } from '~/hooks';
+import { apiGetProducts } from '~/apis/product';
+import {  createSearchParams, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 function Search() {
-    const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
     const [showResult, setShowResult] = useState(true);
-    // const [loading, setLoading] = useState(false);
+    const [keyword, setKeyWord] = useState('');
+    const [queries, setQueries] = useState({q:''})
 
-    const [filters, setFilters] = useState({
-        limit: 5,
-        page: 1,
-    })
+    const [params] = useSearchParams();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const debounced = useDebounce(searchValue, 800);
-
-    useEffect(() => {
-        const fetchApi = async() => {
-            try {
-                const paramString = queryString.stringify(filters);
-                const response = await axios.get(`http://localhost:5000/api/products?name=${encodeURIComponent(debounced)}&${paramString}`);
-                const result = response.data;
-                const {products} = result
-                setSearchResult(products)
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchApi();
-    }, [debounced, filters]);
-
-    const handleKeySearch = (e) => {
-        if(e.keycode === 13 && !e.shiftKey){
-            // e.preventDefault();
-            setFilters({
-                limit: 17,
-                page: 1,
-            })
-            
+    const queriesDebounced = useDebounce(queries.q, 800);
+    const fetchProduct = async(params) => {
+        const response = await apiGetProducts({...params, limit : process.env.REACT_APP_LIMIT })
+        if(queries.q && response.success){
+            setSearchResult(response.products)
         }
     }
 
 
-    const handleHideResult = () => {
-        setShowResult(false);
-    };
+    useEffect(() => {
+        const queries= Object.fromEntries([...params])
+         if(queriesDebounced){
+            queries.q = queriesDebounced
+        } else delete queries.q
+        // navigate({
+        //     pathname: location.pathname,
+        //     search: createSearchParams(queries).toString()
+        // })
+       fetchProduct(queries)
+    },[queriesDebounced, params])
+
+    const handleKeySearch = async(e) => {
+        if(e.keyCode === 13){
+            if(queriesDebounced){
+                queries.q = queriesDebounced
+            } else delete queries.q
+            if(location.pathname === '/:category'){
+                navigate({
+                    pathname: location.pathname,
+                    search: createSearchParams(queries).toString()
+                })
+            } else {
+                navigate({
+                    pathname: `${path.PRODUCTS}`,
+                    search: createSearchParams(queries).toString()
+                })
+            }
+        }
+    }
+
+    
+
+
     return (
         // Using a wrapper <div> tag around the reference element solves this by creating a new parentNode context.
         <div>
@@ -75,19 +86,16 @@ function Search() {
                         </PopperWrapper>
                     </div>
                 )}
-                onClickOutside={handleHideResult}
+                onClickOutside={() => setShowResult(false)}
             >
                 <form className={cx('search')}>
                     <button className={cx('search-btn')}>
                         <FontAwesomeIcon icon={faMagnifyingGlass} />
                     </button>
                     <input
-                        value={searchValue}
+                        value={queries.q}
                         placeholder="Tìm kiếm đồng hồ theo tên, hãng"
-                        onChange={(e) => {
-                            e.target.value = e.target.value.trimStart();
-                            setSearchValue(e.target.value);
-                        }}
+                        onChange={e => setQueries({...queries, q: e.target.value})}
                         onFocus={() => setShowResult(true)}
                         onKeyDown={handleKeySearch}
                     />

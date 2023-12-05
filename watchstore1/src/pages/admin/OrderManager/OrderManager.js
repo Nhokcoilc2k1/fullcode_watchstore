@@ -36,7 +36,7 @@ function OrderManager() {
              delete queries.page 
          }
          fetchOrder(queries);
-    },[queriesDebounced, params])
+    },[queriesDebounced, params, reLoad])
 
     const handleInputSearch = (e) => {
         setQueries({...queries, q: e.target.value})
@@ -108,7 +108,12 @@ function OrderManager() {
                                 <td className={cx('cus-col4')}><p className={cx('code')}>{order._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{order.name}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('code')}>{order.phone}</p></td>
-                                <td className={cx('cus-col1', 'custom-col')}><p onClick={() => setEditOrder(order)} className={cx('status', 'order')}>{order.status}</p></td>
+                                <td className={cx('cus-col1', 'custom-col')}>
+                                    <p 
+                                        onClick={() => setEditOrder(order)} 
+                                        className={cx('status', 'order', order.status === 'Đã giao hàng' ? 'payed' : '', order.status === 'Đã hủy' ? 'cancel-o' : '')}
+                                    >{order.status}</p>
+                                </td>
                                 <td>
                                     {order.products.map((item, index) => (
                                         <p key={index} className={cx('name')}>{item.name}</p>

@@ -162,6 +162,23 @@ productRoute.post(
     })
 )
 
+// get data to excel
+productRoute.get(
+    '/export-excel/',
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async(req, res) => {
+        const response = await Product.find().select('name price sale_price quantity sold createdAt updatedAt -_id')
+        res.status(200).json({
+            success: response ? true : false,
+            data: response ? response : 'Đã xảy ra lỗi!'
+        })
+    })
+
+)
+
+// get detail product
+
 productRoute.get(
     '/:pid',
     asyncHandler(async(req, res) => {
@@ -271,6 +288,42 @@ productRoute.get(
           }
     })
 )
+
+productRoute.put(
+    '/quantity/:pid',
+    asyncHandler(async(req, res)  => {
+        const { pid } = req.params
+        const {qnt} = req.body
+        // if(!qnt) throw new Error('Missing input');
+        const product = await Product.findOne({_id: pid}).select('quantity sold');
+        const qntPay = +product.quantity - +qnt
+        const qntSell = +product.sold + +qnt
+        console.log(qntPay, qntSell);
+        if(product){
+            const response = await Product.findByIdAndUpdate(pid, {quantity: qntPay, sold: qntSell},{new : true})
+            res.status(200).json({
+                success: response ? true : false,
+                message: response ? response : 'Đã xảy ra lỗi!'
+            })
+        } else throw new Error('Sản phẩm không tồn tại')
+
+    })
+)
+
+// Export Excel
+// productRoute.get(
+//     '/export-excel/',
+//     verifyAccessToken,
+//     isAdmin,
+//     asyncHandler(async(req, res) => {
+//         const response = await Product.find().select('name price sale_price quantity sold createdAt updatedAt')
+//         res.status(200).json({
+//             success: response ? true : false,
+//             message: response ? response : 'Đã xảy ra lỗi!'
+//         })
+//     })
+
+// )
 
 
 export default productRoute;

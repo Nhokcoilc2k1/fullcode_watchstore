@@ -47,6 +47,7 @@ function SearchItem({dataBrand, dataCategory}) {
             queries.brand = checked.join(',') 
             queries.page = 1
         } else delete queries.brand
+        // console.log(queries);
         navigate({
             pathname: `/${category}`,
             search: createSearchParams(queries).toString() 
@@ -85,8 +86,8 @@ function SearchItem({dataBrand, dataCategory}) {
 
     return ( 
         < >
-            { dataBrand?.map((el) => (
-                <div key={el._id} className={cx('group')}>
+            { dataBrand?.filter(el => el.status !== false).map((el) => (
+                <div key={el._id} className={cx('box-brand')}>
                     <input 
                         type="checkbox" 
                         checked={checked.includes(el.name)} 
@@ -109,6 +110,18 @@ function SearchItem({dataBrand, dataCategory}) {
                     <label htmlFor={el._id}>{el.name}</label>
                 </div>
             ))}
+            {/* { dataPrice?.map((el) => (
+                <div key={el._id} className={cx('group')}>
+                    <input 
+                        type="checkbox" 
+                        checked={priced.includes(el.value)} 
+                        onChange={() => handleCheckPrice(el.value)} 
+                        id={el._id}
+                        value={el.name}
+                     />
+                    <label htmlFor={el._id}>{el.name}</label>
+                </div>
+            ))} */}
         </>
      );
 }

@@ -7,7 +7,7 @@ import moment from 'moment';
 import UpdateProduct from './UpdateProduct';
 import {  formattedNumber, handleCompareDate } from '~/ultils/helpers';
 import Swal from 'sweetalert2';
-import { apiDeleteProduct, apiGetProducts } from '~/apis/product';
+import { apiDeleteProduct, apiGetExportToExcel, apiGetProducts } from '~/apis/product';
 import { toast } from 'react-toastify';
 import { faIntercom } from '@fortawesome/free-brands-svg-icons';
 import CustomizeVarriant from './CustomizeVariant';
@@ -23,6 +23,7 @@ function ProductManager() {
     const [reLoad, setReLoad] = useState(false);
     const [editProduct, setEditProduct] = useState(null);
     const [customizeVarriant, setCustomVarriant] = useState(null);
+    const [dataExcel, setDataExcel] = useState([]);
     const [queries, setQueries] = useState({
         q: ""
     })
@@ -31,7 +32,8 @@ function ProductManager() {
 
     const fetchProduct = async(params) => {
         const response = await apiGetProducts({...params, limit : process.env.REACT_APP_LIMIT })
-        console.log(response);
+        const dataExcel = await apiGetExportToExcel();
+        setDataExcel(dataExcel.data)
         if(response.success) setProductData(response)
     }
 
@@ -45,7 +47,7 @@ function ProductManager() {
             delete queries.page
          }
        fetchProduct(queries)
-    },[queriesDebounced, params])
+    },[queriesDebounced, params, reLoad])
 
     const handleDelete = (pid) => {
         Swal.fire({
@@ -58,7 +60,7 @@ function ProductManager() {
                 const response = await apiDeleteProduct(pid);
                 if(response.success){
                     toast.success(response.message)
-                    setReLoad(prev => !prev)
+                    setReLoad(!reLoad)
                 }
                 else toast.error(response.message);
             }
@@ -90,7 +92,7 @@ function ProductManager() {
         <div className={cx('inner')}>
                 <h2 className={cx('table-name')}>Danh sách sản phẩm</h2>
                 <div className={cx('header')}>
-                    <ExportToExcel />
+                    <ExportToExcel data={dataExcel} />
                     <div className={cx('search')}>
                         <input placeholder="Tìm kiếm sản phẩm tại đây..." value={queries.q} onChange={handleInputSearch} />
                         <div className={cx('icon')}>

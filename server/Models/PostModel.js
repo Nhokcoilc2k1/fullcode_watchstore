@@ -11,7 +11,6 @@ const postSchema = mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
     },
     status: {
         type: Boolean,
@@ -19,7 +18,7 @@ const postSchema = mongoose.Schema({
     },
     image: {
         type: String,
-        default: 'https://cdn.tgdd.vn//GameApp/-1//maytinh-17-800x450-11.jpg'
+        // default: 'https://cdn.tgdd.vn//GameApp/-1//maytinh-17-800x450-11.jpg'
     }
 },
 {

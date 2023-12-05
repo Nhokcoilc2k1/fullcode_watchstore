@@ -20,6 +20,14 @@ function UpdateOrder({editOrder, setEditOrder, render}) {
             toast.success(response.message)
             render();
             setEditOrder(null);
+            // if(status === 'Đã xác nhận'){
+            //     editOrder.products.map(async(el) => {
+            //        const response =  await apiUpdateQuantitySoldProduct(el.product, {qnt: el.quantity})
+            //        if(response.success){
+            //             console.log(response.message);
+            //        }
+            //     })
+            // }
         } else toast.error(response.message)
     }
 
@@ -27,7 +35,6 @@ function UpdateOrder({editOrder, setEditOrder, render}) {
         const privision = price*quantity;
         return formattedNumber(privision)
     };
-
     // ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng','Đã giao hàng', 'Đã hủy']
     const statusOfOrder = [
         {name: 'Chờ xác nhận', value: 'Chờ xác nhận' },

@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getCurrent } from "~/Redux/user/asyncActions";
-import { apiCreateOrder } from "~/apis/product";
+import { apiCreateOrder, apiUpdateQuantitySoldProduct } from "~/apis/product";
 
 // This value is from the props in the UI
 const style = {"layout":"vertical"};
@@ -31,11 +31,13 @@ const ButtonWrapper = ({ currency, showSpinner, amount, payload, setIsSuccess, s
 
     const handleCreateOrder = async() => {
         const response = await apiCreateOrder({...payload, status: 'Đã xác nhận', paymentMethod: 'Thanh toán bằng PayPal', isPaid: 'Đã thanh toán'})
-        console.log(response);
         if(response.success){
             setIsSuccess(true)
             setShowPaypal(false)
             dispatchUser(getCurrent())
+            payload?.products?.map(async(el) => {
+                const response =  await apiUpdateQuantitySoldProduct(el?.product?._id, {qnt: el.quantity})
+             })
             setTimeout(() => {
                 Swal.fire('Chúc mừng!','Bạn đã đặt hàng thành công!', 'success').then(() => {
                     navigate('/don-hang')

@@ -9,11 +9,11 @@ import Paypal from '../components/Paypal';
 import OverLay from '../components/OverLay';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { formattedNumber } from '~/ultils/helpers';
+import { formatPromo, formattedNumber } from '~/ultils/helpers';
 import { apiUpdateCurrent } from '~/apis/user';
 import Swal from 'sweetalert2';
 import Congration from '../components/Congration';
-import { apiCreateOrder } from '~/apis/product';
+import { apiCreateOrder, apiUpdateQuantitySoldProduct } from '~/apis/product';
 import { useNavigate } from 'react-router-dom';
 import { apiGetPromotion } from '~/apis/promotion';
 import { toast } from 'react-toastify';
@@ -47,7 +47,7 @@ function ShippingAddress() {
     },[])
 
     const provisional = current?.cart?.reduce((acum, el) => {
-        return acum + el.product.sale_price * el.quantity;
+        return acum + el?.product?.sale_price * el?.quantity;
     },0);
 
     
@@ -62,6 +62,10 @@ function ShippingAddress() {
             }else toast.error('Không đủ điều kiện dùng mã giảm giá!')
         }else toast.error('Mã giảm giá không tồn tại!')
     }
+
+    const fitPromo = promotion.filter(el => +provisional > +el.min_order_value)
+    const promOfOder = fitPromo.filter(el => el.status === true)
+    // console.log(totalPrice);
 
     // const totalPrice = provisional;
 
@@ -83,12 +87,16 @@ function ShippingAddress() {
                 const response = await apiCreateOrder({...values,products: current.cart, orderBy: current?._id, totalPrice})
                 if(response.success){
                     setIsSuccess(true);
-                    // dispatch(getCurrent());
+                    dispatch(getCurrent());
+                    current.cart.map(async(el) => {
+                         await apiUpdateQuantitySoldProduct(el?.product?._id, {qnt: el.quantity})
+                    })
                     setTimeout(() => {
                         Swal.fire('Chúc mừng','Bạn đã đặt hàng thành công', 'success').then(() => {
                             navigate('/don-hang');
+                            window.location.reload();
                         }, 3000)
-                    })
+                    })         
                 }
             }else if(checked && checked === 'Thanh toán paypal'){
                 setShowPaypal(true);
@@ -119,6 +127,8 @@ function ShippingAddress() {
         const privision = price*quantity;
         return formattedNumber(privision)
     };
+
+    console.log(current?.cart);
 
 
     const payment = [
@@ -201,6 +211,15 @@ function ShippingAddress() {
                             <div className={cx('price')}>{handlePrivision(el.product.sale_price, el.quantity)}đ</div>
                         </div>
                     ))}
+                    <div className={cx('box-promo')}>
+                        <p className={cx('header-pro')}>Khuyến mãi phù hợp với đơn hàng của bạn</p>
+                        {promOfOder?.map((el, index) => (
+                            <p key={index} className={cx('content')}>
+                            Nhập mã <span>{el.coupon_code}</span>
+                            {`đơn >= ${formatPromo(el.min_order_value)} giảm ${formatPromo(el.discount_value)}`}
+                        </p>
+                        ))}
+                    </div>
                     <div className={cx('code-promo')}>
                         <input placeholder="Nhập mã khuyến mãi" onChange={e => setCouponCode(e.target.value)} />
                         <button type='button' onClick={handleCouponCode}>Áp dụng</button>
@@ -215,7 +234,7 @@ function ShippingAddress() {
                     </div>
                     <div className={cx('box-item')}>
                         <p className={cx('total')}>Tổng tiền</p>
-                        <p className={cx('total')}>{formattedNumber(totalPrice ? totalPrice : provisional)} đ</p>
+                        <p className={cx('total')}>{formattedNumber(totalPrice ? totalPrice : totalPrice = provisional)} đ</p>
                     </div>    
                     <div className={cx('box-select')}>
                         {payment.map(el => (

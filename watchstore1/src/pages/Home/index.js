@@ -38,11 +38,11 @@ function Home() {
         <div className={cx('wrapper')}>
             <Slogan />
             <section className={cx('section')}>
-                <ProductSlide data={bestSellers}>
-                    <h3 className={cx('header-slide')}>Top tìm kiếm</h3>
+                <ProductSlide data={newProducts}>
+                    <h3 className={cx('header-slide')}>Sản phẩm mới</h3>
                     <span className={cx('swiper-pagination')}></span>
                 </ProductSlide>
-                <ProductSlide data={newProducts}>
+                <ProductSlide data={bestSellers}>
                     <h3 className={cx('header-slide')}>Sản phẩm bán chạy</h3>
                     <span className={cx('swiper-pagination')}></span>
                 </ProductSlide>
@@ -51,7 +51,7 @@ function Home() {
                 <h2 className={cx('title')}>Các sản phẩm liên quan</h2>
                 <ListProduct data={products} className={cx('l-2-4')}>
                     <div className={cx('custom-btn')}>
-                        <Button outline href="/products" rightIcon={<FontAwesomeIcon icon={faArrowRight} />}>
+                        <Button outline href="/:category" rightIcon={<FontAwesomeIcon icon={faArrowRight} />}>
                             Xem thêm
                         </Button>
                     </div>

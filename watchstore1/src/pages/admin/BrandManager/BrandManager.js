@@ -40,7 +40,7 @@ function BrandManager() {
              delete queries.page     
          }
         fetchBrand(queries);
-    }, [queriesDebounced, params ]);
+    }, [queriesDebounced, params, reload ]);
 
 
     const handleDelete = async(cid, name) => {

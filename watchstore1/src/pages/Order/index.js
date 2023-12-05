@@ -7,10 +7,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import TabsOrder from "./TabsOrder";
-import { logout } from "~/Redux/user/userSlice";
 import { getOrderOfUser } from "~/Redux/orders/asyncActions";
 import path from "~/ultils/path";
 import BreadCrumb from "~/components/BreadCrumb";
+import { logout } from "~/Redux/user/userSlice";
 
 const cx = classNames.bind(styles);
 
@@ -45,7 +45,7 @@ function Order() {
     const config = [
         {name: 'Tất cả', component: <TabsOrder data={orderOfUser} setRender={setRender}   />, number: orderOfUser.length},
         {name: 'Chờ xác nhận', component: <TabsOrder data={pendingOrder} setRender={setRender}  />, number: pendingOrder.length},
-        {name: 'Chờ lấy hàng', component: <TabsOrder data={confirmedOrder} setRender={setRender}   />, number: confirmedOrder.length},
+        {name: 'Đã xác nhận', component: <TabsOrder data={confirmedOrder} setRender={setRender}   />, number: confirmedOrder.length},
         {name: 'Đang giao', component: <TabsOrder data={deliveringOrder} setRender={setRender}   />, number: deliveringOrder.length},
         {name: 'Đã giao', component: <TabsOrder data={deliveredOrder}  setRender={setRender}  />, number: deliveredOrder.length},
         {name: 'Đã hủy', component: <TabsOrder data={canceledOrder} setRender={setRender}   />, number: canceledOrder.length},
@@ -66,7 +66,7 @@ function Order() {
                             <div className={cx('nav-header')}>
                                 <FontAwesomeIcon icon={faCircleUser} className={cx('icon')} />
                                 <div className={cx('info')}>
-                                    <p className={cx('username')}>{current.name}</p>
+                                    <p className={cx('username')}>{current?.name}</p>
                                     <p>Chưa có hạng thành viên</p>
                                 </div>
                             </div>

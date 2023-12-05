@@ -1,70 +1,90 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import Post from '../Models/PostModel.js';
-import protect from '../Middleware/AuthMiddleware.js';
+import protect, { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
+import uploadCloud from '../config/cloudinaryConfig.js';
 
 const postRoute = express.Router();
 
 postRoute.post(
     "/",
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {title,content,image, description} = req.body;
-        if(!title || !content || !description) throw new Error('Missing input');
-        const postdExit = await Post.findOne({title});
-        if(postdExit){
-            res.status(400);
-            throw new Error("Post name already exist");
-        }else{
-            const post = new Post({
-                title,
-                description,
-                content,
-                image
-            });
-            if(post){
-                const createPost = await post.save();
-                res.status(201).json(createPost);
-            }else{
-                res.status(400);
-                throw new Error("Invalid brand data");
-            }
-        }
+        const {title, content, status, description} = req.body;
+        const postExit = await Post.findOne({title})
+        if(postExit) throw new Error("Mã danh mục đã tồn tại");
+        if(!title) throw new Error("Đầu vào không hợp lệ");
+        const image = req?.files?.image[0].path
+        const post = new Post({
+            title,
+            content,
+            status,
+            description,
+            image
+        })
+        const newPost = await post.save();
+        res.status(200).json({
+            success: newPost ? true : false,
+            message: newPost ? 'Tạo bài viết thành công!' : 'Đã xảy ra lỗi!'
+        })
+        
     })
 )
 
 postRoute.put(
-    "/:id",
+    "/:poid",
+    verifyAccessToken,
+    isAdmin,
+    uploadCloud.fields([
+        {name: 'image', maxCount: 1},
+    ]),
     asyncHandler(async(req, res) => {
-        const {title,content,status, image, description} = req.body;
-        const post = await Post.findById(req.params.id);
-        if(post){
-            post.title = title;
-            post.content = content;
-            post.image = image;
-            post.description = description;
-            post.status = status;
+        const { poid } = req.params;
+        const files = req?.files
+        if(files?.image) req.body.image = files?.image[0]?.path;
+        const updatePost = await Post.findByIdAndUpdate(poid, {...req.body}, {new: true})
+        return res.status(200).json({
+            success: updatePost ? true : false,
+            message: updatePost ? 'Cập nhật bài viết thành công!' : 'Đã xảy ra lỗi!'
+        })
+    })
+    )
 
-            const updatePost = await Post.save();
-            res.json(updatePost);
-        }else{
-            res.status(404);
-            throw new Error('Post not found');
-        }
+// UPDATE STATUS post
+postRoute.put(
+    "/status/:poid",
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async (req, res) => {
+       const {poid} = req.params;
+       const {status} = req.body;
+        const updatePost = await Post.findByIdAndUpdate(poid, {status: status}, {new: true})
+        res.status(200).json({
+            success: updatePost ? true : false,
+            message: updatePost ? updatePost : 'Đã xảy ra lỗi!'
+        })
+
     })
 )
+
 
 postRoute.delete(
-    "/:id",
-    asyncHandler(async(req, res) => {
-        const deletePost = await Post.findByIdAndDelete(req.params.id);
-        if(deletePost){
-            res.status(200).json('Delete successful');
-        }else{
-            res.status(404);
-            throw new Error('Unsuccesful');
-        }
-    })
-)
+    "/:poid",
+    verifyAccessToken,
+    isAdmin,
+    asyncHandler(async (req, res) => {
+        const { poid } = req.params;
+        const response = await Post.findByIdAndDelete(poid, {new : true});
+        res.status(200).json({
+            success: response ? true : false,
+            message: response ? 'Xóa bài viết thành công!' : 'Đã xảy ra lỗi!'
+        })
+}))
+
 
 postRoute.get(
     "/",
@@ -77,6 +97,15 @@ postRoute.get(
         const formatedQueries = JSON.parse(queryString);
 
         if(queries?.name) formatedQueries.name = {$regex: queries.name, $options: 'i'}
+
+        if(req.query.q){
+            delete formatedQueries.q;
+            formatedQueries['$or'] = [
+                {title : {$regex: req.query.q, $options: 'i'}},
+                // {coupon_code : {$regex: req.query.q, $options: 'i'}}
+            ]
+        }
+
         let queryCommand = Post.find(formatedQueries);
 
         if(req.query.fields){

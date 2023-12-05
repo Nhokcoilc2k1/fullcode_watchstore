@@ -42,9 +42,6 @@ function UpdateBrand({editBrand, setEditBrand, render}) {
             for(let i of Object.entries(data)) formData.append(i[0], i[1])
             if(data.image) formData.append('image', data.image.length  === 0 ? image : data.image[0])
 
-            console.log(data);
-            console.log(formData);
-
             const response = await apiUpdateBrand(editBrand._id,formData);
             if(response.success){
                 toast.success(response.message);

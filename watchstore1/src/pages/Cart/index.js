@@ -24,7 +24,7 @@ function Cart() {
     }
 
     const totals = current?.cart?.reduce((acum, el) => {
-        return acum + el.product.sale_price * el.quantity;
+        return acum + el?.product?.sale_price * el?.quantity;
     },0)
 
     const handleRemoveCart = async(pid) => {

@@ -19,14 +19,6 @@ import React from 'react';
   // const datap = [
   //   { product: 'Sản phẩm A', sales: 500 },
   //   { product: 'Sản phẩm B', sales: 400 },
-  //   { product: 'Sản phẩm C', sales: 300 },
-  //   { product: 'Sản phẩm D', sales: 250 },
-  //   { product: 'Sản phẩm E', sales: 200 },
-  //   { product: 'Sản phẩm A', sales: 500 },
-  //   { product: 'Sản phẩm B', sales: 400 },
-  //   { product: 'Sản phẩm C', sales: 300 },
-  //   { product: 'Sản phẩm D', sales: 250 },
-  //   { product: 'Sản phẩm E', sales: 200 },
   // ];
 
   const dataTop = [
@@ -41,14 +33,14 @@ import React from 'react';
   };
 
 // Màu sắc cho các phần tử trong biểu đồ
-const colors = ['#52aa54' , '#ff0000' , '#ffc658',  '#f53e2d','#8884d8' , '#b1c236', '#82ca9d', '#ff7f50', '#008800'];
+const colors = ['#52aa54' , '#ff0000' , '#ffc658', '#ff7f50' ,'#8884d8' , '#b1c236', '#82ca9d', '#f53e2d', '#008800'];
 
 export const SalesPieChart = ({data}) => {
   return (
     <PieChart width={400} height={400}>
       <Pie
         data={data}
-        dataKey="value"
+        dataKey="sold"
         nameKey="name"
         cx="50%"
         cy="50%"
@@ -74,7 +66,7 @@ export const SalesChart = ({data}) => {
         <YAxis tickFormatter={formatValue} />
         <Tooltip />
         <Legend />
-        <Bar dataKey='sales' fill="#52aa54" />
+        <Bar dataKey='sales' fill="#52aa54" name='Doanh số'/>
       </BarChart>
     );
   };
@@ -83,22 +75,22 @@ export const TopProductsChart = ({data}) => {
     return (
         <BarChart width={500} height={500} data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="product" />
-          <YAxis />
+          <XAxis />
+          <YAxis dataKey="sold" />
           <Tooltip />
           <Legend
-          layout="horizontal"
+          layout="vertical"
           align="center"
           verticalAlign="bottom"
           wrapperStyle={{ paddingBottom: 20 }}
           payload={data.map((entry, index) => ({
             id: `legend-${index}`,
-            value: entry.product,
+            value: entry.name,
             type: 'square',
             color: colors[index % colors.length],
           }))}
         />
-          <Bar dataKey="sales" >
+          <Bar dataKey="sold" >
           {data.map((entry, index) => (
           <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
         ))}
