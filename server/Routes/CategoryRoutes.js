@@ -65,9 +65,9 @@ categoryRoutes.get(
 
 // GET SINGLE BRAND
 categoryRoutes.get(
-    "/:id", 
+    "/:cid", 
     asyncHandler(async (req, res) => {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findById(req.params.cid);
     res.status(200).json({
         success: category ? true : false,
         message: category ? category : 'Đã xảy ra lỗi'
@@ -151,19 +151,19 @@ categoryRoutes.delete(
     }))
 
 // SEARCH 
-categoryRoutes.get(
-    "/search/:keyword",
-    asyncHandler(async (req, res) => {
-        let listOfCategory = await Category.find({
-            name : {$regex : new RegExp(req.params.keyword, 'i')}
-        })
-        if(listOfCategory){
-            res.status(200).json(listOfCategory)
-        }else{
-            res.status(404);
-            throw new Error("not find category")
-        }
-    })
-)
+// categoryRoutes.get(
+//     "/search/:keyword",
+//     asyncHandler(async (req, res) => {
+//         let listOfCategory = await Category.find({
+//             name : {$regex : new RegExp(req.params.keyword, 'i')}
+//         })
+//         if(listOfCategory){
+//             res.status(200).json(listOfCategory)
+//         }else{
+//             res.status(404);
+//             throw new Error("not find category")
+//         }
+//     })
+// )
     
 export default categoryRoutes;

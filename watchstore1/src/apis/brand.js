@@ -6,6 +6,11 @@ export const apiGetBrand = (params) => instance({
     params
 })
 
+export const apiGetSingleBrand = (bid) => instance({
+    url: '/brands/' + bid,
+    method: 'get',
+})
+
 export const apiCreateBrand = (data) => instance({
     url: '/brands',
     method: 'post',

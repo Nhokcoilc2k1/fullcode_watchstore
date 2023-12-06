@@ -8,7 +8,7 @@ import Profile from './Profile';
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from '~/Redux/user/userSlice';
 import BreadCrumb from '~/components/BreadCrumb';
-
+// import { apiLogout } from '~/apis/user';
 
 const cx = classNames.bind(styles);
 
@@ -18,8 +18,9 @@ function Account() {
     const navigate = useNavigate()
     const {current} = useSelector(state => state.user)
 
-    const handleLogout = () => {
+    const handleLogout = async() => {
         dispatch(logout());
+        // await apiLogout();
         navigate('/');
     }
 
@@ -38,7 +39,7 @@ function Account() {
                             <div className={cx('nav-header')}>
                                 <FontAwesomeIcon icon={faCircleUser} className={cx('icon')} />
                                 <div className={cx('info')}>
-                                    <p className={cx('username')}>{current.name}</p>
+                                    <p className={cx('username')}>{current?.name}</p>
                                     <p>Chưa có hạng thành viên</p>
                                 </div>
                             </div>

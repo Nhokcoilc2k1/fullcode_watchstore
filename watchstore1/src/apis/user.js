@@ -13,6 +13,11 @@ export const apiLogin = (data) => instance({
     data
 })
 
+export const apiLogout = () => instance({
+    url: '/users/logout',
+    method: 'get',
+})
+
 export const apiForgotPassword = (data) => instance({
     url: '/users/forgotpassword',
     method: 'post',
@@ -27,6 +32,11 @@ export const apiResetPassword = (data) => instance({
 
 export const apiGetCurrent = () => instance({
     url: '/users/current',
+    method: 'get',
+})
+
+export const apiGetSingleUser = (uid) => instance({
+    url: '/users/' + uid,
     method: 'get',
 })
 

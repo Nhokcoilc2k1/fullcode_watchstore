@@ -94,6 +94,10 @@
 .box-check-item {
     padding-bottom: 16px;
     border-bottom: 2px solid rgba(12, 24, 35, 0.2);
+
+    &:first-child{
+        padding-bottom: 0;
+    }
 }
 
 .title-check {

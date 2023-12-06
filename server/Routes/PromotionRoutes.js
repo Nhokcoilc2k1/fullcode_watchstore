@@ -69,7 +69,7 @@ promotionRoute.get(
     const promotion = await Promotion.findById(proid);
     res.status(200).json({
         success: promotion ? true : false,
-        message: promotion ? promotion : 'Đã xảy ra lỗi!'
+        promotion: promotion ? promotion : 'Đã xảy ra lỗi!'
     })
 }))
 

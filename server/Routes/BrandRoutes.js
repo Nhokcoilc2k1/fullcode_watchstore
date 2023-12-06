@@ -65,12 +65,12 @@ brandRoute.get(
 
 // GET SINGLE BRAND
 brandRoute.get(
-    "/:id", 
+    "/:bid", 
     asyncHandler(async (req, res) => {
-    const brand = await Brand.findById(req.params.id);
+    const brand = await Brand.findById(req.params.bid);
     res.status(200).json({
         success: brand ? true : false,
-        message: brand ? brand : 'Đã xảy ra lỗi'
+        brand: brand ? brand : 'Đã xảy ra lỗi'
     })
 }))
 
@@ -154,21 +154,21 @@ brandRoute.delete(
     }))
 
 // SEARCH
-brandRoute.get(
-    "/search/:keyword",
-    asyncHandler( async (req, res) => {
-        const listOfBrand = await Brand.find({
-            name: {
-                $regex: req.params.keyword,
-                $options: "i"
-            },
-        })
-        if(listOfBrand){
-            res.status(200).json(listOfBrand);
-        }else{
-            res.status(400);
-            throw new Error("not find brand");
-        }
-    })
-)
+// brandRoute.get(
+//     "/search/:keyword",
+//     asyncHandler( async (req, res) => {
+//         const listOfBrand = await Brand.find({
+//             name: {
+//                 $regex: req.params.keyword,
+//                 $options: "i"
+//             },
+//         })
+//         if(listOfBrand){
+//             res.status(200).json(listOfBrand);
+//         }else{
+//             res.status(400);
+//             throw new Error("not find brand");
+//         }
+//     })
+// )
 export default brandRoute;

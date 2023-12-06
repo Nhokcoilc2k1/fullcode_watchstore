@@ -11,6 +11,7 @@ import { getOrderOfUser } from "~/Redux/orders/asyncActions";
 import path from "~/ultils/path";
 import BreadCrumb from "~/components/BreadCrumb";
 import { logout } from "~/Redux/user/userSlice";
+// import { apiLogout } from "~/apis/user";
 
 const cx = classNames.bind(styles);
 
@@ -28,8 +29,9 @@ function Order() {
         dispatch(getOrderOfUser());
     },[dispatch, render])
 
-    const logoutHandle = () => {
+    const logoutHandle = async() => {
         dispatch(logout());
+        // await apiLogout();
         navigate('/');
     }
 

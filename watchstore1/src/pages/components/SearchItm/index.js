@@ -85,20 +85,29 @@ function SearchItem({dataBrand, dataCategory}) {
     },[selected])
 
     return ( 
-        < >
-            { dataBrand?.filter(el => el.status !== false).map((el) => (
-                <div key={el._id} className={cx('box-brand')}>
-                    <input 
-                        type="checkbox" 
-                        checked={checked.includes(el.name)} 
-                        onChange={() => handleCheck(el.name)} 
-                        id={el._id}
-                        value={el.name}
-                     />
-                    <label htmlFor={el._id}>{el.name}</label>
-                </div>
-            ))}
-             { dataCategory?.map((el) => (
+        <div className={cx('hidden')}>
+            {dataBrand && (
+                <>
+                    <div className={cx('box-brand')}>
+                        { dataBrand?.filter(el => el.status !== false).map((el) => (
+                                <div key={el._id} className={cx('group')}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={checked.includes(el.name)} 
+                                        onChange={() => handleCheck(el.name)} 
+                                        id={el._id}
+                                        value={el.name}
+                                        />
+                                    <label htmlFor={el._id}>{el.name}</label>
+                                </div>
+                                
+                        ))}
+                    </div>
+                    <input className={cx('more-btn')} type='checkbox' />
+                </>
+            )}
+
+                { dataCategory?.map((el) => (
                 <div key={el._id} className={cx('group')}>
                     <input 
                         type="checkbox" 
@@ -106,23 +115,11 @@ function SearchItem({dataBrand, dataCategory}) {
                         onChange={() => handleCheckCate(el.name)} 
                         id={el._id}
                         value={el.name}
-                     />
+                        />
                     <label htmlFor={el._id}>{el.name}</label>
                 </div>
             ))}
-            {/* { dataPrice?.map((el) => (
-                <div key={el._id} className={cx('group')}>
-                    <input 
-                        type="checkbox" 
-                        checked={priced.includes(el.value)} 
-                        onChange={() => handleCheckPrice(el.value)} 
-                        id={el._id}
-                        value={el.name}
-                     />
-                    <label htmlFor={el._id}>{el.name}</label>
-                </div>
-            ))} */}
-        </>
+        </div>
      );
 }
 

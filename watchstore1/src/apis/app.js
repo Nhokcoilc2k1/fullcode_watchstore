@@ -6,6 +6,11 @@ export const apiGetCategory = (params) => instance({
     params
 })
 
+export const apiGetSingleCategory = (cid) => instance({
+    url: '/categorys/' + cid,
+    method: 'get',
+})
+
 export const apiCreateCategory = (data) => instance({
     url: '/categorys',
     method: 'post',

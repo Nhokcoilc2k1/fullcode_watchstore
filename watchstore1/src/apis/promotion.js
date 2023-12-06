@@ -6,6 +6,11 @@ export const apiGetPromotion = (params) => instance({
     params
 })
 
+export const apiGetSinglePromotion = (proid) => instance({
+    url: '/promotions/' + proid,
+    method: 'get',
+})
+
 export const apiCreatePromotion = (data) => instance({
     url: '/promotions',
     method: 'post',

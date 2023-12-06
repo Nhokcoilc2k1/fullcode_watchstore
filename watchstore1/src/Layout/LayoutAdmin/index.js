@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { adminSidebar } from '~/ultils/contants';
 import { logout } from '~/Redux/user/userSlice';
 import Tooltip from '@mui/material/Tooltip';
+// import { apiLogout } from '~/apis/user';
 
 const cx = classNames.bind(styles);
 
@@ -27,8 +28,9 @@ function LayoutAdmin({ children }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
+    const handleLogout = async() => {
         dispatch(logout());
+        // await apiLogout();
         navigate('/');
     }
 

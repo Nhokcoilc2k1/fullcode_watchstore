@@ -113,7 +113,7 @@ function BrandManager() {
                                 <td className={cx('cus-col')}><p className={cx('code')}>{brand._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{brand.name}</p></td>
                                 <td className={cx('cus-col1')}><p className={cx('image')}><img src={brand.image} alt={brand.description} /></p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchBrand data={brand} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchBrand bid={brand._id} render={render}/></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(brand.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(brand.updatedAt, brand.createdAt)}</p></td>
                             </tr>

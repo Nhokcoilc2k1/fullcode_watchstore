@@ -6,6 +6,11 @@ export const apiGetPosts = (params) => instance({
     params
 })
 
+export const apiGetSinglePost = (poid) => instance({
+    url: '/posts/' + poid,
+    method: 'get',
+})
+
 export const apiGetPost = (poid) => instance({
     url: '/posts/' + poid,
     method: 'get',

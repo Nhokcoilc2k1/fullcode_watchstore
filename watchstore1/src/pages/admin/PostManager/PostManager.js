@@ -125,7 +125,7 @@ function PostManager() {
                                 <td className={cx('cus-col')}><p className={cx('code')}>{post._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{post.title}</p></td>
                                 <td className={cx('cus-col1')}><p className={cx('product-img')}><img src={post.image} alt={post.description} /></p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPost data={post} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPost poid={post._id} render={render} /></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(post.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(post.updatedAt, post.createdAt)}</p></td>
                             </tr>

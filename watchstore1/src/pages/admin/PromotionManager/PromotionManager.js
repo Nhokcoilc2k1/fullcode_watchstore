@@ -134,7 +134,7 @@ function PromotionManager() {
                                 <td className={cx('cus-col')}><p className={cx('name')}>{promo.coupon_code}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('name')}>{promo.discount_value}%</p></td>
                                 <td className={cx('cus-col')}><p className={cx('name')}>{moment(promo.expired).format("DD/MM/YYYY h:mm a")}</p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPromo proid={promo._id} status={promo.status} render={render} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchPromo proid={promo._id} render={render} /></p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{moment(promo.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col')}><p className={cx('date')}>{handleCompareDate(promo.updatedAt, promo.createdAt)}</p></td>
                             </tr>

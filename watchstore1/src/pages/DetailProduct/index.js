@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import DescriptionProduct from './components/IntroduceInfoProduct/DescriptionProduct';
 import IntroSelectSize from './components/IntroduceInfoProduct/IntroSelectSize';
 import OverLay from '../components/OverLay';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Rating, Stack } from '@mui/material';
 import { apiGetProduct, apiGetProducts, apiUpdateReview } from '~/apis/product';
 import { formatPromo, formattedNumber } from '~/ultils/helpers';
@@ -29,12 +29,7 @@ import path from '~/ultils/path';
 
 const cx = classNames.bind(styles);
 
-// const urlImg = [
-//     {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
-//     {url: 'https://wscdn.vn/upload/image/RA-AA0B02R19B-2081811590-287106387.jpg?size=500x500&fomat=webp'},
-//     {url: 'https://wscdn.vn/upload/image/OP990-45ADGS-GL-T-1-1131812509-1619214585.jpg?size=500x500&fomat=webp'},
-//     { url: 'https://wscdn.vn/upload/image/L2-1660492967-1835041053.jpg?size=800x800&fomat=webp'},
-// ];
+let images = []
 
 function DetailProduct() {
     const [review, setReview] = useState(false);
@@ -56,7 +51,10 @@ function DetailProduct() {
         const response = await apiGetProduct(pid);
         const productSlice = await apiGetProducts({sort: '-totalRating', limit: 15})
         const promotion = await apiGetPromotion({limit: 3})
-        setProduct(response.productData);
+        if(response.success){
+            setProduct(response.productData);
+            images = [response.productData.thumbnail, ...response.productData.images]
+        }
         setImage(response?.productData?.thumbnail)
         if(productSlice.success) setProductSlice(productSlice.products);
         if(promotion.success) setPromotion(promotion.promotions);
@@ -87,7 +85,6 @@ function DetailProduct() {
             text: "Vui lòng đăng nhập trước", 
         })
         if(response.success){      
-            // dispatch(getCurrent())
             setTimeout(() => {
                 navigate(path.PAYMENT);
                 window.location.reload();
@@ -117,7 +114,7 @@ function DetailProduct() {
         else toast.error('Đã xảy ra lỗi');
     }
 
-    const images = product.images;
+    // const images = product.images;
 
     const config = [
         {name: 'Thông tin sản phẩm', component: <DescriptionProduct /> },

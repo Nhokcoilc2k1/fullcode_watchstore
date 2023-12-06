@@ -2,14 +2,13 @@ import express from 'express';
 import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModel.js';
 // import generateToken from '../utils/generateToken.js';
-import protect, { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
+import { isAdmin, verifyAccessToken } from '../Middleware/AuthMiddleware.js';
 import {generateAccessToken, generateRefreshToken} from '../utils/generateToken.js';
 import jwt from 'jsonwebtoken';
 import sendMail from '../utils/sendmail.js';
 import crypto from 'crypto';
 import makeToken from 'uniqid';
 import Product from '../Models/ProductModel.js';
-import { log } from 'console';
 
 const usertRouter = express.Router();
 
@@ -417,5 +416,18 @@ usertRouter.delete(
             })
     })
 )
+
+usertRouter.get(
+    '/:uid',
+    asyncHandler(async(req, res) => {
+        const { uid } = req.params
+        const user = await User.findById(uid);
+        res.status(200).json({
+            success: user ? true : false,
+            user: user ? user : 'Đã xảy ra lỗi'
+        })
+    })
+)
+
 
 export default usertRouter;

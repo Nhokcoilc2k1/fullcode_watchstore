@@ -120,7 +120,7 @@ function AccountManager() {
                                 <td><p className={cx('name')}>{user.name}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('code')}>{user.phone}</p></td>
                                 <td><p className={cx('name')}>{user.email}</p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchAccount uid={user._id} status={user.status} render={render}  /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchAccount uid={user._id} render={render}  /></p></td>
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{moment(user.createdAt).format("DD/MM/YYYY")}</p></td>
                                 <td className={cx('cus-col2')}><p className={cx('date')}>{handleCompareDate(user.updatedAt, user.createdAt)}</p></td>
                                 <td className={cx('cus-col4')}>

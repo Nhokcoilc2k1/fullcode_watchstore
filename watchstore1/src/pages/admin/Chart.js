@@ -53,7 +53,7 @@ export const SalesPieChart = ({data}) => {
         ))}
       </Pie>
       <Tooltip />
-      <Legend />
+      <Legend  layout="vertical"/>
     </PieChart>
   );
 };

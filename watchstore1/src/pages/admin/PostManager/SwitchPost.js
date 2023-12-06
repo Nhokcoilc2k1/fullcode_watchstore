@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Switch from 'react-switch';
-import { apiUpdatePost } from '~/apis/post';
+import { apiGetSinglePost, apiUpdatePost } from '~/apis/post';
 
-function SwitchPost({data}) {
-  const [checked, setChecked] = useState(data.status);
+function SwitchPost({poid, render}) {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      const response = await apiGetSinglePost(poid)
+      if(response.success){
+          setChecked(response.post.status)
+      }
+    }
+    fetchApi();
+  }, [poid])
 
   const handleChange = async(checked) => {
     setChecked(checked);
-    const response = await apiUpdatePost(data._id, {status: checked});
+    const response = await apiUpdatePost(poid, {status: checked});
+    if(response.success) render()
   };
 
   return (

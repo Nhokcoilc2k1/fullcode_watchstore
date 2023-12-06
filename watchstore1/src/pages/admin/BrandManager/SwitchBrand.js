@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Switch from 'react-switch';
-import { apiUpdateStatusBrand } from '~/apis/brand';
+import { apiGetSingleBrand, apiUpdateStatusBrand } from '~/apis/brand';
 
-function SwitchBrand({data}) {
-  const [checked, setChecked] = useState(data.status);
+function SwitchBrand({bid, render}) {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      const response = await apiGetSingleBrand(bid)
+      if(response.success){
+          setChecked(response.brand.status)
+      }
+    }
+    fetchApi();
+  },[bid])
 
   const handleChange = async(checked) => {
     setChecked(checked);
-    const response = await apiUpdateStatusBrand(data._id, {status: checked});
+    const response = await apiUpdateStatusBrand(bid, {status: checked});
+    if(response.success){
+      render()
+    }
   };
 
   return (

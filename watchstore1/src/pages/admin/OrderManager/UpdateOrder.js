@@ -87,22 +87,30 @@ function UpdateOrder({editOrder, setEditOrder, render}) {
                         <h4 className={cx('status-order')}>Cập nhật trạng thái đơn hàng</h4>
                     </div>
                     <div className={cx('box-input')}>
-                        <div className={cx('form-select')}>
-                            <label htmlFor="status">Trạng thái đơn hàng</label>
-                            <select 
-                                id="status" 
-                                value={status} 
-                                name="status"
-                                onChange={e => setStatus(e.target.value)}
-                            >
-                                {/* <option value="">--CHOOSE--</option> */}
-                                {
-                                    statusOfOrder?.map((el, index)=> (
-                                        <option key={index} value={el.value}>{el.name}</option>
-                                    ))
-                                }
-                            </select>
-                        </div>
+                        {/* {editOrder.status = 'Đã hủy' ? (
+                            <div className={cx('ispaid')}>
+                                <p  className={cx('ispaid-note')}>Trạng thái đơn hàng:</p>
+                                <p className={cx('success')}>Đã hủy</p>
+                            </div>
+                        ) : ( */}
+                            <div className={cx('form-select')}>
+                                <label htmlFor="status">Trạng thái đơn hàng</label>
+                                <select 
+                                    id="status" 
+                                    value={status} 
+                                    name="status"
+                                    onChange={e => setStatus(e.target.value)}
+                                >
+                                    {/* <option value="">--CHOOSE--</option> */}
+                                    {
+                                        statusOfOrder?.map((el, index)=> (
+                                            <option key={index} value={el.value}>{el.name}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+
+                        {/* )} */}
                         <div className={cx('form-select')}>
                             
                             {editOrder.isPaid === 'Đã thanh toán' ? (

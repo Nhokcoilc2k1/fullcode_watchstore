@@ -1,9 +1,19 @@
-import React, {  memo, useState } from 'react';
+import React, {  memo, useEffect, useState } from 'react';
 import Switch from 'react-switch';
-import { apiUpdateStatusPromotion } from '~/apis/promotion';
+import { apiGetSinglePromotion, apiUpdateStatusPromotion } from '~/apis/promotion';
 
-function SwitchPromo({proid, status, render}) {
-  const [checked, setChecked] = useState(status);
+function SwitchPromo({proid, render}) {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      const response = await apiGetSinglePromotion(proid)
+      if(response.success){
+          setChecked(response.promotion.status)
+      }
+    }
+    fetchApi();
+  }, [proid])
 
   const handleChange = async(checked) => {
     setChecked(checked);

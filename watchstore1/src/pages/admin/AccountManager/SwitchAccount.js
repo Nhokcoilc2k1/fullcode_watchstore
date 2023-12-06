@@ -1,9 +1,19 @@
-import React, {  useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import Switch from 'react-switch';
-import { apiUpdateStatusUser } from '~/apis/user';
+import { apiGetSingleUser, apiUpdateStatusUser } from '~/apis/user';
 
-function SwitchAccount({uid, status, render}) {
-  const [checked, setChecked] = useState(status);
+function SwitchAccount({uid, render}) {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      const response = await apiGetSingleUser(uid)
+      if(response.success){
+          setChecked(response.user.status)
+      }
+    }
+    fetchApi();
+  },[uid])
 
   const handleChange = async(checked) => {
     setChecked(checked);

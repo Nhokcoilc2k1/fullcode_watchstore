@@ -111,7 +111,7 @@ function CategoryManager() {
                                 <td className={cx('cus-col1')}><p className={cx('code')}>{category._id.slice(-6)}</p></td>
                                 <td><p className={cx('name')}>{category.name}</p></td>
                                 <td className={cx('cus-col1')}><p className={cx('image-cate')}><img src={category.image} alt={category.description} /></p></td>
-                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchCategory cid={category._id} status={category.status} render={render} /></p></td>
+                                <td className={cx('cus-col1')}><p className={cx('status')}><SwitchCategory cid={category._id} render={render} /></p></td>
                                 <td className={cx('cus-col1')}><p className={cx('date')}>{moment(category.createdAt).format("DD/MM/YYYY h:mm a")}</p></td>
                                 <td className={cx('cus-col1')}><p className={cx('date')}>{handleCompareDate(category.updatedAt, category.createdAt)}</p></td>
                             </tr>
